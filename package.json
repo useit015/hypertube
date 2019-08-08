@@ -1,0 +1,30 @@
+{
+	"name": "hypertube",
+	"version": "1.0.0",
+	"description": "A web application that allows users to research and watch videos downloaded through the BitTorrent protocol.",
+	"main": "app.js",
+	"scripts": {
+		"start": "node app.js",
+		"dev": "nodemon app.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/useit015/hypertube.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/useit015/hypertube/issues"
+	},
+	"homepage": "https://github.com/useit015/hypertube#readme",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"express": "^4.17.1",
+		"mongoose": "^5.6.9",
+		"passport": "^0.4.0",
+		"passport-local": "^1.0.0"
+	},
+	"devDependencies": {
+		"nodemon": "^1.19.1"
+	}
+}
