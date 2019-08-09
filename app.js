@@ -1,8 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const passport = require('passport')
 
 const app = express()
+
+const requireAuth = passport.authenticate('jwt', { session: false })
 
 require('./config/passport')(passport)
 
