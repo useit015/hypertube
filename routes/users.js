@@ -1,9 +1,13 @@
 const express = require('express')
+// const multer = require('multer')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const User = require('../models/User')
 const validator = require('../config/validator')
 const router = express.Router()
+
+const authJwt = passport.authenticate('jwt', { session: false })
+// const upload = multer({ limits: { fileSize: 4 * 1024 * 1024 } })
 
 const addToken = user => {
 	const opt = { expiresIn: 7200 }
@@ -40,9 +44,9 @@ router.post('/login', (req, res) => {
 	})
 })
 
-router.post('/register', (req, res) => {
-	const { username, email, password, confPassword} = req.body
-	const data = { username, email, password, confPassword }
+router.post('/register', /*upload.single('image'),*/ (req, res) => {
+	const { firstName, lastName, username, email, password, confPassword } = req.body
+	const data = { firstName, lastName, username, email, password, confPassword }
 	validator.register(data, err => {
 		if (!err) {
 			User.findOne({ email })
@@ -50,12 +54,31 @@ router.post('/register', (req, res) => {
 					if (user) {
 						res.status(400).json([ 'Email already exists' ])
 					} else {
-						new User({ username, email, password })
+						new User({ firstName, lastName, username, email, password })
 							.save()
 							.then(user => res.json(addToken(user._doc)))
 							.catch(err => console.log(err))
 					}
 				})
+				.catch(err => console.log(err))
+		} else {
+			res.status(400).json(validator.getErrors(err))
+		}
+	})
+})
+
+router.post('/update', authJwt, (req, res) => {
+	const { firstName, lastName, username, email } = req.body
+	const data = { firstName, lastName, username, email }
+	validator.update(data, err => {
+		if (!err) {
+			req.user.firstName = data.firstName
+			req.user.lastName = data.lastName
+			req.user.username = data.username
+			req.user.email = data.email
+			req.user
+				.save()
+				.then(user => res.json(addToken(user._doc)))
 				.catch(err => console.log(err))
 		} else {
 			res.status(400).json(validator.getErrors(err))
@@ -71,7 +94,19 @@ router.get('/google', passport.authenticate('google', {
 }))
 
 router.get('/googlered', passport.authenticate('google'), (req, res) => {
-	res.json(req.user)
+	res.json(addToken(req.user._doc))
+})
+
+router.get('/ft', passport.authenticate('oauth2'))
+
+router.get('/ft_ret', passport.authenticate('oauth2'), (req, res) => {
+	res.json(addToken(req.user._doc))
+})
+
+router.get('/git', passport.authenticate('github'))
+
+router.get('/git_ret', passport.authenticate('github'), (req, res) => {
+	res.json(addToken(req.user._doc))
 })
 
 module.exports = router
