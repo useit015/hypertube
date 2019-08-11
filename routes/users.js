@@ -97,9 +97,9 @@ router.get('/googlered', passport.authenticate('google'), (req, res) => {
 	res.json(addToken(req.user._doc))
 })
 
-router.get('/ft', passport.authenticate('oauth2'))
+router.get('/ft', passport.authenticate('42'))
 
-router.get('/ft_ret', passport.authenticate('oauth2'), (req, res) => {
+router.get('/ft_ret', passport.authenticate('42'), (req, res) => {
 	res.json(addToken(req.user._doc))
 })
 

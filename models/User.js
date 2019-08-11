@@ -4,15 +4,15 @@ const bcrypt = require('bcryptjs')
 const UserSchema = new mongoose.Schema({
 	firstName: {
 		type: String,
-		required: true
+		default: ''
 	},
 	lastName: {
 		type: String,
-		required: true
+		default: ''
 	},
 	username: {
 		type: String,
-		required: true
+		default: ''
 	},
 	image: {
 		type: String,
@@ -59,10 +59,10 @@ UserSchema.pre('save', function(next) {
 	}
 })
 
-UserSchema.methods.cmpPassword = function(password, cb) {
+UserSchema.methods.cmpPassword = function(password, done) {
 	bcrypt.compare(password, this.password, (err, match) => {
-		if (err) return cb(err)
-		cb(null, match)
+		if (err) return done(err)
+		done(null, match)
 	})
 }
 

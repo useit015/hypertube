@@ -1,35 +1,31 @@
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
-const OAuth2Strategy = require('passport-oauth2').Strategy
+const FortyTwoStrategy = require('passport-42').Strategy
 const GithubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-const request = require('request')
 const User = require('../models/User')
 
-const findUser = (data, done, type) => {
-	let query = {}
-	query[`${type}Id`] = data[`${type}Id`]
-	User.findOne(query)
-		.then(user => {
-			if (!user) {
-				User.findOne({ email: data.email})
-					.then(user => {
-						if (!user) {
-							new User(data)
-								.save()
-								.then(user => done(null, user))
-								.catch(err => console.log(err))
-						} else {
-							user[`${type}Id`] = data[`${type}Id`]
-							user.save()
-								.then(user => done(null, user))
-								.catch(err => console.log(err))
-						}
-					}).catch(err => done(err, false))
+const findUser = async (data, done, type) => {
+	try {
+		let query = {}
+		query[`${type}Id`] = data[`${type}Id`]
+		const user = await User.findOne(query)
+		if (!user) {
+			const user = await User.findOne({ email: data.email})
+			if (!user || !data.email) {
+				new User(data).save()
+					.then(user => done(null, user))
 			} else {
-				done(null, user)
+				user[`${type}Id`] = data[`${type}Id`]
+				user.save()
+					.then(user => done(null, user))
 			}
-		}).catch(err => done(err, false))
+		} else {
+			done(null, user)
+		}
+	} catch (err) {
+		done(err, false)
+	}
 }
 
 module.exports = passport => {
@@ -75,42 +71,39 @@ module.exports = passport => {
 			clientSecret: process.env.GIT_OAUTH_PASS,
 			callbackURL: `http://lvh.me:${PORT}/users/git_ret`
 		}, (accessToken, refreshToken, profile, done) => {
-			const name = profile.displayName.split(' ').filter(cur => cur.length)
 			const user = {
-				firstName: name[0],
-				lastName: name.slice(1).join(' '),
+				firstName: '',
+				lastName: '',
 				username: profile.username,
 				image: profile.photos[0].value,
 				email: profile._json.email,
 				githubId: profile.id
 			}
+			if (profile.displayName) {
+				const name = profile.displayName
+									.split(' ')
+									.filter(cur => cur.length)
+				user.firstName = name[0]
+				user.lastName = name.slice(1).join(' ')
+			}
 			findUser(user, done,'github')
 		})
 	)
 	passport.use(
-		new OAuth2Strategy({
-			authorizationURL: 'https://api.intra.42.fr/oauth/authorize',
-			tokenURL: 'https://api.intra.42.fr/oauth/token',
+		new FortyTwoStrategy({
 			clientID: process.env.FT_OAUTH_ID,
 			clientSecret: process.env.FT_OAUTH_PASS,
 			callbackURL: `http://lvh.me:${PORT}/users/ft_ret`
 		}, (accessToken, refreshToken, profile, done) => {
-			const opts = {
-				url: 'https://api.intra.42.fr/v2/me',
-				headers: { 'Authorization': `Bearer ${accessToken}` }
+			const user = {
+				firstName: profile.name.familyName,
+				lastName: profile.name.givenName,
+				username: profile.username,
+				image: profile.profileUrl,
+				email: profile.emails[0].value,
+				ftId: profile.id
 			}
-			request(opts, (err, res) => {
-				const profile = JSON.parse(res.body)
-				const user = {
-					firstName: profile.first_name,
-					lastName: profile.last_name,
-					username: profile.login,
-					image: profile.image_url,
-					email: profile.email,
-					ftId: profile.id
-				}
-				findUser(user, done, 'ft')
-			})
+			findUser(user, done, 'ft')
 		})
 	)
 }
