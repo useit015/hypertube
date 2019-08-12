@@ -13,14 +13,6 @@ const authJwt = passport.authenticate('jwt', { session: false })
 
 const randomHex = () => randomBytes(10).toString('hex')
 
-const addToken = user => {
-	const opt = { expiresIn: 7200 }
-	const payload = { id: user._id }
-	delete user.password
-	user.token = jwt.sign(payload, 'secret', opt)
-	return user
-}
-
 router.post('/login', (req, res) => {
 	const { email, password } = req.body
 	const data = { email, password }
@@ -32,7 +24,7 @@ router.post('/login', (req, res) => {
 						user.cmpPassword(password, (err, match) => {
 							if (err) throw err
 							if (match && user.verified) {
-								res.json(addToken(user._doc))
+								res.json(user.addToken())
 							} else {
 								res.status(400).json([ `Wrong password` ])
 							}
@@ -67,7 +59,7 @@ router.post('/register', /*upload.single('image'),*/ (req, res) => {
 							vkey
 						}).save().then(user => {
 							sendMail(email, vkey, 'verify')
-							res.json(addToken(user._doc))
+							res.json(user.addToken())
 						}).catch(err => console.log(err))
 					}
 				}).catch(err => console.log(err))
@@ -88,7 +80,7 @@ router.post('/update', authJwt, (req, res) => {
 			user.username = data.username
 			user.email = data.email
 			user.save()
-				.then(user => res.json(addToken(user._doc)))
+				.then(user => res.json(user.addToken()))
 				.catch(err => console.log(err))
 		} else {
 			res.status(400).json(validator.getErrors(err))
@@ -104,7 +96,7 @@ router.get('/verify/:key', (req, res) => {
 					user.verified = true
 					user.vkey = undefined
 					user.save()
-						.then(user => res.json(addToken(user._doc)))
+						.then(user => res.json(user.addToken()))
 						.catch(err => console.log(err))
 				} else {
 					res.status(400).json([ 'Already verified' ])
@@ -137,7 +129,7 @@ router.get('/recover/:key', (req, res) => {
 	User.findOne({ rkey })
 		.then(user => {
 			if (user) {
-				res.json({ ...addToken(user._doc), rkey })
+				res.json({ ...user.addToken(), rkey })
 			} else {
 				res.status(400).json([ 'Invalid key' ])
 			}
