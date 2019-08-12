@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+const { sign } = require('jsonwebtoken')
 
 const UserSchema = new mongoose.Schema({
 	firstName: {
@@ -71,6 +72,15 @@ UserSchema.methods.cmpPassword = function (password, done) {
 		if (err) return done(err)
 		done(null, match)
 	})
+}
+
+UserSchema.methods.addToken = function () {
+	const opt = { expiresIn: 7200 }
+	const payload = { id: this._id }
+	const user = this._doc
+	delete user.password
+	user.token = sign(payload, 'secret', opt)
+	return user
 }
 
 module.exports = mongoose.model('User', UserSchema)
