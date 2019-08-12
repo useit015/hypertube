@@ -4,6 +4,7 @@ const FortyTwoStrategy = require('passport-42').Strategy
 const GithubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
+const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy
 const request = require('request')
 const User = require('../models/User')
 
@@ -100,8 +101,8 @@ module.exports = passport => {
 			callbackURL: `https://hypertube.tk/users/ft_ret`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
-				firstName: profile.name.familyName,
-				lastName: profile.name.givenName,
+				firstName: profile.name.givenName,
+				lastName: profile.name.familyName,
 				username: profile.username,
 				image: profile.photos[0].value,
 				email: profile.emails[0].value,
@@ -135,4 +136,24 @@ module.exports = passport => {
 		})
 	})
 	)
+	passport.use(new LinkedInStrategy({
+		clientID: process.env.LI_OAUTH_ID,
+		clientSecret: process.env.LI_OAUTH_SECRET,
+		callbackURL: "https://hypertube.tk/users/li_ret",
+		scope: ['r_emailaddress', 'r_liteprofile']
+	},
+	function(token, tokenSecret, profile, done) {
+		const photos = profile.photos
+		const user = {
+			  firstName: profile.name.givenName,
+			  lastName: profile.name.familyName,
+			  username: profile.name.givenName+'_'+profile.name.familyName,
+			  image: photos[photos.length - 1].value,
+			  email: profile.emails[0].value,
+			  liId: profile.id,
+			  verified: true
+		}
+		findUser(user, done, 'li')
+	}
+	))
 }

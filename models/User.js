@@ -36,6 +36,10 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		default: '',
 	},
+	liId: {
+		type: String,
+		default: '',
+	},
 	googleId: {
 		type: String,
 		default: '',

@@ -172,6 +172,12 @@ router.get('/fb_ret', passport.authenticate('facebook'), (req, res) => {
 	res.json(req.user.addToken())
 })
 
+router.get('/li', passport.authenticate('linkedin'))
+
+router.get('/li_ret', passport.authenticate('linkedin'), (req, res) => {
+	res.json(req.user.addToken())
+})
+
 router.get('/git', passport.authenticate('github'))
 
 router.get('/git_ret', passport.authenticate('github'), (req, res) => {
