@@ -103,7 +103,7 @@ module.exports = passport => {
 				firstName: profile.name.familyName,
 				lastName: profile.name.givenName,
 				username: profile.username,
-				image: profile.profileUrl,
+				image: profile.photos[0].value,
 				email: profile.emails[0].value,
 				ftId: profile.id,
 				verified: true
