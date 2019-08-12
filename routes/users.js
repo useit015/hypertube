@@ -25,6 +25,8 @@ router.post('/login', (req, res) => {
 							if (err) throw err
 							if (match && user.verified) {
 								res.json(user.addToken())
+							} else if (!user.verified) {
+								res.status(400).json([ `User not verified` ])
 							} else {
 								res.status(400).json([ `Wrong password` ])
 							}
