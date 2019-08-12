@@ -13,7 +13,7 @@ const sendMail = async (to, key, type) => {
 			title: type == 'verify' ? 'Verify email' : 'Recover password',
 			body: `Please click the button to ${type == 'verify' ? 'verify your email' : 'recover your password'}`,
 			action: type == 'verify' ? 'Verify' : 'Recover',
-			url: `http://lvh.me:5000/users/${type}/${key}`
+			url: `https://hypertube.tk/users/${type}/${key}`
 		}
 		const html = ejs.render(raw, data)
 		const transporter = nodemailer.createTransport({
