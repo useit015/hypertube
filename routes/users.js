@@ -2,12 +2,16 @@ const express = require('express')
 // const multer = require('multer')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
+const { randomBytes } = require('crypto')
 const User = require('../models/User')
+const sendMail = require('../config/mailer')
 const validator = require('../config/validator')
 const router = express.Router()
 
 const authJwt = passport.authenticate('jwt', { session: false })
 // const upload = multer({ limits: { fileSize: 4 * 1024 * 1024 } })
+
+const randomHex = () => randomBytes(10).toString('hex')
 
 const addToken = user => {
 	const opt = { expiresIn: 7200 }
@@ -27,7 +31,7 @@ router.post('/login', (req, res) => {
 					if (user) {
 						user.cmpPassword(password, (err, match) => {
 							if (err) throw err
-							if (match) {
+							if (match && user.verified) {
 								res.json(addToken(user._doc))
 							} else {
 								res.status(400).json([ `Wrong password` ])
@@ -36,8 +40,7 @@ router.post('/login', (req, res) => {
 					} else {
 						res.status(400).json([ `Email dosn't exist` ])
 					}
-				})
-				.catch(err => console.log(err))
+				}).catch(err => console.log(err))
 		} else {
 			res.status(400).json(validator.getErrors(err))
 		}
@@ -54,13 +57,20 @@ router.post('/register', /*upload.single('image'),*/ (req, res) => {
 					if (user) {
 						res.status(400).json([ 'Email already exists' ])
 					} else {
-						new User({ firstName, lastName, username, email, password })
-							.save()
-							.then(user => res.json(addToken(user._doc)))
-							.catch(err => console.log(err))
+						const vkey = randomHex()
+						new User({
+							firstName,
+							lastName,
+							username,
+							password,
+							email,
+							vkey
+						}).save().then(user => {
+							sendMail(email, vkey, 'verify')
+							res.json(addToken(user._doc))
+						}).catch(err => console.log(err))
 					}
-				})
-				.catch(err => console.log(err))
+				}).catch(err => console.log(err))
 		} else {
 			res.status(400).json(validator.getErrors(err))
 		}
@@ -69,21 +79,82 @@ router.post('/register', /*upload.single('image'),*/ (req, res) => {
 
 router.post('/update', authJwt, (req, res) => {
 	const { firstName, lastName, username, email } = req.body
+	const user = req.user
 	const data = { firstName, lastName, username, email }
 	validator.update(data, err => {
 		if (!err) {
-			req.user.firstName = data.firstName
-			req.user.lastName = data.lastName
-			req.user.username = data.username
-			req.user.email = data.email
-			req.user
-				.save()
+			user.firstName = data.firstName
+			user.lastName = data.lastName
+			user.username = data.username
+			user.email = data.email
+			user.save()
 				.then(user => res.json(addToken(user._doc)))
 				.catch(err => console.log(err))
 		} else {
 			res.status(400).json(validator.getErrors(err))
 		}
 	})
+})
+
+router.get('/verify/:key', (req, res) => {
+	User.findOne({ vkey: req.params.key })
+		.then(user => {
+			if (user) {
+				if (!user.verified) {
+					user.verified = true
+					user.vkey = undefined
+					user.save()
+						.then(user => res.json(addToken(user._doc)))
+						.catch(err => console.log(err))
+				} else {
+					res.status(400).json([ 'Already verified' ])
+				}
+			} else {
+				res.status(400).json([ 'Invalid key' ])
+			}
+		}).catch(err => console.log(err))
+})
+
+router.post('/forgot', (req, res) => {
+	const { email } = req.body
+	User.findOne({ email })
+		.then(user => {
+			if (user) {
+				user.rkey = randomHex()
+				user.save()
+					.then(user => {
+						sendMail(email, user.rkey, 'recover')
+						res.json({ ok: true })
+					}).catch(err => console.log(err))
+			} else {
+				res.status(400).json([ `Email doens't exist` ])
+			}
+		}).catch(err => console.log(err))
+})
+
+router.get('/recover/:key', (req, res) => {
+	const rkey = req.params.key
+	User.findOne({ rkey })
+		.then(user => {
+			if (user) {
+				res.json({ ...addToken(user._doc), rkey })
+			} else {
+				res.status(400).json([ 'Invalid key' ])
+			}
+		}).catch(err => console.log(err))
+})
+
+router.post('/recovery_check', authJwt, (req, res) => {
+	const key = req.params.key
+	const { user } = req
+	if (user.key == key) {
+		user.key = undefined
+		user.save()
+			.then(user => res.json({ ok: true }))
+			.catch(err => console.log(err))
+	} else {
+		res.status(400).json([ 'Invalid key' ])
+	}
 })
 
 router.get('/google', passport.authenticate('google', {

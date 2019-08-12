@@ -60,7 +60,8 @@ module.exports = passport => {
 				image: profile.photos[0].value,
 				username: profile.displayName.replace(/ /g, ''),
 				email: profile.emails[0].value,
-				googleId: profile.id
+				googleId: profile.id,
+				verified: true
 			}
 			findUser(user, done,'google')
 		})
@@ -77,7 +78,8 @@ module.exports = passport => {
 				username: profile.username,
 				image: profile.photos[0].value,
 				email: profile._json.email,
-				githubId: profile.id
+				githubId: profile.id,
+				verified: true
 			}
 			if (profile.displayName) {
 				const name = profile.displayName
@@ -101,7 +103,8 @@ module.exports = passport => {
 				username: profile.username,
 				image: profile.profileUrl,
 				email: profile.emails[0].value,
-				ftId: profile.id
+				ftId: profile.id,
+				verified: true
 			}
 			findUser(user, done, 'ft')
 		})

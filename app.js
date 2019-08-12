@@ -1,14 +1,15 @@
 require('dotenv').config()
+const https = require('https')
 const express = require('express')
 const mongoose = require('mongoose')
 const passport = require('passport')
 const { resolve } = require('path')
-const https = require('https')
-const fs = require('fs')
+// const ejs = require('ejs')
+const { readFileSync } = require('fs')
 
 const options = {
-	key: fs.readFileSync('./key.pem'),
-	cert: fs.readFileSync('./certificate.pem')
+	key: readFileSync('./key.pem'),
+	cert: readFileSync('./certificate.pem')
 }
 
 const app = express()
@@ -19,8 +20,10 @@ require('./config/passport')(passport)
 app.use(passport.initialize())
 
 mongoose
-	.connect(process.env.MONGO_URI, { useNewUrlParser: true })
-	.then(() => console.log('MongoDB Connected'))
+	.connect(process.env.MONGO_URI, {
+		useCreateIndex: true,
+		useNewUrlParser: true
+	}).then(() => console.log('MongoDB Connected'))
 	.catch(err => console.log(err))
 
 app.use(express.urlencoded({ extended: true }))
