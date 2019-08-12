@@ -166,7 +166,7 @@ router.get('/ft_ret', passport.authenticate('42'), (req, res) => {
 	res.json(req.user.addToken())
 })
 
-router.get('/fb', passport.authenticate('facebook', { scope: ['email'] }))
+router.get('/fb', passport.authenticate('facebook'))
 
 router.get('/fb_ret', passport.authenticate('facebook'), (req, res) => {
 	res.json(req.user.addToken())
