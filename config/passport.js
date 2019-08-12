@@ -3,6 +3,8 @@ const ExtractJwt = require('passport-jwt').ExtractJwt
 const FortyTwoStrategy = require('passport-42').Strategy
 const GithubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+const FacebookStrategy = require('passport-facebook').Strategy
+const request = require('request')
 const User = require('../models/User')
 
 const findUser = async (data, done, type) => {
@@ -52,7 +54,7 @@ module.exports = passport => {
 		new GoogleStrategy({
 			clientID: process.env.GOOGLE_OAUTH_ID,
 			clientSecret: process.env.GOOGLE_OAUTH_PASS,
-			callbackURL: `https://api.hypertube.tk/users/googlered`
+			callbackURL: `https://hypertube.tk/users/googlered`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: profile.name.givenName,
@@ -70,7 +72,7 @@ module.exports = passport => {
 		new GithubStrategy({
 			clientID: process.env.GIT_OAUTH_ID,
 			clientSecret: process.env.GIT_OAUTH_PASS,
-			callbackURL: `https://api.hypertube.tk/users/git_ret`
+			callbackURL: `https://hypertube.tk/users/git_ret`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: '',
@@ -95,7 +97,7 @@ module.exports = passport => {
 		new FortyTwoStrategy({
 			clientID: process.env.FT_OAUTH_ID,
 			clientSecret: process.env.FT_OAUTH_PASS,
-			callbackURL: `https://api.hypertube.tk/users/ft_ret`
+			callbackURL: `https://hypertube.tk/users/ft_ret`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: profile.name.familyName,
@@ -108,5 +110,29 @@ module.exports = passport => {
 			}
 			findUser(user, done, 'ft')
 		})
+	)
+	passport.use(new FacebookStrategy({
+		clientID: process.env.FB_OAUTH_ID,
+		clientSecret: process.env.FB_OAUTH_PASS,
+		callbackURL: "https://hypertube.tk/users/fb_ret"
+	  }, (accessToken, refreshToken, profile, done) => {
+		const opts = {
+			url: 'https://graph.facebook.com/v4.0/me?fields=id,email,first_name,last_name',
+			headers: { 'Authorization': `Bearer ${accessToken}` }
+		}
+		request(opts, (err, res) => {
+			const profile = JSON.parse(res.body)
+			const user = {
+				firstName: profile.first_name,
+				lastName: profile.last_name,
+				username: profile.first_name+'_'+profile.last_name,
+				image: `https://graph.facebook.com/${profile.id}/picture?width=300&height=300`,
+				email: profile.email,
+				fbId: profile.id,
+				verified: true
+			}
+			findUser(user, done, 'fb')
+		})
+	})
 	)
 }
