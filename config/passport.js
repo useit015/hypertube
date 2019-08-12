@@ -52,7 +52,7 @@ module.exports = passport => {
 		new GoogleStrategy({
 			clientID: process.env.GOOGLE_OAUTH_ID,
 			clientSecret: process.env.GOOGLE_OAUTH_PASS,
-			callbackURL: `http://lvh.me:${PORT}/users/googlered`
+			callbackURL: `https://api.hypertube.tk/users/googlered`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: profile.name.givenName,
@@ -70,7 +70,7 @@ module.exports = passport => {
 		new GithubStrategy({
 			clientID: process.env.GIT_OAUTH_ID,
 			clientSecret: process.env.GIT_OAUTH_PASS,
-			callbackURL: `http://lvh.me:${PORT}/users/git_ret`
+			callbackURL: `https://api.hypertube.tk/users/git_ret`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: '',
@@ -95,7 +95,7 @@ module.exports = passport => {
 		new FortyTwoStrategy({
 			clientID: process.env.FT_OAUTH_ID,
 			clientSecret: process.env.FT_OAUTH_PASS,
-			callbackURL: `http://lvh.me:${PORT}/users/ft_ret`
+			callbackURL: `https://api.hypertube.tk/users/ft_ret`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: profile.name.familyName,
