@@ -25,8 +25,6 @@ router.post('/login', (req, res) => {
 							if (err) throw err
 							if (match && user.verified) {
 								res.json(user.addToken())
-							} else if (!user.verified) {
-								res.status(400).json([ `User not verified` ])
 							} else {
 								res.status(400).json([ `Wrong password` ])
 							}
@@ -165,6 +163,12 @@ router.get('/googlered', passport.authenticate('google'), (req, res) => {
 router.get('/ft', passport.authenticate('42'))
 
 router.get('/ft_ret', passport.authenticate('42'), (req, res) => {
+	res.json(req.user.addToken())
+})
+
+router.get('/fb', passport.authenticate('facebook', { scope: ['email'] }))
+
+router.get('/fb_ret', passport.authenticate('facebook'), (req, res) => {
 	res.json(req.user.addToken())
 })
 
