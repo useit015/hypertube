@@ -32,8 +32,8 @@ app.use('/', require('./routes/index'))
 app.use('/users', require('./routes/users'))
 app.use(express.static(indexPath))
 
-const PORT = process.env.PORT || 5000
-const SPORT = 5443
+const PORT = process.env.PORT || 80
+const SPORT = 443
 
 https
 	.createServer(options, app)
