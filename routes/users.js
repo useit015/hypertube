@@ -157,19 +157,19 @@ router.get('/google', passport.authenticate('google', {
 }))
 
 router.get('/googlered', passport.authenticate('google'), (req, res) => {
-	res.json(addToken(req.user._doc))
+	res.json(req.user.addToken())
 })
 
 router.get('/ft', passport.authenticate('42'))
 
 router.get('/ft_ret', passport.authenticate('42'), (req, res) => {
-	res.json(addToken(req.user._doc))
+	res.json(req.user.addToken())
 })
 
 router.get('/git', passport.authenticate('github'))
 
 router.get('/git_ret', passport.authenticate('github'), (req, res) => {
-	res.json(addToken(req.user._doc))
+	res.json(req.user.addToken())
 })
 
 module.exports = router
