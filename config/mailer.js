@@ -26,7 +26,7 @@ const sendMail = async (to, key, type) => {
 			}
 		})
 		transporter.sendMail({
-			from: 'Hypertube team',
+			from: 'Hypertube Team',
 			subject: data.title,
 			html,
 			to
