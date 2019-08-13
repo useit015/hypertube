@@ -6,11 +6,13 @@ const opts = {
 }
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+const usernameRegex = /^([a-zA-Z_])+([a-zA-Z0-9-_])*$/
+const nameRegex = /^(([a-zA-Z])+([-\ \.])?([a-zA-Z])+)+$/
 
 const rules = {
-	firstName: Joi.string().min(3).max(50).required(),
-	lastName: Joi.string().min(3).max(50).required(),
-	username: Joi.string().alphanum().min(5).max(30).required(),
+	firstName: Joi.string().regex(nameRegex).min(3).max(50).required(),
+	lastName: Joi.string().regex(nameRegex).min(3).max(50).required(),
+	username: Joi.string().regex(usernameRegex).min(5).max(30).required(),
 	email: Joi.string().email({ minDomainSegments: 2 }).required()
 }
 
