@@ -57,6 +57,11 @@ const UserSchema = new mongoose.Schema({
 	date: {
 		type: Date,
 		default: Date.now
+	},
+	langue: {
+		type: String,
+		enum : ['ENG', 'FR', 'AR', 'ES'],
+		default: 'ENG'
 	}
 })
 
