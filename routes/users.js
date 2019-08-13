@@ -99,15 +99,16 @@ router.post('/register', /*upload.single('image'),*/ (req, res) => {
 })
 
 router.post('/update', authJwt, (req, res) => {
-	const { firstName, lastName, username, email } = req.body
+	const { firstName, lastName, username, email, langue } = req.body
 	const user = req.user
-	const data = { firstName, lastName, username, email }
+	const data = { firstName, lastName, username, email, langue }
 	validator.update(data, err => {
 		if (!err) {
 			user.firstName = data.firstName
 			user.lastName = data.lastName
 			user.username = data.username
 			user.email = data.email
+			user.langue = data.langue
 			user.save()
 				.then(user => res.json(user.addToken()))
 				.catch(err => console.log(err))
