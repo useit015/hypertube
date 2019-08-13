@@ -5,19 +5,19 @@ const { sign } = require('jsonwebtoken')
 const UserSchema = new mongoose.Schema({
 	firstName: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	lastName: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	username: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	image: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	email: {
 		type: String,
@@ -26,31 +26,31 @@ const UserSchema = new mongoose.Schema({
 	},
 	password: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	ftId: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	fbId: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	liId: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	googleId: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	githubId: {
 		type: String,
-		default: '',
+		default: ''
 	},
 	verified: {
 		type: Boolean,
-		default: false,
+		default: false
 	},
 	vkey: String,
 	rkey: String,
@@ -60,7 +60,7 @@ const UserSchema = new mongoose.Schema({
 	}
 })
 
-UserSchema.pre('save', function (next) {
+UserSchema.pre('save', function(next) {
 	if (this.isModified('password') || this.isNew) {
 		bcrypt.genSalt(10, (err, salt) => {
 			if (err) throw err
@@ -75,14 +75,14 @@ UserSchema.pre('save', function (next) {
 	}
 })
 
-UserSchema.methods.cmpPassword = function (password, done) {
+UserSchema.methods.cmpPassword = function(password, done) {
 	bcrypt.compare(password, this.password, (err, match) => {
 		if (err) return done(err)
 		done(null, match)
 	})
 }
 
-UserSchema.methods.addToken = function () {
+UserSchema.methods.addToken = function() {
 	const opt = { expiresIn: 7200 }
 	const payload = { id: this._id }
 	const user = this._doc

@@ -23,7 +23,8 @@ mongoose
 	.connect(process.env.MONGO_URI, {
 		useCreateIndex: true,
 		useNewUrlParser: true
-	}).then(() => console.log('MongoDB Connected'))
+	})
+	.then(() => console.log('MongoDB Connected'))
 	.catch(err => console.log(err))
 
 app.use(express.urlencoded({ extended: true }))
@@ -35,8 +36,5 @@ app.use(express.static(indexPath))
 const PORT = process.env.PORT || 80
 const SPORT = 443
 
-https
-	.createServer(options, app)
-	.listen(SPORT, () => console.log(`Server started on port ${SPORT}`))
-app
-	.listen(PORT, () => console.log(`Server started on port ${PORT}`))
+https.createServer(options, app).listen(SPORT, () => console.log(`Server started on port ${SPORT}`))
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`))

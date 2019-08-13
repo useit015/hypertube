@@ -26,48 +26,56 @@ router.post('/login', (req, res) => {
 							if (match && user.verified) {
 								res.json(user.addToken())
 							} else {
-								res.status(400).json([ `Wrong password` ])
+								res.status(400).json([`Wrong password`])
 							}
 						})
 					} else {
-						res.status(400).json([ `Email dosn't exist` ])
+						res.status(400).json([`Email dosn't exist`])
 					}
-				}).catch(err => console.log(err))
+				})
+				.catch(err => console.log(err))
 		} else {
 			res.status(400).json(validator.getErrors(err))
 		}
 	})
 })
 
-router.post('/register', /*upload.single('image'),*/ (req, res) => {
-	const { firstName, lastName, username, email, password, confPassword } = req.body
-	const data = { firstName, lastName, username, email, password, confPassword }
-	validator.register(data, err => {
-		if (!err) {
-			User.findOne({ email })
-				.then(user => {
-					if (user) {
-						res.status(400).json([ 'Email already exists' ])
-					} else {
-						const vkey = randomHex()
-						new User({
-							firstName,
-							lastName,
-							username,
-							password,
-							email,
-							vkey
-						}).save().then(user => {
-							sendMail(email, vkey, 'verify')
-							res.json(user.addToken())
-						}).catch(err => console.log(err))
-					}
-				}).catch(err => console.log(err))
-		} else {
-			res.status(400).json(validator.getErrors(err))
-		}
-	})
-})
+router.post(
+	'/register',
+	/*upload.single('image'),*/ (req, res) => {
+		const { firstName, lastName, username, email, password, confPassword } = req.body
+		const data = { firstName, lastName, username, email, password, confPassword }
+		validator.register(data, err => {
+			if (!err) {
+				User.findOne({ email })
+					.then(user => {
+						if (user) {
+							res.status(400).json(['Email already exists'])
+						} else {
+							const vkey = randomHex()
+							new User({
+								firstName,
+								lastName,
+								username,
+								password,
+								email,
+								vkey
+							})
+								.save()
+								.then(user => {
+									sendMail(email, vkey, 'verify')
+									res.json(user.addToken())
+								})
+								.catch(err => console.log(err))
+						}
+					})
+					.catch(err => console.log(err))
+			} else {
+				res.status(400).json(validator.getErrors(err))
+			}
+		})
+	}
+)
 
 router.post('/update', authJwt, (req, res) => {
 	const { firstName, lastName, username, email } = req.body
@@ -99,12 +107,13 @@ router.get('/verify/:key', (req, res) => {
 						.then(user => res.json(user.addToken()))
 						.catch(err => console.log(err))
 				} else {
-					res.status(400).json([ 'Already verified' ])
+					res.status(400).json(['Already verified'])
 				}
 			} else {
-				res.status(400).json([ 'Invalid key' ])
+				res.status(400).json(['Invalid key'])
 			}
-		}).catch(err => console.log(err))
+		})
+		.catch(err => console.log(err))
 })
 
 router.post('/forgot', (req, res) => {
@@ -117,11 +126,13 @@ router.post('/forgot', (req, res) => {
 					.then(user => {
 						sendMail(email, user.rkey, 'recover')
 						res.json({ ok: true })
-					}).catch(err => console.log(err))
+					})
+					.catch(err => console.log(err))
 			} else {
-				res.status(400).json([ `Email doens't exist` ])
+				res.status(400).json([`Email doens't exist`])
 			}
-		}).catch(err => console.log(err))
+		})
+		.catch(err => console.log(err))
 })
 
 router.get('/recover/:key', (req, res) => {
@@ -131,9 +142,10 @@ router.get('/recover/:key', (req, res) => {
 			if (user) {
 				res.json({ ...user.addToken(), rkey })
 			} else {
-				res.status(400).json([ 'Invalid key' ])
+				res.status(400).json(['Invalid key'])
 			}
-		}).catch(err => console.log(err))
+		})
+		.catch(err => console.log(err))
 })
 
 router.post('/recovery_check', authJwt, (req, res) => {
@@ -145,16 +157,16 @@ router.post('/recovery_check', authJwt, (req, res) => {
 			.then(user => res.json({ ok: true }))
 			.catch(err => console.log(err))
 	} else {
-		res.status(400).json([ 'Invalid key' ])
+		res.status(400).json(['Invalid key'])
 	}
 })
 
-router.get('/google', passport.authenticate('google', {
-	scope: [
-		'https://www.googleapis.com/auth/userinfo.profile',
-		'https://www.googleapis.com/auth/userinfo.email'
-	]
-}))
+router.get(
+	'/google',
+	passport.authenticate('google', {
+		scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
+	})
+)
 
 router.get('/googlered', passport.authenticate('google'), (req, res) => {
 	res.json(req.user.addToken())

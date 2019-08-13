@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer')
 const ejs = require('ejs')
 const { readFile } = require('fs')
-const { resolve, dirname} = require('path')
+const { resolve, dirname } = require('path')
 const { promisify } = require('util')
 const readFileAsync = promisify(readFile)
 

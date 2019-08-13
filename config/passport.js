@@ -14,14 +14,12 @@ const findUser = async (data, done, type) => {
 		query[`${type}Id`] = data[`${type}Id`]
 		const user = await User.findOne(query)
 		if (!user) {
-			const user = await User.findOne({ email: data.email})
+			const user = await User.findOne({ email: data.email })
 			if (!user || !data.email) {
-				new User(data).save()
-					.then(user => done(null, user))
+				new User(data).save().then(user => done(null, user))
 			} else {
 				user[`${type}Id`] = data[`${type}Id`]
-				user.save()
-					.then(user => done(null, user))
+				user.save().then(user => done(null, user))
 			}
 		} else {
 			done(null, user)
@@ -32,7 +30,7 @@ const findUser = async (data, done, type) => {
 }
 
 module.exports = passport => {
-	const PORT = process.env.PORT || 5000
+	// const PORT = process.env.PORT || 5000
 	passport.serializeUser((user, done) => done(null, user.id))
 	passport.deserializeUser((id, done) => {
 		User.findById(id, (err, user) => {
@@ -40,7 +38,7 @@ module.exports = passport => {
 		})
 	})
 	const opts = {
-		jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
+		jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
 		secretOrKey: 'secret'
 	}
 	passport.use(
@@ -52,108 +50,122 @@ module.exports = passport => {
 		})
 	)
 	passport.use(
-		new GoogleStrategy({
-			clientID: process.env.GOOGLE_OAUTH_ID,
-			clientSecret: process.env.GOOGLE_OAUTH_PASS,
-			callbackURL: `https://hypertube.tk/users/googlered`
-		}, (accessToken, refreshToken, profile, done) => {
-			const user = {
-				firstName: profile.name.givenName,
-				lastName: profile.name.familyName,
-				image: profile.photos[0].value,
-				username: profile.displayName.replace(/ /g, ''),
-				email: profile.emails[0].value,
-				googleId: profile.id,
-				verified: true
+		new GoogleStrategy(
+			{
+				clientID: process.env.GOOGLE_OAUTH_ID,
+				clientSecret: process.env.GOOGLE_OAUTH_PASS,
+				callbackURL: `https://hypertube.tk/users/googlered`
+			},
+			(accessToken, refreshToken, profile, done) => {
+				const user = {
+					firstName: profile.name.givenName,
+					lastName: profile.name.familyName,
+					image: profile.photos[0].value,
+					username: profile.displayName.replace(/ /g, ''),
+					email: profile.emails[0].value,
+					googleId: profile.id,
+					verified: true
+				}
+				findUser(user, done, 'google')
 			}
-			findUser(user, done,'google')
-		})
+		)
 	)
 	passport.use(
-		new GithubStrategy({
-			clientID: process.env.GIT_OAUTH_ID,
-			clientSecret: process.env.GIT_OAUTH_PASS,
-			callbackURL: `https://hypertube.tk/users/git_ret`
-		}, (accessToken, refreshToken, profile, done) => {
-			const user = {
-				firstName: '',
-				lastName: '',
-				username: profile.username,
-				image: profile.photos[0].value,
-				email: profile._json.email,
-				githubId: profile.id,
-				verified: true
+		new GithubStrategy(
+			{
+				clientID: process.env.GIT_OAUTH_ID,
+				clientSecret: process.env.GIT_OAUTH_PASS,
+				callbackURL: `https://hypertube.tk/users/git_ret`
+			},
+			(accessToken, refreshToken, profile, done) => {
+				const user = {
+					firstName: '',
+					lastName: '',
+					username: profile.username,
+					image: profile.photos[0].value,
+					email: profile._json.email,
+					githubId: profile.id,
+					verified: true
+				}
+				if (profile.displayName) {
+					const name = profile.displayName.split(' ').filter(cur => cur.length)
+					user.firstName = name[0]
+					user.lastName = name.slice(1).join(' ')
+				}
+				findUser(user, done, 'github')
 			}
-			if (profile.displayName) {
-				const name = profile.displayName
-									.split(' ')
-									.filter(cur => cur.length)
-				user.firstName = name[0]
-				user.lastName = name.slice(1).join(' ')
-			}
-			findUser(user, done,'github')
-		})
+		)
 	)
 	passport.use(
-		new FortyTwoStrategy({
-			clientID: process.env.FT_OAUTH_ID,
-			clientSecret: process.env.FT_OAUTH_PASS,
-			callbackURL: `https://hypertube.tk/users/ft_ret`
-		}, (accessToken, refreshToken, profile, done) => {
-			const user = {
-				firstName: profile.name.givenName,
-				lastName: profile.name.familyName,
-				username: profile.username,
-				image: profile.photos[0].value,
-				email: profile.emails[0].value,
-				ftId: profile.id,
-				verified: true
+		new FortyTwoStrategy(
+			{
+				clientID: process.env.FT_OAUTH_ID,
+				clientSecret: process.env.FT_OAUTH_PASS,
+				callbackURL: `https://hypertube.tk/users/ft_ret`
+			},
+			(accessToken, refreshToken, profile, done) => {
+				const user = {
+					firstName: profile.name.givenName,
+					lastName: profile.name.familyName,
+					username: profile.username,
+					image: profile.photos[0].value,
+					email: profile.emails[0].value,
+					ftId: profile.id,
+					verified: true
+				}
+				findUser(user, done, 'ft')
 			}
-			findUser(user, done, 'ft')
-		})
+		)
 	)
-	passport.use(new FacebookStrategy({
-		clientID: process.env.FB_OAUTH_ID,
-		clientSecret: process.env.FB_OAUTH_PASS,
-		callbackURL: "https://hypertube.tk/users/fb_ret"
-	  }, (accessToken, refreshToken, profile, done) => {
-		const opts = {
-			url: 'https://graph.facebook.com/v4.0/me?fields=id,email,first_name,last_name',
-			headers: { 'Authorization': `Bearer ${accessToken}` }
-		}
-		request(opts, (err, res) => {
-			const profile = JSON.parse(res.body)
-			const user = {
-				firstName: profile.first_name,
-				lastName: profile.last_name,
-				username: profile.first_name+'_'+profile.last_name,
-				image: `https://graph.facebook.com/${profile.id}/picture?width=300&height=300`,
-				email: profile.email,
-				fbId: profile.id,
-				verified: true
+	passport.use(
+		new FacebookStrategy(
+			{
+				clientID: process.env.FB_OAUTH_ID,
+				clientSecret: process.env.FB_OAUTH_PASS,
+				callbackURL: 'https://hypertube.tk/users/fb_ret'
+			},
+			(accessToken, refreshToken, profile, done) => {
+				const opts = {
+					url: 'https://graph.facebook.com/v4.0/me?fields=id,email,first_name,last_name',
+					headers: { Authorization: `Bearer ${accessToken}` }
+				}
+				request(opts, (err, res) => {
+					const profile = JSON.parse(res.body)
+					const user = {
+						firstName: profile.first_name,
+						lastName: profile.last_name,
+						username: profile.first_name + '_' + profile.last_name,
+						image: `https://graph.facebook.com/${profile.id}/picture?width=300&height=300`,
+						email: profile.email,
+						fbId: profile.id,
+						verified: true
+					}
+					findUser(user, done, 'fb')
+				})
 			}
-			findUser(user, done, 'fb')
-		})
-	})
+		)
 	)
-	passport.use(new LinkedInStrategy({
-		clientID: process.env.LI_OAUTH_ID,
-		clientSecret: process.env.LI_OAUTH_SECRET,
-		callbackURL: "https://hypertube.tk/users/li_ret",
-		scope: ['r_emailaddress', 'r_liteprofile']
-	},
-	function(token, tokenSecret, profile, done) {
-		const photos = profile.photos
-		const user = {
-			  firstName: profile.name.givenName,
-			  lastName: profile.name.familyName,
-			  username: profile.name.givenName+'_'+profile.name.familyName,
-			  image: photos[photos.length - 1].value,
-			  email: profile.emails[0].value,
-			  liId: profile.id,
-			  verified: true
-		}
-		findUser(user, done, 'li')
-	}
-	))
+	passport.use(
+		new LinkedInStrategy(
+			{
+				clientID: process.env.LI_OAUTH_ID,
+				clientSecret: process.env.LI_OAUTH_SECRET,
+				callbackURL: 'https://hypertube.tk/users/li_ret',
+				scope: ['r_emailaddress', 'r_liteprofile']
+			},
+			function(token, tokenSecret, profile, done) {
+				const photos = profile.photos
+				const user = {
+					firstName: profile.name.givenName,
+					lastName: profile.name.familyName,
+					username: profile.name.givenName + '_' + profile.name.familyName,
+					image: photos[photos.length - 1].value,
+					email: profile.emails[0].value,
+					liId: profile.id,
+					verified: true
+				}
+				findUser(user, done, 'li')
+			}
+		)
+	)
 }
