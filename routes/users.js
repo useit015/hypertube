@@ -13,6 +13,72 @@ const authJwt = passport.authenticate('jwt', { session: false })
 
 const randomHex = () => randomBytes(10).toString('hex')
 
+router.get('/'/*, authJwt*/, (req, res) => {
+	User.find({})
+		.then(users => {
+			response = {
+				count:users.length,
+				results:[]
+			}
+			users.forEach(user => {
+				u = {
+					id:user._id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					username: user.username,
+					image: user.image,
+				}
+				response.results.push(u)
+			})
+			res.json(response)
+		})
+		.catch(err => res.json({count:0, error:`Error while searching for users : ${err}`}))
+	})
+	
+router.get('/search/:username'/*, authJwt*/, (req, res) => {
+	User.find({username: { "$regex": req.params.username, "$options": "i" }})
+	.then(users => {
+		response = {
+			count:users.length,
+			results:[]
+		}
+		users.forEach(user => {
+			u = {
+				id:user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				username: user.username,
+				image: user.image,
+			}
+			response.results.push(u)
+		})
+		res.json(response)
+	})
+	.catch(err => res.json({count:0, error:`Error while searching for users : ${err}`}))
+})
+
+router.get('/:username'/*, authJwt*/, (req, res) => {
+	User.find({username: req.params.username})
+	.then(users => {
+		response = {
+			count:users.length,
+			results:[]
+		}
+		users.forEach(user => {
+			u = {
+				id:user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				username: user.username,
+				image: user.image,
+			}
+			response.results.push(u)
+		})
+		res.json(response)
+	})
+	.catch(err => res.json({count:0, error:`Error while searching for users : ${err}`}))
+})
+
 router.post('/login', (req, res) => {
 	const { email, password } = req.body
 	const data = { email, password }
@@ -25,6 +91,8 @@ router.post('/login', (req, res) => {
 							if (err) throw err
 							if (match && user.verified) {
 								res.json(user.addToken())
+							} else if (!user.verified){
+								res.status(400).json([ `User not verified` ])
 							} else {
 								res.status(400).json([ `Wrong password` ])
 							}
@@ -87,6 +155,7 @@ router.post('/update', authJwt, (req, res) => {
 		}
 	})
 })
+
 
 router.get('/verify/:key', (req, res) => {
 	User.findOne({ vkey: req.params.key })
