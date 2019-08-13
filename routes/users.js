@@ -13,51 +13,7 @@ const authJwt = passport.authenticate('jwt', { session: false })
 
 const randomHex = () => randomBytes(10).toString('hex')
 
-router.get('/'/*, authJwt*/, (req, res) => {
-	User.find({})
-		.then(users => {
-			response = {
-				count:users.length,
-				results:[]
-			}
-			users.forEach(user => {
-				u = {
-					id:user._id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					username: user.username,
-					image: user.image,
-				}
-				response.results.push(u)
-			})
-			res.json(response)
-		})
-		.catch(err => res.json({count:0, error:`Error while searching for users : ${err}`}))
-	})
-	
-router.get('/search/:username'/*, authJwt*/, (req, res) => {
-	User.find({username: { "$regex": req.params.username, "$options": "i" }})
-	.then(users => {
-		response = {
-			count:users.length,
-			results:[]
-		}
-		users.forEach(user => {
-			u = {
-				id:user._id,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				username: user.username,
-				image: user.image,
-			}
-			response.results.push(u)
-		})
-		res.json(response)
-	})
-	.catch(err => res.json({count:0, error:`Error while searching for users : ${err}`}))
-})
-
-router.get('/:username'/*, authJwt*/, (req, res) => {
+router.get('/user/:username'/*, authJwt*/, (req, res) => {
 	User.find({username: req.params.username})
 	.then(users => {
 		response = {
