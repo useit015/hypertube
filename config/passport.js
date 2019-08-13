@@ -5,6 +5,7 @@ const GithubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy
+const { randomBytes } = require('crypto')
 const request = require('request')
 const User = require('../models/User')
 
@@ -31,6 +32,16 @@ const findUser = async (data, done, type) => {
 	}
 }
 
+const generateUsername = async (id, type) => {
+	let username = `user_${type}${id}`
+	let user = await User.findOne({username})
+	while (user) {
+		username = `user_${type}${randomBytes(6).toString('hex')}`
+		user = await User.findOne({username})
+	}
+	return username
+}
+
 module.exports = passport => {
 	passport.serializeUser((user, done) => done(null, user.id))
 	passport.deserializeUser((id, done) => {
@@ -55,12 +66,13 @@ module.exports = passport => {
 			clientID: process.env.GOOGLE_OAUTH_ID,
 			clientSecret: process.env.GOOGLE_OAUTH_PASS,
 			callbackURL: `https://hypertube.tk/oauth/googlered`
-		}, (accessToken, refreshToken, profile, done) => {
+		}, async (accessToken, refreshToken, profile, done) => {
+			const userName = await generateUsername(profile.id, 'gl')
 			const user = {
 				firstName: profile.name.givenName,
 				lastName: profile.name.familyName,
 				image: profile.photos[0].value,
-				username: profile.displayName.replace(/ /g, ''),
+				username: userName,
 				email: profile.emails[0].value,
 				googleId: profile.id,
 				verified: true
@@ -73,11 +85,12 @@ module.exports = passport => {
 			clientID: process.env.GIT_OAUTH_ID,
 			clientSecret: process.env.GIT_OAUTH_PASS,
 			callbackURL: `https://hypertube.tk/oauth/git_ret`
-		}, (accessToken, refreshToken, profile, done) => {
+		}, async (accessToken, refreshToken, profile, done) => {
+			const userName = await generateUsername(profile.id, 'gt')
 			const user = {
 				firstName: '',
 				lastName: '',
-				username: profile.username,
+				username: userName,
 				image: profile.photos[0].value,
 				email: profile._json.email,
 				githubId: profile.id,
@@ -98,11 +111,12 @@ module.exports = passport => {
 			clientID: process.env.FT_OAUTH_ID,
 			clientSecret: process.env.FT_OAUTH_PASS,
 			callbackURL: `https://hypertube.tk/oauth/ft_ret`
-		}, (accessToken, refreshToken, profile, done) => {
+		}, async (accessToken, refreshToken, profile, done) => {
+			const userName = await generateUsername(profile.id, 'ft')
 			const user = {
 				firstName: profile.name.givenName,
 				lastName: profile.name.familyName,
-				username: profile.username,
+				username: userName,
 				image: profile.photos[0].value,
 				email: profile.emails[0].value,
 				ftId: profile.id,
@@ -120,12 +134,13 @@ module.exports = passport => {
 			url: 'https://graph.facebook.com/v4.0/me?fields=id,email,first_name,last_name',
 			headers: { 'Authorization': `Bearer ${accessToken}` }
 		}
-		request(opts, (err, res) => {
+		request(opts, async (err, res) => {
 			const profile = JSON.parse(res.body)
+			const userName = await generateUsername(profile.id, 'fb')
 			const user = {
 				firstName: profile.first_name,
 				lastName: profile.last_name,
-				username: profile.first_name+'_'+profile.last_name,
+				username: userName,
 				image: `https://graph.facebook.com/${profile.id}/picture?width=300&height=300`,
 				email: profile.email,
 				fbId: profile.id,
@@ -140,13 +155,13 @@ module.exports = passport => {
 		clientSecret: process.env.LI_OAUTH_SECRET,
 		callbackURL: "https://hypertube.tk/oauth/li_ret",
 		scope: ['r_emailaddress', 'r_liteprofile']
-	},
-	function(token, tokenSecret, profile, done) {
+	}, async (token, tokenSecret, profile, done) => {
 		const photos = profile.photos
+		const userName = await generateUsername(profile.id, 'li')
 		const user = {
 			  firstName: profile.name.givenName,
 			  lastName: profile.name.familyName,
-			  username: profile.name.givenName+'_'+profile.name.familyName,
+			  username: userName,
 			  image: photos[photos.length - 1].value,
 			  email: profile.emails[0].value,
 			  liId: profile.id,
