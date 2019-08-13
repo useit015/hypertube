@@ -32,7 +32,6 @@ const findUser = async (data, done, type) => {
 }
 
 module.exports = passport => {
-	const PORT = process.env.PORT || 5000
 	passport.serializeUser((user, done) => done(null, user.id))
 	passport.deserializeUser((id, done) => {
 		User.findById(id, (err, user) => {
