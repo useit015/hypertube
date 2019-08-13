@@ -55,7 +55,7 @@ module.exports = passport => {
 		new GoogleStrategy({
 			clientID: process.env.GOOGLE_OAUTH_ID,
 			clientSecret: process.env.GOOGLE_OAUTH_PASS,
-			callbackURL: `https://hypertube.tk/users/googlered`
+			callbackURL: `https://hypertube.tk/oauth/googlered`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: profile.name.givenName,
@@ -73,7 +73,7 @@ module.exports = passport => {
 		new GithubStrategy({
 			clientID: process.env.GIT_OAUTH_ID,
 			clientSecret: process.env.GIT_OAUTH_PASS,
-			callbackURL: `https://hypertube.tk/users/git_ret`
+			callbackURL: `https://hypertube.tk/oauth/git_ret`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: '',
@@ -98,7 +98,7 @@ module.exports = passport => {
 		new FortyTwoStrategy({
 			clientID: process.env.FT_OAUTH_ID,
 			clientSecret: process.env.FT_OAUTH_PASS,
-			callbackURL: `https://hypertube.tk/users/ft_ret`
+			callbackURL: `https://hypertube.tk/oauth/ft_ret`
 		}, (accessToken, refreshToken, profile, done) => {
 			const user = {
 				firstName: profile.name.givenName,
@@ -115,7 +115,7 @@ module.exports = passport => {
 	passport.use(new FacebookStrategy({
 		clientID: process.env.FB_OAUTH_ID,
 		clientSecret: process.env.FB_OAUTH_PASS,
-		callbackURL: "https://hypertube.tk/users/fb_ret"
+		callbackURL: "https://hypertube.tk/oauth/fb_ret"
 	  }, (accessToken, refreshToken, profile, done) => {
 		const opts = {
 			url: 'https://graph.facebook.com/v4.0/me?fields=id,email,first_name,last_name',
@@ -139,7 +139,7 @@ module.exports = passport => {
 	passport.use(new LinkedInStrategy({
 		clientID: process.env.LI_OAUTH_ID,
 		clientSecret: process.env.LI_OAUTH_SECRET,
-		callbackURL: "https://hypertube.tk/users/li_ret",
+		callbackURL: "https://hypertube.tk/oauth/li_ret",
 		scope: ['r_emailaddress', 'r_liteprofile']
 	},
 	function(token, tokenSecret, profile, done) {
