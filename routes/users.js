@@ -36,11 +36,11 @@ router.get('/user/:username'/*, authJwt*/, (req, res) => {
 })
 
 router.post('/login', (req, res) => {
-	const { email, password } = req.body
-	const data = { email, password }
+	const { username, password } = req.body
+	const data = { username, password }
 	validator.login(data, err => {
 		if (!err) {
-			User.findOne({ email })
+			User.findOne({ username })
 				.then(user => {
 					if (user) {
 						user.cmpPassword(password, (err, match) => {
@@ -54,7 +54,7 @@ router.post('/login', (req, res) => {
 							}
 						})
 					} else {
-						res.status(400).json([ `Email dosn't exist` ])
+						res.status(400).json([ `Username dosn't exist` ])
 					}
 				}).catch(err => console.log(err))
 		} else {
@@ -68,10 +68,15 @@ router.post('/register', /*upload.single('image'),*/ (req, res) => {
 	const data = { firstName, lastName, username, email, password, confPassword }
 	validator.register(data, err => {
 		if (!err) {
-			User.findOne({ email })
+			User.findOne({ "$or":[{email:email}, {username:username}] })
 				.then(user => {
 					if (user) {
-						res.status(400).json([ 'Email already exists' ])
+						if (user.email == email && user.username != username)
+							res.status(400).json([ 'Email already exists' ])
+						else if (user.username == username && user.email != email)
+							res.status(400).json([ 'Username already exists' ])
+						else
+						res.status(400).json([ 'User already exists' ])
 					} else {
 						const vkey = randomHex()
 						new User({

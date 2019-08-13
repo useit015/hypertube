@@ -34,7 +34,7 @@ module.exports = {
 	},
 	login: (obj, f) => {
 		const schema = Joi.object().keys({
-			email: rules.email,
+			username: rules.username,
 			password: passRule
 		})
 		Joi.validate(obj, schema, opts, f)
