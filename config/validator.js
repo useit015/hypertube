@@ -13,7 +13,8 @@ const rules = {
 	firstName: Joi.string().regex(nameRegex).min(3).max(50).required(),
 	lastName: Joi.string().regex(nameRegex).min(3).max(50).required(),
 	username: Joi.string().regex(usernameRegex).min(5).max(30).required(),
-	email: Joi.string().email({ minDomainSegments: 2 }).required()
+	email: Joi.string().email({ minDomainSegments: 2 }).required(),
+	langue: Joi.string().valid('FR', 'ENG', 'ES', 'AR')
 }
 
 const passRule = Joi.string().regex(passwordRegex).required()
