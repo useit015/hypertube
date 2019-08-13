@@ -9,31 +9,46 @@ router.get('/google', passport.authenticate('google', {
 	]
 }))
 
-router.get('/googlered', passport.authenticate('google'), (req, res) => {
+router.get('/googlered', passport.authenticate('google'), (err, req, res, next) => {
+	if (err) return res.status(400).json({error:{name:err.name, message:err.message}})
+	res.json(req.user.addToken())
+}, (req, res) => {
 	res.json(req.user.addToken())
 })
 
 router.get('/ft', passport.authenticate('42'))
 
-router.get('/ft_ret', passport.authenticate('42'), (req, res) => {
+router.get('/ft_ret', passport.authenticate('42'), (err, req, res, next) => {
+	if (err) return res.status(400).json({error:{name:err.name, message:err.message}})
+	res.json(req.user.addToken())
+}, (req, res) => {
 	res.json(req.user.addToken())
 })
 
 router.get('/fb', passport.authenticate('facebook'))
 
-router.get('/fb_ret', passport.authenticate('facebook'), (req, res) => {
+router.get('/fb_ret', passport.authenticate('facebook'), (err, req, res, next) => {
+	if (err) return res.status(400).json({error:{name:err.name, message:err.message}})
+	res.json(req.user.addToken())
+}, (req, res) => {
 	res.json(req.user.addToken())
 })
 
 router.get('/li', passport.authenticate('linkedin'))
 
-router.get('/li_ret', passport.authenticate('linkedin'), (req, res) => {
+router.get('/li_ret', passport.authenticate('linkedin'), (err, req, res, next) => {
+	if (err) return res.status(400).json({error:{name:err.name, message:err.message}})
+	res.json(req.user.addToken())
+}, (req, res) => {
 	res.json(req.user.addToken())
 })
 
 router.get('/git', passport.authenticate('github'))
 
-router.get('/git_ret', passport.authenticate('github'), (req, res) => {
+router.get('/git_ret', passport.authenticate('github'), (err, req, res, next) => {
+	if (err) return res.status(400).json({error:{name:err.name, message:err.message}})
+	res.json(req.user.addToken())
+}, (req, res) => {
 	res.json(req.user.addToken())
 })
 
