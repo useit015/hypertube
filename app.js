@@ -31,6 +31,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/', require('./routes/index'))
 app.use('/users', require('./routes/users'))
+app.use('/oauth', require('./routes/oauth'))
 app.use(express.static(indexPath))
 
 const PORT = process.env.PORT || 80

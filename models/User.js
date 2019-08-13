@@ -13,7 +13,8 @@ const UserSchema = new mongoose.Schema({
 	},
 	username: {
 		type: String,
-		default: ''
+		default: '',
+		unique: true
 	},
 	image: {
 		type: String,
@@ -57,6 +58,11 @@ const UserSchema = new mongoose.Schema({
 	date: {
 		type: Date,
 		default: Date.now
+	},
+	langue: {
+		type: String,
+		enum: ['ENG', 'FR', 'AR', 'ES'],
+		default: 'ENG'
 	}
 })
 

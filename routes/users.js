@@ -13,24 +13,48 @@ const authJwt = passport.authenticate('jwt', { session: false })
 
 const randomHex = () => randomBytes(10).toString('hex')
 
+router.get('/user/:username' /*, authJwt*/, (req, res) => {
+	User.find({ username: req.params.username })
+		.then(users => {
+			response = {
+				count: users.length,
+				results: []
+			}
+			users.forEach(user => {
+				u = {
+					id: user._id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					username: user.username,
+					image: user.image
+				}
+				response.results.push(u)
+			})
+			res.json(response)
+		})
+		.catch(err => res.json({ count: 0, error: `Error while searching for users : ${err}` }))
+})
+
 router.post('/login', (req, res) => {
-	const { email, password } = req.body
-	const data = { email, password }
+	const { username, password } = req.body
+	const data = { username, password }
 	validator.login(data, err => {
 		if (!err) {
-			User.findOne({ email })
+			User.findOne({ username })
 				.then(user => {
 					if (user) {
 						user.cmpPassword(password, (err, match) => {
 							if (err) throw err
 							if (match && user.verified) {
 								res.json(user.addToken())
+							} else if (!user.verified) {
+								res.status(400).json([`User not verified`])
 							} else {
 								res.status(400).json([`Wrong password`])
 							}
 						})
 					} else {
-						res.status(400).json([`Email dosn't exist`])
+						res.status(400).json([`Username dosn't exist`])
 					}
 				})
 				.catch(err => console.log(err))
@@ -47,10 +71,14 @@ router.post(
 		const data = { firstName, lastName, username, email, password, confPassword }
 		validator.register(data, err => {
 			if (!err) {
-				User.findOne({ email })
+				User.findOne({ $or: [{ email: email }, { username: username }] })
 					.then(user => {
 						if (user) {
-							res.status(400).json(['Email already exists'])
+							if (user.email == email && user.username != username)
+								res.status(400).json(['Email already exists'])
+							else if (user.username == username && user.email != email)
+								res.status(400).json(['Username already exists'])
+							else res.status(400).json(['User already exists'])
 						} else {
 							const vkey = randomHex()
 							new User({
@@ -78,15 +106,16 @@ router.post(
 )
 
 router.post('/update', authJwt, (req, res) => {
-	const { firstName, lastName, username, email } = req.body
+	const { firstName, lastName, username, email, langue } = req.body
 	const user = req.user
-	const data = { firstName, lastName, username, email }
+	const data = { firstName, lastName, username, email, langue }
 	validator.update(data, err => {
 		if (!err) {
 			user.firstName = data.firstName
 			user.lastName = data.lastName
 			user.username = data.username
 			user.email = data.email
+			user.langue = data.langue
 			user.save()
 				.then(user => res.json(user.addToken()))
 				.catch(err => console.log(err))
@@ -159,41 +188,6 @@ router.post('/recovery_check', authJwt, (req, res) => {
 	} else {
 		res.status(400).json(['Invalid key'])
 	}
-})
-
-router.get(
-	'/google',
-	passport.authenticate('google', {
-		scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
-	})
-)
-
-router.get('/googlered', passport.authenticate('google'), (req, res) => {
-	res.json(req.user.addToken())
-})
-
-router.get('/ft', passport.authenticate('42'))
-
-router.get('/ft_ret', passport.authenticate('42'), (req, res) => {
-	res.json(req.user.addToken())
-})
-
-router.get('/fb', passport.authenticate('facebook'))
-
-router.get('/fb_ret', passport.authenticate('facebook'), (req, res) => {
-	res.json(req.user.addToken())
-})
-
-router.get('/li', passport.authenticate('linkedin'))
-
-router.get('/li_ret', passport.authenticate('linkedin'), (req, res) => {
-	res.json(req.user.addToken())
-})
-
-router.get('/git', passport.authenticate('github'))
-
-router.get('/git_ret', passport.authenticate('github'), (req, res) => {
-	res.json(req.user.addToken())
 })
 
 module.exports = router
