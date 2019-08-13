@@ -34,6 +34,7 @@ const findUser = async (data, done, type) => {
 
 const generateUsername = async (id, type) => {
 	let username = `user_${type}${id}`
+	username = username.substr(0, 30)
 	let user = await User.findOne({username})
 	while (user) {
 		username = `user_${type}${randomBytes(6).toString('hex')}`
