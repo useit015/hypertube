@@ -21,24 +21,11 @@ const randomHex = () => randomBytes(10).toString('hex')
 
 router.get('/user/:username' /*, authJwt*/, (req, res) => {
 	User.find({ username: req.params.username })
-		.then(users => {
-			response = {
-				count: users.length,
-				results: []
-			}
-			users.forEach(user => {
-				u = {
-					id: user._id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					username: user.username,
-					image: user.image
-				}
-				response.results.push(u)
-			})
-			res.json(response)
+		.then(user => {
+			if (user.length) return res.json(user[0])
+			res.json({err:true, errors:[`user '${req.params.username}' not found`]})
 		})
-		.catch(err => res.json({ count: 0, error: `Error while searching for users : ${err}` }))
+		.catch(err => res.json({ count: 0, error: `Error while searching for user ${req.params.user} : ${err}` }))
 })
 
 router.post('/login', (req, res) => {
