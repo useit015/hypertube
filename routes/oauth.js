@@ -23,7 +23,7 @@ router.get('/ft_ret', passport.authenticate('42'), oauthMiddleware, (req, res) =
 	res.render('redirect', { token: req.user.addToken().token })
 })
 
-router.get('/fb', passport.authenticate('facebook'))
+router.get('/fb', passport.authenticate('facebook', {scope:['email']}))
 
 router.get('/fb_ret', passport.authenticate('facebook'), oauthMiddleware, (req, res) => {
 	res.render('redirect', { token: req.user.addToken().token })
