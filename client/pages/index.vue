@@ -16,7 +16,7 @@
 				<v-layout justify-center align-center wrap>
 					<v-flex sm6 md4 v-for="(strategy, i) in strategies" :key="i">
 						<v-layout class="mx-3 my-3" justify-center align-center>
-							<v-btn rounded large outlined color="grey darken-2" :href="strategy.url" min-width="130">
+							<v-btn rounded large outlined color="grey darken-2" :href="strategy.url" width="130">
 								<v-layout justify-center align-center>
 									<span class="text-capitalize font-weight-slim grey--text">{{ strategy.text }}</span>
 									<v-img class="ml-2" :width="strategy.text === '42 Intra' ? 30 : 20" :src="strategy.img"></v-img>
