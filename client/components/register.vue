@@ -45,7 +45,6 @@
 						placeholder="Make up a strong password"
 						color="primary"
 						class="my-3"
-						validate-on-blur
 						v-model="password"
 						:rules="rules.password"
 						label="Password"
@@ -60,7 +59,6 @@
 						@keyup.13="registerUser"
 						color="primary"
 						class="my-3"
-						validate-on-blur
 						v-model="confPassword"
 						label="Confirm Password"
 						required
@@ -100,9 +98,21 @@
 			password: "",
 			confPassword: "",
 			rules: {
-				name: [],
-				username: [],
-				password: [],
+				name: [
+					v => !!v || 'This field is required',
+					v => (/^(([a-zA-Z])+([-\ \.])?([a-zA-Z])+)+$/.test(v)) || 'Name can contain only letters and valid separators',
+					v => (v.length >= 3 && v.length <= 255 ) || 'Name must be at least 3 characters long'
+				],
+				username: [
+					v => !!v || 'This field is required',
+					v => (v.length >= 5 && v.length <= 30 ) || 'Username must be between 5 and 30 characters long',
+					v => (/^([a-zA-Z_])+([a-zA-Z0-9-_])*$/.test(v)) || 'Username can contain only letters, numbers, _ and - characters'
+				],
+				password: [
+					v => !!v || 'This field is required',
+					v => v.length >= 8 || 'Password must be at least 8 characters long',
+					v => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v) || 'Password must contain at least one uppercase, one lowercase, one number and one special char'
+				],
 				email: [
 					v => !!v || "E-mail is required",
 					v => /.+@.+\..+/.test(v) || "E-mail must be valid"
