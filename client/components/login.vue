@@ -17,7 +17,6 @@
 						outlined
 						placeholder="Password goes here"
 						color="primary"
-						validate-on-blur
 						v-model="password"
 						:rules="rules.password"
 						label="Password"
@@ -45,8 +44,16 @@
 			username: "",
 			password: "",
 			rules: {
-				username: [],
-				password: []
+				username: [
+					v => !!v || 'This field is required',
+					v => (v.length >= 5 && v.length <= 30 ) || 'Username must be between 5 and 30 characters long',
+					v => (/^([a-zA-Z_])+([a-zA-Z0-9-_])*$/.test(v)) || 'Username can contain only letters, numbers, _ and - characters'
+				],
+				password: [
+					v => !!v || 'This field is required',
+					v => v.length >= 8 || 'Password must be at least 8 characters long',
+					v => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v) || 'Password must contain at least one uppercase, one lowercase, one number and one special char'
+				]
 			}
 		}),
 		methods: {
