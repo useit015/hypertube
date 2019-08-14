@@ -1,5 +1,5 @@
 <template>
-	<v-app dark>
+	<v-app dark class="app">
 		<v-content>
 			<v-container>
 				<nuxt/>
@@ -33,3 +33,20 @@
 		}
 	};
 </script>
+
+<style>
+.app {
+	background: #424242; /* fallback for old browsers */
+	background: -webkit-linear-gradient(
+		to bottom,
+		#424242 10%,
+		#212121 100%
+	); /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(
+		to bottom,
+		#424242 10%,
+		#212121 100%
+	) !important;
+}
+</style>
+

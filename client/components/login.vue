@@ -27,7 +27,7 @@
 						@click:append="showPass = !showPass"
 					></v-text-field>
 					<v-layout column justify-center align-center class="mt-5 py-4">
-						<v-btn rounded large outlined color="grey" @click.prevent="login">Login</v-btn>
+						<v-btn class="cta_btn" rounded large outlined color="primary" @click.prevent="login">Login</v-btn>
 					</v-layout>
 				</v-form>
 			</v-layout>

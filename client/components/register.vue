@@ -70,7 +70,14 @@
 						:error-messages="passwordMatch()"
 					></v-text-field>
 					<v-layout column justify-center align-center class="mt-5 py-4">
-						<v-btn rounded large outlined color="grey" @click.prevent="registerUser">Register</v-btn>
+						<v-btn
+							class="cta_btn"
+							rounded
+							large
+							outlined
+							color="primary"
+							@click.prevent="registerUser"
+						>Register</v-btn>
 					</v-layout>
 				</v-form>
 			</v-layout>
