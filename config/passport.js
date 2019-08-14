@@ -33,10 +33,10 @@ const findUser = async (data, done, type) => {
 const generateUsername = async (id, type) => {
 	let username = `user_${type}${id}`
 	username = username.substr(0, 30)
-	let user = await User.findOne({username})
+	let user = await User.findOne({ username })
 	while (user) {
 		username = `user_${type}${randomBytes(6).toString('hex')}`
-		user = await User.findOne({username})
+		user = await User.findOne({ username })
 	}
 	return username
 }
@@ -65,9 +65,9 @@ module.exports = passport => {
 			{
 				clientID: process.env.GOOGLE_OAUTH_ID,
 				clientSecret: process.env.GOOGLE_OAUTH_PASS,
-				callbackURL: `https://hypertube.tk/users/googlered`
+				callbackURL: `https://hypertube.tk/oauth/googlered`
 			},
-			(accessToken, refreshToken, profile, done) => {
+			async (accessToken, refreshToken, profile, done) => {
 				const userName = await generateUsername(profile.id, 'gl')
 				const user = {
 					firstName: profile.name.givenName,
@@ -88,7 +88,8 @@ module.exports = passport => {
 				clientID: process.env.GIT_OAUTH_ID,
 				clientSecret: process.env.GIT_OAUTH_PASS,
 				callbackURL: `https://hypertube.tk/oauth/git_ret`
-			}, async (accessToken, refreshToken, profile, done) => {
+			},
+			async (accessToken, refreshToken, profile, done) => {
 				const userName = await generateUsername(profile.id, 'gt')
 				const user = {
 					firstName: '',
@@ -108,9 +109,9 @@ module.exports = passport => {
 			{
 				clientID: process.env.FT_OAUTH_ID,
 				clientSecret: process.env.FT_OAUTH_PASS,
-				callbackURL: `https://hypertube.tk/users/ft_ret`
+				callbackURL: `https://hypertube.tk/oauth/ft_ret`
 			},
-			(accessToken, refreshToken, profile, done) => {
+			async (accessToken, refreshToken, profile, done) => {
 				const userName = await generateUsername(profile.id, 'ft')
 				const user = {
 					firstName: profile.name.givenName,
@@ -130,11 +131,12 @@ module.exports = passport => {
 			{
 				clientID: process.env.FB_OAUTH_ID,
 				clientSecret: process.env.FB_OAUTH_PASS,
-				callbackURL: "https://hypertube.tk/oauth/fb_ret"
-			}, (accessToken, refreshToken, profile, done) => {
+				callbackURL: 'https://hypertube.tk/oauth/fb_ret'
+			},
+			async (accessToken, refreshToken, profile, done) => {
 				const opts = {
 					url: 'https://graph.facebook.com/v4.0/me?fields=id,email,first_name,last_name',
-					headers: { 'Authorization': `Bearer ${accessToken}` }
+					headers: { Authorization: `Bearer ${accessToken}` }
 				}
 				request(opts, async (err, res) => {
 					const profile = JSON.parse(res.body)
@@ -158,9 +160,10 @@ module.exports = passport => {
 			{
 				clientID: process.env.LI_OAUTH_ID,
 				clientSecret: process.env.LI_OAUTH_SECRET,
-				callbackURL: "https://hypertube.tk/oauth/li_ret",
+				callbackURL: 'https://hypertube.tk/oauth/li_ret',
 				scope: ['r_emailaddress', 'r_liteprofile']
-			}, async (token, tokenSecret, profile, done) => {
+			},
+			async (token, tokenSecret, profile, done) => {
 				const photos = profile.photos
 				const userName = await generateUsername(profile.id, 'li')
 				const user = {

@@ -8,7 +8,13 @@ const sendMail = require('../config/mailer')
 const validator = require('../config/validator')
 const router = express.Router()
 
-const authJwt = passport.authenticate('jwt', { session: false })
+const authJwt = (req, res, next) => {
+	passport.authenticate('jwt', { session: false }, (err, user, info) => {
+		if (!user) return res.json({ err: true, errors: ['Not logged in']})
+		req.user = user
+		next()
+	})(req, res, next)
+}
 // const upload = multer({ limits: { fileSize: 4 * 1024 * 1024 } })
 
 const randomHex = () => randomBytes(10).toString('hex')
@@ -48,18 +54,18 @@ router.post('/login', (req, res) => {
 							if (match && user.verified) {
 								res.json(user.addToken())
 							} else if (!user.verified) {
-								res.status(400).json([`User not verified`])
+								res.json({ err: true, errors: [`User not verified`] })
 							} else {
-								res.status(400).json([`Wrong password`])
+								res.json({ err: true, errors: [`Wrong password`] })
 							}
 						})
 					} else {
-						res.status(400).json([`Username dosn't exist`])
+						res.json({ err: true, errors: [`Username dosn't exist`] })
 					}
 				})
 				.catch(err => console.log(err))
 		} else {
-			res.status(400).json(validator.getErrors(err))
+			res.json({ err: true, errors: validator.getErrors(err) })
 		}
 	})
 })
@@ -75,10 +81,10 @@ router.post(
 					.then(user => {
 						if (user) {
 							if (user.email == email && user.username != username)
-								res.status(400).json(['Email already exists'])
+								res.json({ err: true, errors: ['Email already exists'] })
 							else if (user.username == username && user.email != email)
-								res.status(400).json(['Username already exists'])
-							else res.status(400).json(['User already exists'])
+								res.json({ err: true, errors: ['Username already exists'] })
+							else res.json({ err: true, errors: ['User already exists'] })
 						} else {
 							const vkey = randomHex()
 							new User({
@@ -99,11 +105,15 @@ router.post(
 					})
 					.catch(err => console.log(err))
 			} else {
-				res.status(400).json(validator.getErrors(err))
+				res.json({ err: true, errors: validator.getErrors(err) })
 			}
 		})
 	}
 )
+
+router.get('/isloggedin', authJwt, (req, res) => {
+	res.json(req.user.addToken())
+})
 
 router.post('/update', authJwt, (req, res) => {
 	const { firstName, lastName, username, email, langue } = req.body
@@ -120,7 +130,7 @@ router.post('/update', authJwt, (req, res) => {
 				.then(user => res.json(user.addToken()))
 				.catch(err => console.log(err))
 		} else {
-			res.status(400).json(validator.getErrors(err))
+			res.json({ err: true, errors: validator.getErrors(err) })
 		}
 	})
 })
@@ -136,10 +146,10 @@ router.get('/verify/:key', (req, res) => {
 						.then(user => res.json(user.addToken()))
 						.catch(err => console.log(err))
 				} else {
-					res.status(400).json(['Already verified'])
+					res.json({ err: true, errors: ['Already verified'] })
 				}
 			} else {
-				res.status(400).json(['Invalid key'])
+				res.json({ err: true, errors: ['Invalid key'] })
 			}
 		})
 		.catch(err => console.log(err))
@@ -158,7 +168,7 @@ router.post('/forgot', (req, res) => {
 					})
 					.catch(err => console.log(err))
 			} else {
-				res.status(400).json([`Email doens't exist`])
+				res.json({ err: true, errors: [`Email doens't exist`] })
 			}
 		})
 		.catch(err => console.log(err))
@@ -171,7 +181,7 @@ router.get('/recover/:key', (req, res) => {
 			if (user) {
 				res.json({ ...user.addToken(), rkey })
 			} else {
-				res.status(400).json(['Invalid key'])
+				res.json({ err: true, errors: ['Invalid key'] })
 			}
 		})
 		.catch(err => console.log(err))
@@ -186,7 +196,7 @@ router.post('/recovery_check', authJwt, (req, res) => {
 			.then(user => res.json({ ok: true }))
 			.catch(err => console.log(err))
 	} else {
-		res.status(400).json(['Invalid key'])
+		res.json({ err: true, errors: ['Invalid key'] })
 	}
 })
 
