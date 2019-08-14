@@ -37,7 +37,9 @@ app.use('/', require('./routes/index'))
 app.use('/users', require('./routes/users'))
 app.use('/oauth', require('./routes/oauth'))
 app.use(express.static(indexPath))
-
+app.use(function(req, res) {
+	res.json({error: {'message':'Invalid Request'}})
+})
 const PORT = process.env.PORT || 80
 const SPORT = 443
 
