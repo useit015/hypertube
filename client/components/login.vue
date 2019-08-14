@@ -57,12 +57,6 @@
 			}
 		}),
 		methods: {
-			passwordMatch() {
-				return !this.confPassword.length ||
-					this.password === this.confPassword
-					? ""
-					: "Passwords must match";
-			},
 			async login() {
 				try {
 					const url = `https://hypertube.tk/users/login`;
