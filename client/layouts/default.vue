@@ -21,7 +21,7 @@
 		async beforeCreate() {
 			try {
 				const token = localStorage.getItem("token");
-				const url = `https://hypertube.tk/users/isloggedin`;
+				const url = `https://hypertube.tk/api/users/isloggedin`;
 				const headers = { Authorization: `jwt ${token}` };
 				const res = await axios.get(url, { headers });
 				if (!res.data.err) {
@@ -36,17 +36,26 @@
 
 <style>
 .app {
-	background: #424242; /* fallback for old browsers */
+	background: #424242;
 	background: -webkit-linear-gradient(
-		to bottom,
 		#424242 10%,
-		#212121 100%
-	); /* Chrome 10-25, Safari 5.1-6 */
+		#353535 30%,
+		#272727 60%,
+		#212121 90%
+	);
 	background: linear-gradient(
-		to bottom,
 		#424242 10%,
-		#212121 100%
+		#353535 30%,
+		#272727 60%,
+		#212121 90%
 	) !important;
+}
+.cta_btn {
+	border: 1px solid rgba(100, 214, 196, 0.5) !important;
+	height: 40px !important;
+	transform: scale(1.1);
+	letter-spacing: 2px;
+	font-weight: 300;
 }
 </style>
 

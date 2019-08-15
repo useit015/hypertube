@@ -85,10 +85,13 @@
 
 <script>
 	import axios from "axios";
+	import rules from "@/assets/rules";
+
 	export default {
 		name: "Register",
 		data: () => ({
-			valid: true,
+			rules,
+			valid: false,
 			showPass: false,
 			showConfPass: false,
 			firstName: "",
@@ -96,28 +99,7 @@
 			username: "",
 			email: "",
 			password: "",
-			confPassword: "",
-			rules: {
-				name: [
-					v => !!v || 'This field is required',
-					v => (/^(([a-zA-Z])+([-\ \.])?([a-zA-Z])+)+$/.test(v)) || 'Name can contain only letters and valid separators',
-					v => (v.length >= 3 && v.length <= 255 ) || 'Name must be at least 3 characters long'
-				],
-				username: [
-					v => !!v || 'This field is required',
-					v => (v.length >= 5 && v.length <= 30 ) || 'Username must be between 5 and 30 characters long',
-					v => (/^([a-zA-Z_])+([a-zA-Z0-9-_])*$/.test(v)) || 'Username can contain only letters, numbers, _ and - characters'
-				],
-				password: [
-					v => !!v || 'This field is required',
-					v => v.length >= 8 || 'Password must be at least 8 characters long',
-					v => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v) || 'Password must contain at least one uppercase, one lowercase, one number and one special char'
-				],
-				email: [
-					v => !!v || "E-mail is required",
-					v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-				]
-			}
+			confPassword: ""
 		}),
 		methods: {
 			passwordMatch() {
@@ -127,20 +109,22 @@
 					: "Passwords must match";
 			},
 			async registerUser() {
-				try {
-					const url = `https://hypertube.tk/users/register`;
-					const data = {
-						firstName: this.firstName,
-						lastName: this.lastName,
-						username: this.username,
-						email: this.email,
-						password: this.password,
-						confPassword: this.confPassword
-					};
-					const res = await axios.post(url, data);
-					console.log(res);
-				} catch (err) {
-					console.error(err);
+				if (this.valid) {
+					try {
+						const url = `https://hypertube.tk/users/register`;
+						const data = {
+							firstName: this.firstName,
+							lastName: this.lastName,
+							username: this.username,
+							email: this.email,
+							password: this.password,
+							confPassword: this.confPassword
+						};
+						const res = await axios.post(url, data);
+						console.log(res);
+					} catch (err) {
+						console.error(err);
+					}
 				}
 			}
 		}

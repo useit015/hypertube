@@ -25,7 +25,18 @@
 						:type="showPass ? 'text' : 'password'"
 						@click:append="showPass = !showPass"
 					></v-text-field>
-					<v-layout column justify-center align-center class="mt-5 py-4">
+					<v-layout justify-end align-center>
+						<v-btn
+							rounded
+							text
+							small
+							color="primary"
+							class="caption text-lowercase fgt_btn"
+							to="/forgot"
+							nuxt
+						>I forgot my password</v-btn>
+					</v-layout>
+					<v-layout justify-center align-center class="mt-5 py-4">
 						<v-btn class="cta_btn" rounded large outlined color="primary" @click.prevent="login">Login</v-btn>
 					</v-layout>
 				</v-form>
@@ -36,41 +47,44 @@
 
 <script>
 	import axios from "axios";
+	import rules from "@/assets/rules";
+
 	export default {
 		name: "Login",
 		data: () => ({
-			valid: true,
+			valid: false,
 			showPass: false,
 			username: "",
 			password: "",
 			rules: {
-				username: [
-					v => !!v || 'This field is required',
-					v => (v.length >= 5 && v.length <= 30 ) || 'Username must be between 5 and 30 characters long',
-					v => (/^([a-zA-Z_])+([a-zA-Z0-9-_])*$/.test(v)) || 'Username can contain only letters, numbers, _ and - characters'
-				],
-				password: [
-					v => !!v || 'This field is required',
-					v => v.length >= 8 || 'Password must be at least 8 characters long',
-					v => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v) || 'Password must contain at least one uppercase, one lowercase, one number and one special char'
-				]
+				username: rules.username,
+				password: rules.password
 			}
 		}),
 		methods: {
 			async login() {
-				try {
-					const url = `https://hypertube.tk/users/login`;
-					const data = {
-						username: this.username,
-						password: this.password
-					};
-					const res = await axios.post(url, data);
-					console.log(res);
-				} catch (err) {
-					console.error(err);
+				if (this.valid) {
+					try {
+						const url = `https://hypertube.tk/api/users/login`;
+						const data = {
+							username: this.username,
+							password: this.password
+						};
+						const res = await axios.post(url, data);
+						console.log(res);
+					} catch (err) {
+						console.error(err);
+					}
 				}
 			}
 		}
 	};
 </script>
+
+<style>
+.fgt_btn {
+	margin-top: -0.5rem !important;
+}
+</style>
+
 
