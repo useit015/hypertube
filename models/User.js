@@ -41,6 +41,10 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		default: ''
 	},
+	twId: {
+		type: String,
+		default: ''
+	},
 	googleId: {
 		type: String,
 		default: ''

@@ -6,6 +6,7 @@ router.get('/ft', passport.authenticate('42'))
 router.get('/fb', passport.authenticate('facebook', {scope:['email']}))
 router.get('/git', passport.authenticate('github'))
 router.get('/li', passport.authenticate('linkedin'))
+router.get('/tw', passport.authenticate('twitchtv'))
 router.get('/google', passport.authenticate('google', {
 	scope: [
 		'https://www.googleapis.com/auth/userinfo.profile',

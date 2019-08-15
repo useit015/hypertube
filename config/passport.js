@@ -5,6 +5,7 @@ const GithubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy
+const TwitchStrategy = require('passport-twitchtv').Strategy
 const { randomBytes } = require('crypto')
 const request = require('request')
 const User = require('../models/User')
@@ -176,6 +177,30 @@ module.exports = passport => {
 					verified: true
 				}
 				findUser(user, done, 'li')
+			}
+		)
+	)
+	passport.use(
+		new TwitchStrategy(
+			{
+				clientID: process.env.TW_CLIENT_ID,
+				clientSecret: process.env.TW_CLIENT_SECRET,
+				callbackURL: 'https://hypertube.tk/oauth/tw_ret',
+				scope: 'user_read'
+			},
+			async (token, tokenSecret, profile, done) => {
+				const photos = profile.photos
+				const userName = await generateUsername(profile.id, 'tw')
+				const user = {
+					firstName: profile.displayName,
+					lastName: profile.displayName,
+					username: userName,
+					image: profile._json.logo,
+					email: profile.email,
+					twId: profile.id,
+					verified: true
+				}
+				findUser(user, done, 'tw')
 			}
 		)
 	)
