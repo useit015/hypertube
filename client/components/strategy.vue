@@ -48,9 +48,9 @@
 					url: "https://hypertube.tk/api/oauth/li"
 				},
 				{
-					text: "42 Intra",
-					img: "/42.svg",
-					url: "https://hypertube.tk/api/oauth/ft"
+					text: "Twitch",
+					img: "/twitch.svg",
+					url: "https://hypertube.tk/api/oauth/tw"
 				}
 			]
 		})
