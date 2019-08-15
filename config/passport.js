@@ -66,7 +66,7 @@ module.exports = passport => {
 			{
 				clientID: process.env.GOOGLE_OAUTH_ID,
 				clientSecret: process.env.GOOGLE_OAUTH_PASS,
-				callbackURL: `https://hypertube.tk/oauth/googlered`
+				callbackURL: `${process.env.API_URL}/oauth/googlered`
 			},
 			async (accessToken, refreshToken, profile, done) => {
 				const userName = await generateUsername(profile.id, 'gl')
@@ -88,7 +88,7 @@ module.exports = passport => {
 			{
 				clientID: process.env.GIT_OAUTH_ID,
 				clientSecret: process.env.GIT_OAUTH_PASS,
-				callbackURL: `https://hypertube.tk/oauth/git_ret`
+				callbackURL: `${process.env.API_URL}/oauth/git_ret`
 			},
 			async (accessToken, refreshToken, profile, done) => {
 				const userName = await generateUsername(profile.id, 'gt')
@@ -110,7 +110,7 @@ module.exports = passport => {
 			{
 				clientID: process.env.FT_OAUTH_ID,
 				clientSecret: process.env.FT_OAUTH_PASS,
-				callbackURL: `https://hypertube.tk/oauth/ft_ret`
+				callbackURL: `${process.env.API_URL}/oauth/ft_ret`
 			},
 			async (accessToken, refreshToken, profile, done) => {
 				const userName = await generateUsername(profile.id, 'ft')
@@ -132,7 +132,7 @@ module.exports = passport => {
 			{
 				clientID: process.env.FB_OAUTH_ID,
 				clientSecret: process.env.FB_OAUTH_PASS,
-				callbackURL: 'https://hypertube.tk/oauth/fb_ret'
+				callbackURL: `${process.env.API_URL}/oauth/fb_ret`
 			},
 			async (accessToken, refreshToken, profile, done) => {
 				const opts = {
@@ -161,7 +161,7 @@ module.exports = passport => {
 			{
 				clientID: process.env.LI_OAUTH_ID,
 				clientSecret: process.env.LI_OAUTH_SECRET,
-				callbackURL: 'https://hypertube.tk/oauth/li_ret',
+				callbackURL: `${process.env.API_URL}/oauth/li_ret`,
 				scope: ['r_emailaddress', 'r_liteprofile']
 			},
 			async (token, tokenSecret, profile, done) => {
@@ -185,7 +185,7 @@ module.exports = passport => {
 			{
 				clientID: process.env.TW_CLIENT_ID,
 				clientSecret: process.env.TW_CLIENT_SECRET,
-				callbackURL: 'https://hypertube.tk/oauth/tw_ret',
+				callbackURL: `${process.env.API_URL}/oauth/tw_ret`,
 				scope: 'user_read'
 			},
 			async (token, tokenSecret, profile, done) => {
