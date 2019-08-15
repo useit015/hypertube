@@ -1,6 +1,9 @@
 <template>
 	<v-layout justify-center align-center class="mt-5">
 		<v-flex xs12 sm7 md6 lg5 xl3>
+			<div v-if="sent">
+				<v-alert dismissible :type="alert.type" class="mb-5">{{ alert.text }}</v-alert>
+			</div>
 			<v-layout column justify-center>
 				<h2 class="display-2 font-weight-thin mt-3 mb-5 py-4 text-center">Join Us</h2>
 				<v-form ref="form" v-model="valid" lazy-validation>
@@ -90,6 +93,8 @@
 	export default {
 		name: "Register",
 		data: () => ({
+			alertErr: false,
+			sent: false,
 			rules,
 			valid: false,
 			showPass: false,
@@ -101,6 +106,21 @@
 			password: "",
 			confPassword: ""
 		}),
+		computed: {
+			alert() {
+				if (this.alertErr) {
+					return {
+						type: "error",
+						text: "Something went wrong, please try again later"
+					};
+				} else {
+					return {
+						type: "success",
+						text: `User registred succesfully ! please verify your account.`
+					};
+				}
+			}
+		},
 		methods: {
 			passwordMatch() {
 				return !this.confPassword.length ||
@@ -111,7 +131,7 @@
 			async registerUser() {
 				if (this.valid) {
 					try {
-						const url = `https://hypertube.tk/users/register`;
+						const url = `https://hypertube.tk/api/users/register`;
 						const data = {
 							firstName: this.firstName,
 							lastName: this.lastName,
@@ -121,6 +141,8 @@
 							confPassword: this.confPassword
 						};
 						const res = await axios.post(url, data);
+						this.alertErr = !!res.data.err;
+						this.sent = true;
 						console.log(res);
 					} catch (err) {
 						console.error(err);
