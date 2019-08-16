@@ -32,12 +32,12 @@
 							small
 							color="primary"
 							class="caption text-lowercase fgt_btn"
-							to="/forgot"
+							to="/login/forgot"
 							nuxt
 						>I forgot my password</v-btn>
 					</v-layout>
 					<v-layout justify-center align-center class="mt-5 py-4">
-						<v-btn class="cta_btn" rounded large outlined color="primary" @click.prevent="login">Login</v-btn>
+						<v-btn class="cta_btn" rounded large outlined color="primary" @click.prevent="logUser">Login</v-btn>
 					</v-layout>
 				</v-form>
 			</v-layout>
@@ -47,6 +47,7 @@
 
 <script>
 	import axios from "axios";
+	import { mapActions } from "vuex";
 	import rules from "@/assets/rules";
 
 	export default {
@@ -62,7 +63,8 @@
 			}
 		}),
 		methods: {
-			async login() {
+			...mapActions(["login"]),
+			async logUser() {
 				if (this.valid) {
 					try {
 						const url = `https://hypertube.tk/api/users/login`;
@@ -72,6 +74,11 @@
 						};
 						const res = await axios.post(url, data);
 						console.log(res);
+						if (!res.err) {
+							this.login(res.data);
+							this.$router.push("/library");
+						} else {
+						}
 					} catch (err) {
 						console.error(err);
 					}

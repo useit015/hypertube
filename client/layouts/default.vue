@@ -1,23 +1,27 @@
 <template>
 	<v-app dark class="app">
+		<navbar/>
 		<v-content>
-			<v-container>
+			<v-container fluid class="py-0 px-0">
 				<nuxt/>
 			</v-container>
 		</v-content>
-		<v-footer fixed app>
-			<span>&copy; 2019</span>
-		</v-footer>
 	</v-app>
 </template>
 
 <script>
 	import axios from "axios";
+	import { mapActions } from "vuex";
+	import navbar from "@/components/navbar";
 
 	export default {
+		components: {
+			navbar
+		},
 		data() {
 			return {};
 		},
+		methods: mapActions(["login"]),
 		async beforeCreate() {
 			try {
 				const token = localStorage.getItem("token");
@@ -25,7 +29,8 @@
 				const headers = { Authorization: `jwt ${token}` };
 				const res = await axios.get(url, { headers });
 				if (!res.data.err) {
-					localStorage.setItem("token", res.data.token);
+					this.login(res.data);
+					this.$router.push("/library");
 				}
 			} catch (err) {
 				console.log("Got error here -->", err);
