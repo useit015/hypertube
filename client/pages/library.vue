@@ -28,25 +28,33 @@
 		}
 		const { data } = await axios.get(purl);
 		let popcornList = [];
-		if (data.MovieList.length) {
-			popcornList = data.MovieList.map(cur => ({
-				title: cur.title,
-				year: cur.year,
-				rating: cur.rating,
-				imdb: cur.imdb,
-				poster_med: cur.poster_med
-			}));
+		try {
+			if (data.MovieList.length) {
+				popcornList = data.MovieList.map(cur => ({
+					title: cur.title,
+					year: cur.year,
+					rating: cur.rating,
+					imdb: cur.imdb,
+					poster_med: cur.poster_med
+				}));
+			}
+		} catch (error) {
+			console.log('got error : ', error.message)
 		}
-		const res = await axios.get(yurl);
 		let ytsList = [];
-		if (res.data.data.movie_count) {
-			ytsList = res.data.data.movies.map(cur => ({
-				title: cur.title,
-				year: cur.year,
-				rating: cur.rating,
-				imdb: cur.imdb_code,
-				poster_med: cur.medium_cover_image
-			}));
+		try {
+			const res = await axios.get(yurl);
+			if (res.data.data.movie_count) {
+				ytsList = res.data.data.movies.map(cur => ({
+					title: cur.title,
+					year: cur.year,
+					rating: cur.rating,
+					imdb: cur.imdb_code,
+					poster_med: cur.medium_cover_image
+				}));
+			}
+		} catch (error) {
+			console.log('got error : ', error.message)
 		}
 		const merged = [
 			...ytsList,
