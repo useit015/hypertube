@@ -17,42 +17,47 @@
 
 	const fetchMovieList = async (page, query, genre) => {
 		const sortType = query ? "title" : "seeds";
-		let url = `https://api.apiumadomain.com/list?sort=${sortType}&short=1&cb=&quality=720p,1080p,3d&page=${page}`;
+		let purl = `https://api.apiumadomain.com/list?sort=${sortType}&short=1&cb=&quality=720p,1080p,3d&page=${page}`;
+		let yurl = `https://yts.lt/api/v2/list_movies.json?limit=1&sort_by=${sortType}&page=${page}`;
 		if (query) {
-			url = `${url}&keywords=${query}`;
+			purl = `${purl}&keywords=${query}`;
+			yurl = `${yurl}&query_term=${query}`;
 		} else if (genre) {
-			url = `${url}&genre=${genre}`;
+			purl = `${purl}&genre=${genre}`;
+			yurl = `${yurl}&genre=${genre}`;
 		}
-		const { data } = await axios.get(url);
-		const popcornList = data.MovieList.map(cur => ({
-			title: cur.title,
-			year: cur.year,
-			rating: cur.rating,
-			imdb: cur.imdb,
-			poster_med: cur.poster_med
-		}));
-		if (query) {
-			url = `https://yts.lt/api/v2/list_movies.json?query_term=${query}`;
-			const res = await axios.get(url);
-			const ytsList = res.data.data.movies.map(cur => ({
+		const { data } = await axios.get(purl);
+		let popcornList = [];
+		if (data.MovieList.length) {
+			popcornList = data.MovieList.map(cur => ({
+				title: cur.title,
+				year: cur.year,
+				rating: cur.rating,
+				imdb: cur.imdb,
+				poster_med: cur.poster_med
+			}));
+		}
+		const res = await axios.get(yurl);
+		let ytsList = [];
+		if (res.data.data.movie_count) {
+			ytsList = res.data.data.movies.map(cur => ({
 				title: cur.title,
 				year: cur.year,
 				rating: cur.rating,
 				imdb: cur.imdb_code,
 				poster_med: cur.medium_cover_image
 			}));
-			const merged = [
-				...ytsList,
-				...popcornList.filter(cur => {
-					for (let item of ytsList) {
-						if (cur.imdb === item.imdb) return false;
-					}
-					return true;
-				})
-			];
-			console.log(merged);
 		}
-		return data;
+		const merged = [
+			...ytsList,
+			...popcornList.filter(cur => {
+				for (let item of ytsList) {
+					if (cur.imdb === item.imdb) return false;
+				}
+				return true;
+			})
+		];
+		return merged;
 	};
 
 	export default {
@@ -69,7 +74,7 @@
 		}),
 		async asyncData({ params }) {
 			const data = await fetchMovieList(1);
-			return { list: data.MovieList };
+			return { list: data };
 		},
 		created() {
 			window.addEventListener("scroll", this.handleScroll);
@@ -95,7 +100,7 @@
 						this.query,
 						this.genre
 					);
-					this.list = [...this.list, ...data.MovieList];
+					this.list = [...this.list, ...data];
 					this.polling = false;
 				}
 			},
@@ -106,7 +111,7 @@
 				this.page = 1;
 				this.query = query;
 				const data = await fetchMovieList(this.page, this.query);
-				this.list = data.MovieList;
+				this.list = data;
 				window.scrollTo(0, 0);
 			},
 			async filterMovie(genre) {
@@ -115,8 +120,9 @@
 				}
 				this.page = 1;
 				this.genre = genre;
+				this.query = '';
 				const data = await fetchMovieList(this.page, this.query, genre);
-				this.list = data.MovieList;
+				this.list = data;
 				window.scrollTo(0, 0);
 			}
 		}
