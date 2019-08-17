@@ -3,7 +3,7 @@
 		<v-layout column justify-end align-center class="overlay">
 			<div class="overlay_info pt-5 mt-5">
 				<h3 class="headline font-weight-black overlay_title mt-5">{{ stripYear(movie.title) }}</h3>
-				<h3 class="overlay_year mt-2">{{ movie.year }}</h3>
+				<h3 v-if="movie.year" class="overlay_year mt-2">{{ movie.year }}</h3>
 			</div>
 			<v-rating
 				dense
@@ -32,7 +32,7 @@
 
 <style>
 .movie_card {
-	width: calc(100vw / 6);
+	width: 100%;
 	height: calc(100vw / 4);
 	position: relative;
 	background-size: cover;

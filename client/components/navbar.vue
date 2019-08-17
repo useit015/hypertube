@@ -1,5 +1,5 @@
 <template>
-	<nav>
+	<nav class="navbar">
 		<v-toolbar color="grey darken-2" dark class="elevation-0 px-3">
 			<v-layout align-center>
 				<nuxt-link to="/" class="px-4">
@@ -17,6 +17,9 @@
 					rounded
 					outlined
 					class="nav_search"
+					v-model="query"
+					@keyup.13="searchMovie"
+					@change="clearSearch"
 				></v-text-field>
 				<v-spacer></v-spacer>
 				<v-btn icon v-if="authenticated">
@@ -31,7 +34,9 @@
 	import { mapGetters } from "vuex";
 	export default {
 		name: "Navbar",
-		data: () => ({}),
+		data: () => ({
+			query: ""
+		}),
 		computed: mapGetters(["authenticated"]),
 		methods: {
 			async logout() {
@@ -44,12 +49,25 @@
 				// } catch (err) {
 				// 	console.log("problem with -->", err);
 				// }
+			},
+			searchMovie() {
+				this.$bus.$emit("searchMovie", this.query);
+			},
+			clearSearch() {
+				if (!this.query) {
+					this.$bus.$emit("searchMovie", this.query);
+				}
 			}
 		}
 	};
 </script>
 
 <style>
+.navbar {
+	z-index: 3;
+	width: 100vw;
+	position: fixed;
+}
 .logo {
 	margin-left: -3px;
 	letter-spacing: 1px;

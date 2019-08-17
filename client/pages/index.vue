@@ -1,7 +1,20 @@
 <template>
-	<v-layout column>
-		<h1>Home</h1>
-	</v-layout>
+	<v-container>
+		<v-row justify="center">
+			<v-col cols="3">
+				<v-btn
+					block
+					large
+					depressed
+					rounded
+					to="/sign"
+					nuxt
+					color="primary"
+					class="mt-5 title font-weight-light"
+				>Get Started</v-btn>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>

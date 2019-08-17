@@ -24,6 +24,7 @@
 						:append-icon="showPass ? 'visibility' : 'visibility_off'"
 						:type="showPass ? 'text' : 'password'"
 						@click:append="showPass = !showPass"
+						@keyup.13.prevent="logUser"
 					></v-text-field>
 					<v-layout justify-end align-center>
 						<v-btn
