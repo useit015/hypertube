@@ -10,6 +10,7 @@
 				class="mb-3 mt-auto overlay_rating"
 				color="black"
 				small
+				readonly
 				:value="movie.rating / 2"
 			></v-rating>
 		</v-layout>
