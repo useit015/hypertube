@@ -14,33 +14,22 @@
 </template>
 
 <script>
-    import axios from "axios";
     import loader from '@/components/loader';
-    const fetchUser = async (username) => {
-        const token = localStorage.getItem('token')
-        const res = await axios.get(`https://hypertube.tk/api/users/user/${username}`, {headers:{Authorization:`jwt ${token}`}})
-        if (!res.data.err) {
-            return res.data
-        }
-        else {
-            return null
-        }
-    }
+    import { mapGetters } from "vuex";
     export default {
         //middleware: "authenticated",
         components: {
             loader
         },
         data: () => ({
-            user: null,
-                loaded: false
+            loaded: false
         }),
+        computed: {
+            ...mapGetters(['user'])
+        },
         async created() {
-            console.log(this.$route.params)
-            const res = await fetchUser(this.$route.params.username)
-            this.user = res
             this.loaded = true
-        }
+        },
     }
 </script>
 <style>
