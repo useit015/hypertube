@@ -2,6 +2,7 @@ const express = require('express')
 // const multer = require('multer')
 const jwt = require('jsonwebtoken')
 const base64Img = require('base64-img')
+const Jimp = require('jimp')
 const passport = require('passport')
 const { randomBytes } = require('crypto')
 const User = require('../models/User')
@@ -71,6 +72,16 @@ router.post(
 				} catch (error) {
 					return res.json({ err: true, errors: ['File is not an image'] })
 				}
+				Jimp.read(image)
+					.then(img => {
+						img
+							.resize(256, Jimp.AUTO)
+							.quality(90)
+							.write(image)
+					})
+					.catch(err => {
+						console.error(err);
+					})
 				User.findOne({ $or: [{ email: email }, { username: username }] })
 					.then(user => {
 						if (user) {
