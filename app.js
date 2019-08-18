@@ -26,7 +26,6 @@ app.set('view engine', 'ejs')
 app.use(cors())
 app.use(passport.initialize())
 app.use(express.urlencoded({
-	parameterLimit: 100000,
 	limit: '50mb',
 	extended: true
 }))
