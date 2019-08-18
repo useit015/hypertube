@@ -1,6 +1,7 @@
 const express = require('express')
 // const multer = require('multer')
 const jwt = require('jsonwebtoken')
+const base64Img = require('base64-img')
 const passport = require('passport')
 const { randomBytes } = require('crypto')
 const User = require('../models/User')
@@ -60,10 +61,16 @@ router.post('/login', (req, res) => {
 router.post(
 	'/register',
 	/*upload.single('image'),*/ (req, res) => {
-		const { firstName, lastName, username, email, password, confPassword } = req.body
+		const { firstName, lastName, username, email, password, confPassword, avatar } = req.body
 		const data = { firstName, lastName, username, email, password, confPassword }
 		validator.register(data, err => {
 			if (!err) {
+				let image
+				try {
+					image = base64Img.imgSync(avatar, 'uploads', username)
+				} catch (error) {
+					return res.json({ err: true, errors: ['File is not an image'] })
+				}
 				User.findOne({ $or: [{ email: email }, { username: username }] })
 					.then(user => {
 						if (user) {
@@ -80,6 +87,7 @@ router.post(
 								username,
 								password,
 								email,
+								image,
 								vkey
 							})
 								.save()
