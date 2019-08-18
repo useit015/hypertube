@@ -19,6 +19,7 @@
 	"homepage": "https://github.com/useit015/hypertube#readme",
 	"dependencies": {
 		"@hapi/joi": "^15.1.0",
+		"base64-img": "^1.0.4",
 		"bcryptjs": "^2.4.3",
 		"cors": "^2.8.5",
 		"dotenv": "^8.0.0",
