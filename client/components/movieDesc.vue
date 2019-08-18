@@ -67,7 +67,7 @@
 		computed: {
 			genre() {
 				if (!this.movie.genres || !this.movie.genres.length) return "";
-				return this.movie.genres[0];
+				return this.movie.genres.join(',');
 			}
 		},
 		created() {
