@@ -7,7 +7,7 @@
 		<div v-else class="search_placeholder">
 			<h1>Nothing found</h1>
 		</div>
-		<movieDesc/>
+		<movieDesc @hook:updated="movieMounted"/>
 	</v-layout>
 </template>
 
@@ -88,7 +88,8 @@
 			page: 1,
 			query: "",
 			genre: "",
-			polling: false
+			polling: false,
+			isOpen: false
 		}),
 		async asyncData({ params }) {
 			return { list: await fetchMovieList(1) };
@@ -128,6 +129,17 @@
 				this.genre = genre === "popular" ? "" : genre;
 				this.list = await fetchMovieList(this.page, this.query, this.genre);
 				window.scrollTo(0, 0);
+			},
+			movieMounted() {
+				if (this.isOpen === false) {
+					window.removeEventListener("scroll", this.handleScroll);
+					document.documentElement.style.overflowY = 'hidden'
+					this.isOpen = true;
+				} else {
+					window.addEventListener("scroll", this.handleScroll);
+					document.documentElement.style.overflowY = 'auto'
+					this.isOpen = false;
+				}
 			}
 		}
 	};
