@@ -62,5 +62,8 @@
 	letter-spacing: 2px;
 	font-weight: 300;
 }
+.main_container {
+	margin-top: 64px;
+}
 </style>
 

@@ -3,15 +3,40 @@
 		<div class="movie_poster" :style="`background-image:url(${movie.poster_big});`"></div>
 		<div class="movie_content">
 			<h1 class="movie_title display-1 font-weight-black text-uppercase mb-3">{{ movie.title }}</h1>
-			<v-row align="center" justify="start" class="movie_info">
-				<span class="movie_genre mx-4">{{ genre }}</span>
+			<v-row align="center" justify="start" class="movie_info mb-5">
+				<span class="movie_genre mx-4 text-capitalize title">{{ genre }}</span>
 				<v-icon>calendar_today</v-icon>
 				<span class="movie_year ml-2 mr-4">{{ movie.year }}</span>
 				<v-icon>access_time</v-icon>
 				<span class="movie_duration ml-2 mr-4">{{ `${movie.runtime} min` }}</span>
 				<v-rating dense class="mx-3" color="white" small readonly :value="movie.rating / 2"/>
 			</v-row>
+			<p class="movie_desc">{{ movie.description }}</p>
+			<v-row justify="end" class="mr-5">
+				<v-btn text rounded color="white" class="movie_action mr-2">
+					<v-icon>favorite</v-icon>
+				</v-btn>
+				<v-btn text rounded color="white" class="movie_action" @click="trailer = true">
+					<v-img ref="img" src="/trailer.svg" width="20" class="movie_trailer"/>
+				</v-btn>
+			</v-row>
 		</div>
+		<v-row v-if="trailer" column align="center" justify="center" class="trailer_overlay">
+			<v-btn
+				fab
+				top
+				right
+				small
+				outlined
+				absolute
+				color="primary"
+				class="movie_close"
+				@click="trailer = false"
+			>
+				<v-icon>close</v-icon>
+			</v-btn>
+			<youtube fitParent :player-vars="vars" ref="youtube" :video-id="movie.trailer"/>
+		</v-row>
 		<v-btn
 			fab
 			top
@@ -32,69 +57,24 @@
 	import axios from "axios";
 	export default {
 		name: "movieDesc",
-		props: {
-			genres: {
-				type: Object,
-				default: () => ({
-					"12": "Adventure",
-					"14": "Fantasy",
-					"16": "Animation",
-					"18": "Drama",
-					"27": "Horror",
-					"28": "Action",
-					"35": "Comedy",
-					"36": "History",
-					"37": "Western",
-					"53": "Thriller",
-					"80": "Crime",
-					"99": "Documentary",
-					"878": "Science Fiction",
-					"9648": "Mystery",
-					"10402": "Music",
-					"10749": "Romance",
-					"10751": "Family",
-					"10752": "War",
-					"10770": "TV Movie"
-				})
-			}
-		},
 		data: () => ({
 			open: false,
-			movie: {}
+			movie: {},
+			timer: null,
+			trailer: false,
+			vars: { autoplay: 1 }
 		}),
 		computed: {
-			// poster() {
-			// 	const path = this.movie.poster_big
-			// 	if (!path) return "";
-			// 	return `https://image.tmdb.org/t/p/w780${path}`;
-			// },
-			// year() {
-			// 	if (!this.movie.release_date) return "";
-			// 	return this.movie.release_date.split("-")[0];
-			// },
 			genre() {
 				if (!this.movie.genres || !this.movie.genres.length) return "";
 				return this.movie.genres[0];
 			}
-			// duration() {
-			// 	if (!this.genres || !this.movie.genre_ids) return "";
-			// 	return this.genres[this.movie.genre_ids[0]];
-			// }
 		},
 		created() {
 			this.$bus.$on("openDesc", this.openDesc);
 		},
 		methods: {
 			async openDesc(id) {
-				// try {
-				// 	const TMDB_KEY = "76dc6a53508624a4aa33450eff1abea3";
-				// 	const url = `https://api.themoviedb.org/3/find/${id}?api_key=${TMDB_KEY}&external_source=imdb_id`;
-				// 	const { data } = await axios.get(url);
-				// 	this.movie = data.movie_results[0];
-				// 	this.open = true;
-				// } catch (err) {
-				// 	console.log("Got error here --> ", err);
-				// }
 				try {
 					const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&short=1&imdb=${id}`;
 					const { data } = await axios.get(url);
@@ -142,11 +122,54 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	width: 50vw;
 }
 .movie_title {
-	text-shadow: 1px 1px 5px #000;
+	text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.4);
+}
+.movie_desc,
+.movie_content {
+	text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
 }
 .movie_close {
+	z-index: 2 !important;
 	transform: translate(-50%, 125%);
+}
+
+@media all and (max-width: 1200px) {
+	.movie_content {
+		width: 60vw;
+	}
+}
+
+@media all and (max-width: 1000px) {
+	.movie_content {
+		width: 70vw;
+	}
+}
+
+@media all and (max-width: 700px) {
+	.movie_content {
+		width: 80vw;
+	}
+}
+
+@media all and (min-width: 1700px) {
+	.movie_content {
+		width: 40vw;
+	}
+}
+.trailer_overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.8);
+	z-index: 4;
+	padding: 0 5rem;
+}
+.movie_trailer {
+	transform: scale(0.85);
 }
 </style>

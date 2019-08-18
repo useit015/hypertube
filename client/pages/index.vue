@@ -1,5 +1,5 @@
 <template>
-	<v-container>
+	<v-container class="main_container">
 		<v-row justify="center">
 			<v-col cols="3">
 				<v-btn
@@ -33,9 +33,3 @@
 		})
 	};
 </script>
-
-<style>
-.toggle {
-	overflow: hidden;
-}
-</style>

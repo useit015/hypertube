@@ -71,15 +71,6 @@
 		return merged;
 	};
 
-	const fetchGenres = async () => {
-		let genres = {};
-		const TMDB_KEY = "76dc6a53508624a4aa33450eff1abea3";
-		const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_KEY}`;
-		const { data } = await axios.get(url);
-		data.genres.forEach(cur => (genres[`${cur.id}`] = cur.name));
-		return genres;
-	};
-
 	const getBottomDist = () => {
 		const offsetHeight = document.body.offsetHeight;
 		const { pageYOffset, innerHeight } = window;
@@ -100,10 +91,7 @@
 			polling: false
 		}),
 		async asyncData({ params }) {
-			return {
-				list: await fetchMovieList(1),
-				genres: await fetchGenres()
-			};
+			return { list: await fetchMovieList(1) };
 		},
 		async created() {
 			window.addEventListener("scroll", this.handleScroll);
