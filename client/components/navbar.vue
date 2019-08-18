@@ -52,12 +52,10 @@
 			},
 			searchMovie() {
 				this.$bus.$emit("searchMovie", this.query);
-				this.query = '';
 			},
 			clearSearch() {
 				if (!this.query) {
 					this.$bus.$emit("searchMovie", this.query);
-					this.query = '';
 				}
 			}
 		}
