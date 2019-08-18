@@ -70,6 +70,7 @@
 						@click:append="showConfPass = !showConfPass"
 						:error-messages="passwordMatch()"
 					></v-text-field>
+					<v-file-input @change="selectFile" append-icon="camera_alt" outlined placeholder="Send nudes ?" label="Avatar"></v-file-input>
 					<v-layout column justify-center align-center class="mt-5 py-4">
 						<v-btn
 							class="cta_btn"
@@ -77,7 +78,7 @@
 							large
 							outlined
 							color="primary"
-							@click.prevent="registerUser"
+							@click="registerUser"
 						>Register</v-btn>
 					</v-layout>
 				</v-form>
@@ -104,7 +105,8 @@
 			username: "",
 			email: "",
 			password: "",
-			confPassword: ""
+			confPassword: "",
+			avatar: null
 		}),
 		computed: {
 			alert() {
@@ -122,6 +124,18 @@
 			}
 		},
 		methods: {
+			selectFile(file) {
+				this.avatar = file
+			},
+			getBase64: file => new Promise((resolve, reject) => {
+				if (!file) resolve('File is empty.')
+				if (['image/jpeg', 'image/png'].includes(file.type) == false) resolve('File must be JPEG or PNG image.')
+				if (file.size >= 1024 * 1024 * 4) resolve('File size must be less than 4 MB.');
+				const reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = () => resolve(reader.result);
+				reader.onerror = error => resolve('');
+			}),
 			passwordMatch() {
 				return !this.confPassword.length ||
 					this.password === this.confPassword
@@ -131,6 +145,11 @@
 			async registerUser() {
 				if (this.valid) {
 					try {
+						let image = await this.getBase64(this.avatar)
+						if (/^data:/.test(image) == false) {
+							alert(image)
+							return
+						}
 						const url = `https://hypertube.tk/api/users/register`;
 						const data = {
 							firstName: this.firstName,
@@ -138,7 +157,8 @@
 							username: this.username,
 							email: this.email,
 							password: this.password,
-							confPassword: this.confPassword
+							confPassword: this.confPassword,
+							avatar: image
 						};
 						const res = await axios.post(url, data);
 						this.alertErr = !!res.data.err;
@@ -152,4 +172,10 @@
 		}
 	};
 </script>
+<style>
+.v-input__prepend-outer {
+	display: none;
+}
+</style>
+
 

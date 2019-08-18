@@ -74,11 +74,10 @@
 							password: this.password
 						};
 						const res = await axios.post(url, data);
-						console.log(res);
-						if (!res.err) {
+						console.log(res.data);
+						if (!res.data.err) {
 							this.login(res.data);
 							this.$router.push("/library");
-						} else {
 						}
 					} catch (err) {
 						console.error(err);
