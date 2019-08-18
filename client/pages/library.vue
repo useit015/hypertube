@@ -2,11 +2,12 @@
 	<v-layout>
 		<drawer/>
 		<div v-if="list.length" class="library">
-			<movieCard v-for="movie in list" :key="movie.imdb" :movie="movie"/>
+			<movieCard v-for="(movie, i) in list" :key="i" :movie="movie"/>
 		</div>
 		<div v-else class="search_placeholder">
 			<h1>Nothing found</h1>
 		</div>
+		<movieDesc/>
 	</v-layout>
 </template>
 
@@ -14,6 +15,7 @@
 	import axios from "axios";
 	import drawer from "@/components/drawer";
 	import movieCard from "@/components/movieCard";
+	import movieDesc from "@/components/movieDesc";
 
 	const fetchMovieList = async (page, query, genre) => {
 		const sortType = query ? "title" : "seeds";
@@ -39,8 +41,9 @@
 				}));
 			}
 		} catch (error) {
-			console.log('got error : ', error.message)
+			console.log("got error : ", error.message);
 		}
+		return popcornList;
 		let ytsList = [];
 		try {
 			const res = await axios.get(yurl);
@@ -54,25 +57,41 @@
 				}));
 			}
 		} catch (error) {
-			console.log('got error : ', error.message)
+			console.log("got error : ", error.message);
 		}
 		const merged = [
-			...ytsList,
 			...popcornList.filter(cur => {
 				for (let item of ytsList) {
 					if (cur.imdb === item.imdb) return false;
 				}
 				return true;
-			})
+			}),
+			...ytsList
 		];
 		return merged;
+	};
+
+	const fetchGenres = async () => {
+		let genres = {};
+		const TMDB_KEY = "76dc6a53508624a4aa33450eff1abea3";
+		const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_KEY}`;
+		const { data } = await axios.get(url);
+		data.genres.forEach(cur => (genres[`${cur.id}`] = cur.name));
+		return genres;
+	};
+
+	const getBottomDist = () => {
+		const offsetHeight = document.body.offsetHeight;
+		const { pageYOffset, innerHeight } = window;
+		return Math.max(offsetHeight - (pageYOffset + innerHeight), 0);
 	};
 
 	export default {
 		middleware: "authenticated",
 		components: {
 			drawer,
-			movieCard
+			movieCard,
+			movieDesc
 		},
 		data: () => ({
 			page: 1,
@@ -81,10 +100,12 @@
 			polling: false
 		}),
 		async asyncData({ params }) {
-			const data = await fetchMovieList(1);
-			return { list: data };
+			return {
+				list: await fetchMovieList(1),
+				genres: await fetchGenres()
+			};
 		},
-		created() {
+		async created() {
 			window.addEventListener("scroll", this.handleScroll);
 			this.$bus.$on("searchMovie", this.searchMovie);
 			this.$bus.$on("filterMovie", this.filterMovie);
@@ -92,15 +113,9 @@
 		destroyed() {
 			window.removeEventListener("scroll", this.handleScroll);
 		},
-		computed: {},
 		methods: {
-			getBottomDist() {
-				const offsetHeight = document.body.offsetHeight;
-				const { pageYOffset, innerHeight } = window;
-				return Math.max(offsetHeight - (pageYOffset + innerHeight), 0);
-			},
 			async handleScroll() {
-				const bottomDist = this.getBottomDist();
+				const bottomDist = getBottomDist();
 				if (!this.polling && bottomDist >= 0 && bottomDist <= 500) {
 					this.polling = true;
 					const data = await fetchMovieList(
@@ -113,24 +128,17 @@
 				}
 			},
 			async searchMovie(query) {
-				if (query) {
-					this.genre = "";
-				}
 				this.page = 1;
 				this.query = query;
-				const data = await fetchMovieList(this.page, this.query);
-				this.list = data;
+				this.genre = query ? "" : this.genre;
+				this.list = await fetchMovieList(this.page, this.query);
 				window.scrollTo(0, 0);
 			},
 			async filterMovie(genre) {
-				if (genre === "popular") {
-					genre = "";
-				}
 				this.page = 1;
-				this.genre = genre;
-				this.query = '';
-				const data = await fetchMovieList(this.page, this.query, genre);
-				this.list = data;
+				this.query = "";
+				this.genre = genre === "popular" ? "" : genre;
+				this.list = await fetchMovieList(this.page, this.query, this.genre);
 				window.scrollTo(0, 0);
 			}
 		}

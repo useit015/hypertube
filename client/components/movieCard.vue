@@ -1,5 +1,9 @@
 <template>
-	<div class="movie_card" :style="`background-image:url(${movie.poster_med})`">
+	<div
+		class="movie_card"
+		:style="`background-image:url(${movie.poster_med})`"
+		@click="openDesc(movie.imdb)"
+	>
 		<v-layout column justify-end align-center class="overlay">
 			<div class="overlay_info pt-5 mt-5">
 				<h3 class="headline font-weight-black overlay_title mt-5">{{ stripYear(movie.title) }}</h3>
@@ -19,6 +23,7 @@
 
 <script>
 	export default {
+		name: "movieCard",
 		props: {
 			movie: {
 				type: Object,
@@ -26,7 +31,10 @@
 			}
 		},
 		methods: {
-			stripYear: title => title.replace(/\([0-9]{4}\)/, "")
+			stripYear: title => title.replace(/\([0-9]{4}\)/, ""),
+			openDesc(id) {
+				this.$bus.$emit("openDesc", id);
+			}
 		}
 	};
 </script>
