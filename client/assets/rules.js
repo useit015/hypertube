@@ -37,5 +37,10 @@ export default {
         v => reg.username.test(v) || errors.username.valid
     ],
     password: [required, v => v.length >= 8 || errors.password.len, v => reg.password.test(v) || errors.password.valid],
-    email: [required, v => reg.email.test(v) || errors.email.valid]
+    email: [required, v => reg.email.test(v) || errors.email.valid],
+    avatar: [
+        v => (!!v && !!v.name) || 'This field is required',
+        v => (!!v && ['image/png', 'image/jpeg'].includes(v.type)) || 'Must be a JPEG or PNG file',
+        v => (!!v && v.size) <= 1024 * 1024 * 4 || 'Image must be less than 4 MB'
+    ]
 }
