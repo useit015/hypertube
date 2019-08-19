@@ -100,6 +100,7 @@ router.post(
 							else res.json({ err: true, errors: ['User already exists'] })
 						} else {
 							const vkey = randomHex()
+							image = `/${image}`
 							new User({
 								firstName,
 								lastName,
