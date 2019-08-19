@@ -20,21 +20,6 @@
 		},
 		data() {
 			return {};
-		},
-		methods: mapActions(["login"]),
-		async beforeCreate() {
-			try {
-				const token = localStorage.getItem("token");
-				const url = `https://hypertube.tk/api/users/isloggedin`;
-				const headers = { Authorization: `jwt ${token}` };
-				const res = await axios.get(url, { headers });
-				if (!res.data.err) {
-					this.login(res.data);
-					this.$router.push("/library");
-				}
-			} catch (err) {
-				console.log("Got error here -->", err);
-			}
 		}
 	};
 </script>
@@ -70,8 +55,8 @@ body {
 }
 @media all and (max-width: 1000px) {
 	.main_container {
-	margin-top: 56px;
-}
+		margin-top: 56px;
+	}
 }
 </style>
 
