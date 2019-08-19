@@ -40,6 +40,9 @@
 </script>
 
 <style>
+body {
+	overflow: hidden;
+}
 .app {
 	background: #424242;
 	background: -webkit-linear-gradient(
@@ -64,6 +67,11 @@
 }
 .main_container {
 	margin-top: 64px;
+}
+@media all and (max-width: 1000px) {
+	.main_container {
+	margin-top: 56px;
+}
 }
 </style>
 

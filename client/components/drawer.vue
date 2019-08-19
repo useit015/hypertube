@@ -1,11 +1,33 @@
 <template>
-	<v-navigation-drawer class="genre_drawer" expand-on-hover permanent>
+	<v-navigation-drawer class="genre_drawer" permanent :mini-variant.sync="mini">
 		<v-list nav dense class="genre_list">
+			<v-btn
+          icon
+          @click.stop="mini = !mini"
+        >
+          <v-icon>{{ `chevron_${mini ? "right" : "left"}` }}</v-icon>
+        </v-btn>
+				<v-divider class="mb-3"></v-divider>
 			<v-list-item link v-for="(genre, i) in genres" :key="i" @click="filterMovie(genre)">
 				<v-list-item-icon>
 					<v-img width="40" class="genre_logo" :src="`/${genre}.svg`"/>
 				</v-list-item-icon>
 				<v-list-item-title class="text-capitalize">{{ genre }}</v-list-item-title>
+			</v-list-item>
+			<v-divider></v-divider>
+			<v-list-item v-if="!mini">
+				<v-col class="d-flex" align="start" justify="center">
+				<v-icon small color="primary" class="sort_icon">sort</v-icon>
+					<v-select
+					:value="items[0]"
+					:items="items"
+					class="subtitle-2"
+					solo
+					@change="sortMovie"
+					flat
+					>
+					</v-select>
+				</v-col>
 			</v-list-item>
 		</v-list>
 	</v-navigation-drawer>
@@ -36,11 +58,19 @@
 				"sci-fi",
 				"thriller",
 				"biography"
-			]
+			],
+			items: ["Popularity", "Date added", "Year", "Title"],
+			mini: true,
+			drawer: true
 		}),
 		methods: {
 			filterMovie(genre) {
 				this.$bus.$emit("filterMovie", genre);
+				this.mini = true;
+			},
+			sortMovie(item) {
+				this.$bus.$emit("sortMovie", item);
+				this.mini = true;
 			}
 		}
 	};
@@ -61,5 +91,9 @@
 }
 .genre_list {
 	margin-top: 64px;
+}
+.sort_icon {
+	margin: -2rem 1.7rem 0 -.4rem;
+	transform: scale(1.8);
 }
 </style>

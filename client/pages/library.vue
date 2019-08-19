@@ -1,7 +1,7 @@
 <template>
 	<v-layout>
 		<drawer/>
-		<div v-if="list.length" class="library">
+		<div v-if="list.length" class="library main_container">
 			<movieCard v-for="(movie, i) in list" :key="i" :movie="movie"/>
 		</div>
 		<div v-else class="search_placeholder">
@@ -17,8 +17,19 @@
 	import movieCard from "@/components/movieCard";
 	import movieDesc from "@/components/movieDesc";
 
-	const fetchMovieList = async (page, query, genre) => {
-		const sortType = query ? "title" : "seeds";
+	const fetchMovieList = async (page, query, genre, sort) => {
+		let sortType = "";
+
+		if (sort === undefined) sort = "seeds"
+
+		if (sort === "Popularity") sortType = "seeds";
+
+		if (sort === "Date added") sortType = "dateadded";
+
+		if (sort === "Year") sortType = "year";
+
+		if (sort === "Title") sortType = "title";
+
 		let purl = `https://api.apiumadomain.com/list?sort=${sortType}&short=1&cb=&quality=720p,1080p,3d&page=${page}`;
 		let yurl = `https://yts.lt/api/v2/list_movies.json?limit=1&sort_by=${sortType}&page=${page}`;
 		if (query) {
@@ -88,6 +99,7 @@
 			page: 1,
 			query: "",
 			genre: "",
+			sort: "",
 			polling: false,
 			isOpen: false
 		}),
@@ -98,6 +110,7 @@
 			window.addEventListener("scroll", this.handleScroll);
 			this.$bus.$on("searchMovie", this.searchMovie);
 			this.$bus.$on("filterMovie", this.filterMovie);
+			this.$bus.$on("sortMovie", this.sortMovie)
 		},
 		destroyed() {
 			window.removeEventListener("scroll", this.handleScroll);
@@ -110,7 +123,8 @@
 					const data = await fetchMovieList(
 						++this.page,
 						this.query,
-						this.genre
+						this.genre,
+						this.sort
 					);
 					this.list = [...this.list, ...data];
 					this.polling = false;
@@ -120,14 +134,24 @@
 				this.page = 1;
 				this.query = query;
 				this.genre = query ? "" : this.genre;
-				this.list = await fetchMovieList(this.page, this.query);
+				this.sort = this.sort;
+				this.list = await fetchMovieList(this.page, this.query, this.sort);
 				window.scrollTo(0, 0);
 			},
 			async filterMovie(genre) {
 				this.page = 1;
 				this.query = "";
 				this.genre = genre === "popular" ? "" : genre;
-				this.list = await fetchMovieList(this.page, this.query, this.genre);
+				this.sort = this.sort;
+				this.list = await fetchMovieList(this.page, this.query, this.genre, this.sort);
+				window.scrollTo(0, 0);
+			},
+			async sortMovie(sort) {
+				this.page = 1;
+				this.query = this.query;
+				this.genre = this.genre;
+				this.sort = sort
+				this.list = await fetchMovieList(this.page, this.query, this.genre, this.sort);
 				window.scrollTo(0, 0);
 			},
 			movieMounted() {
@@ -151,7 +175,6 @@
 	flex: 1 1 100%;
 	grid-template-columns: repeat(6, 1fr);
 	margin-left: 80px;
-	margin-top: 64px;
 }
 
 @media all and (min-width: 1350px) {
