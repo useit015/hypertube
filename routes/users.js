@@ -29,7 +29,8 @@ router.get('/user/:username', authJwt, (req, res) => {
 					username: user[0].username,
 					firstName: user[0].firstName,
 					lastName: user[0].lastName,
-					image: user[0].image
+					image: user[0].image,
+					date: user[0].date
 				}
 				return res.json(usr)
 			}
