@@ -22,6 +22,8 @@
 					@change="clearSearch"
 				></v-text-field>
 				<v-spacer></v-spacer>
+				<v-btn @click="changeLange('fr')" icon>FR</v-btn>
+				<v-btn @click="changeLange('en')" icon>EN</v-btn>
 				<v-btn icon v-if="authenticated">
 					<v-icon>more_vert</v-icon>
 				</v-btn>
@@ -57,6 +59,9 @@
 				if (!this.query) {
 					this.$bus.$emit("searchMovie", this.query);
 				}
+			},
+			changeLange(lang) {
+				this.$i18n.locale = lang;
 			}
 		}
 	};

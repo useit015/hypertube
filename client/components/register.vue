@@ -5,52 +5,52 @@
 				<v-alert dismissible :type="alert.type" class="mb-5">{{ alert.text }}</v-alert>
 			</div>
 			<v-layout column justify-center>
-				<h2 class="display-2 font-weight-thin mt-3 mb-5 py-4 text-center">Join Us</h2>
+				<h2 class="display-2 font-weight-thin mt-3 mb-5 py-4 text-center">{{$t('joinus')}}</h2>
 				<v-form ref="form" v-model="valid" lazy-validation>
 					<v-text-field
 						outlined
 						color="primary"
-						placeholder="First Name goes here"
+						:placeholder="$t('firstname_placeholder')"
 						v-model="firstName"
 						:rules="rules.name"
-						label="First Name"
+						:label="$t('firstname')"
 						required
 					></v-text-field>
 					<v-text-field
 						outlined
 						color="primary"
-						placeholder="Last Name goes here"
+						:placeholder="$t('lastname_placeholder')"
 						v-model="lastName"
 						:rules="rules.name"
-						label="Last Name"
+						:label="$t('lastname')"
 						required
 					></v-text-field>
 					<v-text-field
 						outlined
 						color="primary"
-						placeholder="Username goes here"
+						:placeholder="$t('username_placeholder')"
 						v-model="username"
 						:rules="rules.username"
-						label="Username"
+						:label="$t('username')"
 						required
 					></v-text-field>
 					<v-text-field
 						outlined
 						color="primary"
-						placeholder="E-mail goes here"
+						:placeholder="$t('email_placeholder')"
 						v-model="email"
 						:rules="rules.email"
-						label="E-mail"
+						:label="$t('email')"
 						required
 					></v-text-field>
 					<v-text-field
 						outlined
-						placeholder="Make up a strong password"
+						:placeholder="$t('password_placeholder')"
 						color="primary"
 						class="my-3"
 						v-model="password"
 						:rules="rules.password"
-						label="Password"
+						:label="$t('password')"
 						required
 						:append-icon="showPass ? 'visibility' : 'visibility_off'"
 						:type="showPass ? 'text' : 'password'"
@@ -58,19 +58,27 @@
 					></v-text-field>
 					<v-text-field
 						outlined
-						placeholder="Can you remember that password ?"
+						:placeholder="$t('confpassword_placeholder')"
 						@keyup.13="registerUser"
 						color="primary"
 						class="my-3"
 						v-model="confPassword"
-						label="Confirm Password"
+						:rules="rules.password"
+						:label="$t('confpassword')"
 						required
 						:append-icon="showConfPass ? 'visibility' : 'visibility_off'"
 						:type="showConfPass ? 'text' : 'password'"
 						@click:append="showConfPass = !showConfPass"
 						:error-messages="passwordMatch()"
 					></v-text-field>
-					<v-file-input @change="selectFile" append-icon="camera_alt" outlined placeholder="Send nudes ?" label="Avatar"></v-file-input>
+					<v-file-input
+						@change="selectFile"
+						append-icon="camera_alt"
+						outlined
+						:placeholder="$t('avatar_placeholder')"
+						:label="$t('avatar')"
+						:rules="rules.avatar"
+					></v-file-input>
 					<v-layout column justify-center align-center class="mt-5 py-4">
 						<v-btn
 							class="cta_btn"
@@ -79,7 +87,7 @@
 							outlined
 							color="primary"
 							@click="registerUser"
-						>Register</v-btn>
+						>{{$t('register')}}</v-btn>
 					</v-layout>
 				</v-form>
 			</v-layout>
@@ -125,30 +133,34 @@
 		},
 		methods: {
 			selectFile(file) {
-				this.avatar = file
+				this.avatar = file;
 			},
-			getBase64: file => new Promise((resolve, reject) => {
-				if (!file) resolve('File is empty.')
-				if (['image/jpeg', 'image/png'].includes(file.type) == false) resolve('File must be JPEG or PNG image.')
-				if (file.size >= 1024 * 1024 * 4) resolve('File size must be less than 4 MB.');
-				const reader = new FileReader();
-				reader.readAsDataURL(file);
-				reader.onload = () => resolve(reader.result);
-				reader.onerror = error => resolve('');
-			}),
+			getBase64: file =>
+				new Promise((resolve, reject) => {
+					if (!file) resolve("File is empty.");
+					if (["image/jpeg", "image/png"].includes(file.type) == false)
+						resolve("File must be JPEG or PNG image.");
+					if (file.size >= 1024 * 1024 * 4)
+						resolve("File size must be less than 4 MB.");
+					const reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onload = () => resolve(reader.result);
+					reader.onerror = error => resolve("");
+				}),
 			passwordMatch() {
+				if (this.confPassword === this.password) return "";
 				return !this.confPassword.length ||
 					this.password === this.confPassword
 					? ""
 					: "Passwords must match";
 			},
 			async registerUser() {
-				if (this.valid) {
+				if (this.$refs.form.validate()) {
 					try {
-						let image = await this.getBase64(this.avatar)
+						let image = await this.getBase64(this.avatar);
 						if (/^data:/.test(image) == false) {
-							alert(image)
-							return
+							alert(image);
+							return;
 						}
 						const url = `https://hypertube.tk/api/users/register`;
 						const data = {

@@ -26,7 +26,7 @@ export default {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: ['~/plugins/bus', '~/plugins/vue-youtube'],
+    plugins: ['~/plugins/bus', '~/plugins/vue-youtube', '~/plugins/i18n'],
     /*
      ** Nuxt.js dev-modules
      */

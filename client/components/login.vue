@@ -2,24 +2,24 @@
 	<v-layout justify-center align-center class="mt-5">
 		<v-flex xs12 sm7 md6 lg5 xl3>
 			<v-layout column justify-center>
-				<h2 class="display-2 font-weight-thin my-5 py-5 text-center">Welcome back</h2>
+				<h2 class="display-2 font-weight-thin my-5 py-5 text-center">{{ $t('title') }}</h2>
 				<v-form ref="form" v-model="valid" lazy-validation class="mt-5">
 					<v-text-field
 						outlined
 						color="primary"
-						placeholder="Username goes here"
+						:placeholder="$t('username_placeholder')"
 						v-model="username"
 						:rules="rules.username"
-						label="Username"
+						:label="$t('username')"
 						required
 					></v-text-field>
 					<v-text-field
 						outlined
-						placeholder="Password goes here"
+						:placeholder="$t('password_placeholder')"
 						color="primary"
 						v-model="password"
 						:rules="rules.password"
-						label="Password"
+						:label="$t('password')"
 						required
 						:append-icon="showPass ? 'visibility' : 'visibility_off'"
 						:type="showPass ? 'text' : 'password'"
@@ -32,13 +32,20 @@
 							text
 							small
 							color="primary"
-							class="caption text-lowercase fgt_btn"
+							class="caption fgt_btn"
 							to="/login/forgot"
 							nuxt
-						>I forgot my password</v-btn>
+						>{{ $t('forgot') }}</v-btn>
 					</v-layout>
 					<v-layout justify-center align-center class="mt-5 py-4">
-						<v-btn class="cta_btn" rounded large outlined color="primary" @click.prevent="logUser">Login</v-btn>
+						<v-btn
+							class="cta_btn"
+							rounded
+							large
+							outlined
+							color="primary"
+							@click.prevent="logUser"
+						>{{ $t('login') }}</v-btn>
 					</v-layout>
 				</v-form>
 			</v-layout>
@@ -66,7 +73,7 @@
 		methods: {
 			...mapActions(["login"]),
 			async logUser() {
-				if (this.valid) {
+				if (this.$refs.form.validate()) {
 					try {
 						const url = `https://hypertube.tk/api/users/login`;
 						const data = {
