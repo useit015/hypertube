@@ -84,6 +84,7 @@
 						console.log(res.data);
 						if (!res.data.err) {
 							this.login(res.data);
+							this.$i18n.locale = res.data.langue;
 							this.$router.push("/library");
 						}
 					} catch (err) {
