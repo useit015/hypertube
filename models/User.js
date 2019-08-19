@@ -65,8 +65,8 @@ const UserSchema = new mongoose.Schema({
 	},
 	langue: {
 		type: String,
-		enum: ['ENG', 'FR', 'AR', 'ES'],
-		default: 'ENG'
+		enum: ['en', 'fr', 'ar', 'es'],
+		default: 'en'
 	}
 })
 
