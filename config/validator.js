@@ -28,7 +28,7 @@ const rules = {
 	email: Joi.string()
 		.email({ minDomainSegments: 2 })
 		.required(),
-	langue: Joi.string().valid('FR', 'ENG', 'ES', 'AR')
+	langue: Joi.string().valid('fr', 'en', 'es', 'ar')
 }
 
 const passRule = Joi.string()
