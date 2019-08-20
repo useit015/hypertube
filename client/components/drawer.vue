@@ -1,32 +1,29 @@
 <template>
-	<v-navigation-drawer class="genre_drawer" permanent :mini-variant.sync="mini">
+	<v-navigation-drawer class="genre_drawer" permanent :mini-variant="mini">
 		<v-list nav dense class="genre_list">
-			<v-btn
-          icon
-          @click.stop="mini = !mini"
-        >
-          <v-icon>{{ `chevron_${mini ? "right" : "left"}` }}</v-icon>
-        </v-btn>
-				<v-divider class="mb-3"></v-divider>
+			<v-btn icon @click.stop="mini = !mini">
+				<v-icon>{{ `chevron_${mini ? "right" : "left"}` }}</v-icon>
+			</v-btn>
+			<v-divider class="mb-3"></v-divider>
 			<v-list-item link v-for="(genre, i) in genres" :key="i" @click="filterMovie(genre)">
 				<v-list-item-icon>
 					<v-img width="40" class="genre_logo" :src="`/${genre}.svg`"/>
 				</v-list-item-icon>
-				<v-list-item-title class="text-capitalize">{{ genre }}</v-list-item-title>
+				<v-list-item-title class="text-capitalize">{{ $t(genre) }}</v-list-item-title>
 			</v-list-item>
 			<v-divider></v-divider>
 			<v-list-item v-if="!mini">
 				<v-col class="d-flex" align="start" justify="center">
-				<v-icon small color="primary" class="sort_icon">sort</v-icon>
+					<v-icon small color="primary" class="sort_icon">sort</v-icon>
 					<v-select
-					:value="items[0]"
-					:items="items"
-					class="subtitle-2"
-					solo
-					@change="sortMovie"
-					flat
-					>
-					</v-select>
+						:value="$t(items[0])"
+						:item-text="items_t"
+						:items="items"
+						class="subtitle-2"
+						solo
+						@change="sortMovie"
+						flat
+					></v-select>
 				</v-col>
 			</v-list-item>
 		</v-list>
@@ -63,6 +60,11 @@
 			mini: true,
 			drawer: true
 		}),
+		computed: {
+			items_t() {
+				return items.map(cur => $t(cur));
+			}
+		},
 		methods: {
 			filterMovie(genre) {
 				this.$bus.$emit("filterMovie", genre);
@@ -93,7 +95,7 @@
 	margin-top: 64px;
 }
 .sort_icon {
-	margin: -2rem 1.7rem 0 -.4rem;
+	margin: -2rem 1.7rem 0 -0.4rem;
 	transform: scale(1.8);
 }
 </style>
