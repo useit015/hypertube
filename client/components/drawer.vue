@@ -81,11 +81,13 @@
 		methods: {
 			filterMovie(genre) {
 				this.$bus.$emit("filterMovie", genre);
+				document.getElementsByClassName("v-navigation-drawer__content")[0].scrollTo(0,0)
 				this.mini = true;
 			},
 			sortMovie(item) {
 				this.$bus.$emit("sortMovie", item);
 				this.selected = item
+				document.getElementsByClassName("v-navigation-drawer__content")[0].scrollTo(0,0)
 				this.mini = true;
 			},
 			trad(item) {
