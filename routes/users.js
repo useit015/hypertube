@@ -114,7 +114,7 @@ router.post(
 									.save()
 									.then(user => {
 										sendMail(email, vkey, 'verify')
-										res.json(user.addToken())
+										res.json({status: 'User registred succesfully ! please verify your account.'})
 									})
 									.catch(err => console.log(err))
 							});
