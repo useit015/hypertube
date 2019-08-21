@@ -2,6 +2,7 @@
 	<v-layout justify-center align-center class="mt-5">
 		<v-flex xs12 sm7 md6 lg5 xl3>
 			<v-layout column justify-center>
+				<h2 class="display-2 font-weight-thin my-5 py-5 text-center">{{$t("recover_password")}}</h2>
 				<v-form ref="form" v-model="valid" lazy-validation class="mt-5" @submit.prevent="recoverPass">
 					<v-text-field
 						outlined
@@ -49,21 +50,6 @@
 			email: "",
 			rules
 		}),
-		computed: {
-			alert() {
-				if (this.alertErr) {
-					return {
-						type: "error",
-						text: "Something went wrong, please try again later"
-					};
-				} else {
-					return {
-						type: "success",
-						text: `We've sent you an e-mail with recovery steps`
-					};
-				}
-			}
-		},
 		methods: {
 			...utility,
 			async recoverPass() {
@@ -76,7 +62,7 @@
 							this.showAlert('red', res.data.errors.join(', '), this)
 						}
 						else {
-							this.showAlert('green', "We've sent you an e-mail with recovery steps", this)
+							this.showAlert('green', res.data.status, this)
 						}
 					} catch (err) {
 						console.error(err);

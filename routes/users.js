@@ -185,7 +185,7 @@ router.post('/forgot', (req, res) => {
 				user.save()
 					.then(user => {
 						sendMail(email, user.rkey, 'recover')
-						res.json({ ok: true })
+						res.json({ ok: true, status: `We've sent you an e-mail with recovery steps` })
 					})
 					.catch(err => console.log(err))
 			} else {
