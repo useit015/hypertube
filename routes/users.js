@@ -132,6 +132,10 @@ router.get('/isloggedin', authJwt, (req, res) => {
 	res.json(req.user.addToken())
 })
 
+router.get('/logout', authJwt, (req, res) => {
+	res.json({ok: true})
+})
+
 router.post('/update', authJwt, (req, res) => {
 	const { firstName, lastName, username, email, langue } = req.body
 	const user = req.user
