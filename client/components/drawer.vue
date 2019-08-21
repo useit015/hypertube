@@ -16,7 +16,7 @@
 				<v-col class="d-flex" align="start" justify="center">
 					<v-icon small color="primary" class="sort_icon">sort</v-icon>
 					<v-select
-						:label="trad(items[0])"
+						:label="$t(selected)"
 						:item-text="trad"
 						:items="items"
 						class="subtitle-2"
@@ -75,7 +75,8 @@
 				}
 			],
 			mini: true,
-			drawer: true
+			drawer: true,
+			selected: "Popularity"
 		}),
 		methods: {
 			filterMovie(genre) {
@@ -84,6 +85,7 @@
 			},
 			sortMovie(item) {
 				this.$bus.$emit("sortMovie", item);
+				this.selected = item
 				this.mini = true;
 			},
 			trad(item) {
