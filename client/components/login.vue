@@ -31,7 +31,7 @@
 							small
 							color="primary"
 							class="caption fgt_btn"
-							to="/login/forgot"
+							to="/sign/forgot"
 							nuxt
 						>{{ $t('forgot') }}</v-btn>
 					</v-layout>

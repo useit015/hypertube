@@ -10,6 +10,8 @@
     "avatar": "Avatar",
     "login": "Login",
     "register": "Register",
+    "send": "Send",
+    "recover_password": "Recover password",
     "forgot": "I forgot my password",
     "or": "or",
     "signup": "Sign Up",
