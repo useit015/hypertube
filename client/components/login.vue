@@ -48,17 +48,28 @@
 				</v-form>
 			</v-layout>
 		</v-flex>
+		<alert :data="alert"></alert>
 	</v-layout>
 </template>
 
 <script>
+	import Alert from "./alert";
 	import axios from "axios";
 	import { mapActions } from "vuex";
 	import rules from "@/assets/rules";
+	import utility from '../utility.js';
 
 	export default {
 		name: "Login",
+		components: {
+			Alert
+		},
 		data: () => ({
+			alert: {
+				state: false,
+				color: '',
+				text: ''
+			},
 			valid: false,
 			showPass: false,
 			username: "",
@@ -70,6 +81,7 @@
 		}),
 		methods: {
 			...mapActions(["login"]),
+			...utility,
 			async logUser() {
 				if (this.$refs.form.validate()) {
 					try {
@@ -79,8 +91,10 @@
 							password: this.password
 						};
 						const res = await axios.post(url, data);
-						console.log(res.data);
-						if (!res.data.err) {
+						if (!!res.data.err) {
+							this.showAlert('red', res.data.errors.join(', '), this)
+						}
+						else {
 							this.login(res.data);
 							this.$i18n.locale = res.data.langue;
 							this.$router.push("/library");

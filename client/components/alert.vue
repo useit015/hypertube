@@ -1,7 +1,7 @@
 <template>
-	<v-snackbar v-model="data.state" :color="data.color" :timeout="4000" auto-height top right>
+	<v-snackbar v-model="data.state" :color="data.color" :timeout="3000" top right>
 		{{ data.text }}
-		<v-btn dark flat @click="data.state = false">
+		<v-btn dark text @click="data.state = false">
 			<v-icon>close</v-icon>
 		</v-btn>
 	</v-snackbar>

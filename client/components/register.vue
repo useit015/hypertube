@@ -1,9 +1,6 @@
 <template>
 	<v-layout justify-center align-center class="mt-5">
 		<v-flex xs12 sm7 md6 lg5 xl3>
-			<div v-if="sent">
-				<v-alert dismissible :type="alert.type" class="mb-5">{{ alert.text }}</v-alert>
-			</div>
 			<v-layout column justify-center>
 				<h2 class="display-2 font-weight-thin mt-3 mb-5 py-4 text-center">{{$t('joinus')}}</h2>
 				<v-form ref="form" v-model="valid" lazy-validation>
@@ -85,18 +82,26 @@
 				</v-form>
 			</v-layout>
 		</v-flex>
+	<alert :data="alert"></alert>
 	</v-layout>
 </template>
 
 <script>
+	import Alert from "./alert";
 	import axios from "axios";
 	import rules from "@/assets/rules";
-
+	import utility from '../utility.js';
 	export default {
 		name: "Register",
+		components: {
+			Alert
+		},
 		data: () => ({
-			alertErr: false,
-			sent: false,
+			alert: {
+				state: false,
+				color: '',
+				text: ''
+			},
 			rules,
 			valid: false,
 			showPass: false,
@@ -109,22 +114,8 @@
 			confPassword: "",
 			avatar: null
 		}),
-		computed: {
-			alert() {
-				if (this.alertErr) {
-					return {
-						type: "error",
-						text: "Something went wrong, please try again later"
-					};
-				} else {
-					return {
-						type: "success",
-						text: `User registred succesfully ! please verify your account.`
-					};
-				}
-			}
-		},
 		methods: {
+			...utility,
 			selectFile(file) {
 				this.avatar = file;
 			},
@@ -166,8 +157,12 @@
 							avatar: image
 						};
 						const res = await axios.post(url, data);
-						this.alertErr = !!res.data.err;
-						this.sent = true;
+						if (!!res.data.err) {
+							this.showAlert('red', res.data.errors.join(', '), this)
+						}
+						else {
+							this.showAlert('green', res.data.status, this)
+						}
 						console.log(res);
 					} catch (err) {
 						console.error(err);
