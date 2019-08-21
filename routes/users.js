@@ -3,6 +3,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const base64Img = require('base64-img')
 const Jimp = require('jimp')
+const fs = require('fs')
 const passport = require('passport')
 const { randomBytes } = require('crypto')
 const User = require('../models/User')
@@ -90,33 +91,33 @@ router.post(
 							} catch (error) {
 								return res.json({ err: true, errors: ['File is not an image'] })
 							}
-							Jimp.read(image)
-								.then(img => {
-									img
-										.resize(256, Jimp.AUTO)
-										.quality(90)
-										.write(image)
+							Jimp.read(image, (err, img) => {
+								if (err) {
+									fs.unlink(image, (err) => {})
+									return res.json({ err: true, errors: ['File is not an image'] })
+								}	
+								img
+									.resize(256, Jimp.AUTO)
+									.quality(90)
+									.write(image)
+								const vkey = randomHex()
+								image = `/${image}`
+								new User({
+									firstName,
+									lastName,
+									username,
+									password,
+									email,
+									image,
+									vkey
 								})
-								.catch(err => {
-									console.error(err);
-								})
-							const vkey = randomHex()
-							image = `/${image}`
-							new User({
-								firstName,
-								lastName,
-								username,
-								password,
-								email,
-								image,
-								vkey
-							})
-								.save()
-								.then(user => {
-									sendMail(email, vkey, 'verify')
-									res.json(user.addToken())
-								})
-								.catch(err => console.log(err))
+									.save()
+									.then(user => {
+										sendMail(email, vkey, 'verify')
+										res.json(user.addToken())
+									})
+									.catch(err => console.log(err))
+							});
 						}
 					})
 					.catch(err => console.log(err))
