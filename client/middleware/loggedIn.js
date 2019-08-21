@@ -6,8 +6,6 @@ const checkToken = async store => {
         const url = `https://hypertube.tk/api/users/isloggedin`
         const headers = { Authorization: `jwt ${token}` }
         const res = await axios.get(url, { headers })
-        console.log('i called the server from sign')
-
         if (!res.data.err) {
             store.dispatch('login', res.data)
         }
