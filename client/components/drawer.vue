@@ -16,8 +16,8 @@
 				<v-col class="d-flex" align="start" justify="center">
 					<v-icon small color="primary" class="sort_icon">sort</v-icon>
 					<v-select
-						:value="$t(items[0])"
-						:item-text="items_t"
+						:label="trad(items[0])"
+						:item-text="trad"
 						:items="items"
 						class="subtitle-2"
 						solo
@@ -56,15 +56,27 @@
 				"thriller",
 				"biography"
 			],
-			items: ["Popularity", "Date added", "Year", "Title"],
+			items: [
+				{
+					value: "Popularity",
+					text: "Popularity",
+				},
+				{
+					value: "Date added",
+					text: "Date added",
+				},
+				{
+					value: "Year",
+					text: "Year",
+				},
+				{
+					value: "Title",
+					text: "Title",
+				}
+			],
 			mini: true,
 			drawer: true
 		}),
-		computed: {
-			items_t() {
-				return items.map(cur => $t(cur));
-			}
-		},
 		methods: {
 			filterMovie(genre) {
 				this.$bus.$emit("filterMovie", genre);
@@ -73,6 +85,9 @@
 			sortMovie(item) {
 				this.$bus.$emit("sortMovie", item);
 				this.mini = true;
+			},
+			trad(item) {
+				return this.$t(item.value)
 			}
 		}
 	};
