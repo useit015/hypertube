@@ -75,22 +75,6 @@ router.post(
 		const data = { firstName, lastName, username, email, password, confPassword }
 		validator.register(data, err => {
 			if (!err) {
-				let image
-				try {
-					image = base64Img.imgSync(avatar, 'uploads', username)
-				} catch (error) {
-					return res.json({ err: true, errors: ['File is not an image'] })
-				}
-				Jimp.read(image)
-					.then(img => {
-						img
-							.resize(256, Jimp.AUTO)
-							.quality(90)
-							.write(image)
-					})
-					.catch(err => {
-						console.error(err);
-					})
 				User.findOne({ $or: [{ email: email }, { username: username }] })
 					.then(user => {
 						if (user) {
@@ -100,6 +84,22 @@ router.post(
 								res.json({ err: true, errors: ['Username already exists'] })
 							else res.json({ err: true, errors: ['User already exists'] })
 						} else {
+							let image
+							try {
+								image = base64Img.imgSync(avatar, 'uploads', username)
+							} catch (error) {
+								return res.json({ err: true, errors: ['File is not an image'] })
+							}
+							Jimp.read(image)
+								.then(img => {
+									img
+										.resize(256, Jimp.AUTO)
+										.quality(90)
+										.write(image)
+								})
+								.catch(err => {
+									console.error(err);
+								})
 							const vkey = randomHex()
 							image = `/${image}`
 							new User({
