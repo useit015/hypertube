@@ -12,6 +12,10 @@ export const mutations = {
     login: (state, user) => {
         state.authenticated = true
         state.user = user
+    },
+    logout: state => {
+        state.user = {},
+        state.authenticated = false
     }
 }
 
@@ -21,5 +25,9 @@ export const actions = {
             localStorage.setItem('token', user.token)
             commit('login', user)
         }
+    },
+    logout: ({ commit }) => {
+        localStorage.clear()
+        commit('logout')
     }
 }
