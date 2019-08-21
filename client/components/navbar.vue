@@ -24,8 +24,8 @@
 				<v-spacer></v-spacer>
 				<v-btn @click="changeLange('fr')" icon>FR</v-btn>
 				<v-btn @click="changeLange('en')" icon>EN</v-btn>
-				<v-btn icon v-if="authenticated">
-					<v-icon>more_vert</v-icon>
+				<v-btn icon v-if="authenticated" @click="logout">
+					<v-icon>exit_to_app</v-icon>
 				</v-btn>
 			</v-layout>
 		</v-toolbar>
@@ -33,7 +33,8 @@
 </template>
 
 <script>
-	import { mapGetters } from "vuex";
+	import axios from "axios";
+	import { mapGetters, mapActions } from "vuex";
 	export default {
 		name: "Navbar",
 		data: () => ({
@@ -41,16 +42,20 @@
 		}),
 		computed: mapGetters(["authenticated"]),
 		methods: {
+			...mapActions({
+				out: 'logout'
+			}),
 			async logout() {
-				// try {
-				// 	const url = `${process.env.URL}/auth/logout`;
-				// 	const headers = { "x-auth-token": this.user.token };
-				// 	const res = await this.$http.get(url, { headers });
-				// 	if (res.body.ok) this.out(this.user.id);
-				// 	this.$router.push("/");
-				// } catch (err) {
-				// 	console.log("problem with -->", err);
-				// }
+				try {
+					const url = `https://hypertube.tk/api/users/logout`;
+					const token = localStorage.getItem('token');
+					const headers = { Authorization: `jwt ${token}` }
+					const res = await axios.get(url, { headers })
+					if (res.data.ok) this.out();
+					this.$router.push("/");
+				} catch (err) {
+					console.log("problem with -->", err);
+				}
 			},
 			searchMovie() {
 				this.$bus.$emit("searchMovie", this.query);
