@@ -10,7 +10,6 @@
 					<v-text-field
 						outlined
 						color="primary"
-						:placeholder="$t('firstname_placeholder')"
 						v-model="firstName"
 						:rules="rules.name"
 						:label="$t('firstname')"
@@ -19,7 +18,6 @@
 					<v-text-field
 						outlined
 						color="primary"
-						:placeholder="$t('lastname_placeholder')"
 						v-model="lastName"
 						:rules="rules.name"
 						:label="$t('lastname')"
@@ -28,7 +26,6 @@
 					<v-text-field
 						outlined
 						color="primary"
-						:placeholder="$t('username_placeholder')"
 						v-model="username"
 						:rules="rules.username"
 						:label="$t('username')"
@@ -37,7 +34,6 @@
 					<v-text-field
 						outlined
 						color="primary"
-						:placeholder="$t('email_placeholder')"
 						v-model="email"
 						:rules="rules.email"
 						:label="$t('email')"
@@ -45,7 +41,6 @@
 					></v-text-field>
 					<v-text-field
 						outlined
-						:placeholder="$t('password_placeholder')"
 						color="primary"
 						class="my-3"
 						v-model="password"
@@ -58,7 +53,6 @@
 					></v-text-field>
 					<v-text-field
 						outlined
-						:placeholder="$t('confpassword_placeholder')"
 						@keyup.13="registerUser"
 						color="primary"
 						class="my-3"
@@ -75,7 +69,6 @@
 						@change="selectFile"
 						append-icon="camera_alt"
 						outlined
-						:placeholder="$t('avatar_placeholder')"
 						:label="$t('avatar')"
 						:rules="rules.avatar"
 					></v-file-input>

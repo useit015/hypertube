@@ -7,7 +7,6 @@
 					<v-text-field
 						outlined
 						color="primary"
-						:placeholder="$t('username_placeholder')"
 						v-model="username"
 						:rules="rules.username"
 						:label="$t('username')"
@@ -15,7 +14,6 @@
 					></v-text-field>
 					<v-text-field
 						outlined
-						:placeholder="$t('password_placeholder')"
 						color="primary"
 						v-model="password"
 						:rules="rules.password"
