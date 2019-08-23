@@ -101,7 +101,8 @@
 			genre: "",
 			sort: "",
 			polling: false,
-			isOpen: false
+			isOpen: false,
+			isTrailer: false
 		}),
 		async asyncData({ params }) {
 			return { list: await fetchMovieList(1) };
@@ -110,7 +111,8 @@
 			window.addEventListener("scroll", this.handleScroll);
 			this.$bus.$on("searchMovie", this.searchMovie);
 			this.$bus.$on("filterMovie", this.filterMovie);
-			this.$bus.$on("sortMovie", this.sortMovie)
+			this.$bus.$on("sortMovie", this.sortMovie);
+			this.$bus.$on("openTrailer", this.openTrailer);
 		},
 		destroyed() {
 			window.removeEventListener("scroll", this.handleScroll);
@@ -154,11 +156,19 @@
 				this.list = await fetchMovieList(this.page, this.query, this.genre, this.sort);
 				window.scrollTo(0, 0);
 			},
+			openTrailer(isTrailer) {
+				this.isTrailer = isTrailer;
+			},
 			movieMounted() {
 				if (this.isOpen === false) {
 					window.removeEventListener("scroll", this.handleScroll);
 					document.documentElement.style.overflowY = 'hidden'
 					this.isOpen = true;
+				} else if (this.isTrailer === true) {
+					window.removeEventListener("scroll", this.handleScroll);
+					document.documentElement.style.overflowY = 'hidden'
+					this.isTrailer = false;
+					this.isOpen = false;
 				} else {
 					window.addEventListener("scroll", this.handleScroll);
 					document.documentElement.style.overflowY = 'auto'

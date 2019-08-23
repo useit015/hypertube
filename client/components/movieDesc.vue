@@ -16,7 +16,7 @@
 				<v-btn text rounded color="white" class="movie_action mr-2">
 					<v-icon>favorite</v-icon>
 				</v-btn>
-				<v-btn text rounded color="white" class="movie_action" @click="trailer = true">
+				<v-btn text rounded color="white" class="movie_action" @click="openTrailer">
 					<v-img ref="img" src="/trailer.svg" width="20" class="movie_trailer"/>
 				</v-btn>
 			</v-row>
@@ -83,6 +83,10 @@
 				} catch (err) {
 					console.log("Got error here --> ", err);
 				}
+			},
+			openTrailer() {
+				this.trailer = true;
+				this.$bus.$emit("openTrailer", this.trailer);
 			}
 		}
 	};
