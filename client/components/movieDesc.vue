@@ -176,4 +176,7 @@
 .movie_trailer {
 	transform: scale(0.85);
 }
+iframe {
+  height: 100%;
+}
 </style>
