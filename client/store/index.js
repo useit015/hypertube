@@ -31,3 +31,5 @@ export const actions = {
         commit('logout')
     }
 }
+
+export const strict = false
