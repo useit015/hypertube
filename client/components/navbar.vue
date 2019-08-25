@@ -1,7 +1,7 @@
 <template>
 	<nav class="navbar">
 		<v-toolbar color="grey darken-2" dark class="elevation-0 px-3">
-			<v-layout align-center>
+			<v-layout align-center justify-space-around>
 				<nuxt-link to="/" class="px-4">
 					<v-toolbar-title class="text-uppercase grey--text">
 						<span>H</span>
@@ -24,9 +24,29 @@
 				<v-spacer></v-spacer>
 				<v-btn @click="changeLange('fr')" icon>FR</v-btn>
 				<v-btn @click="changeLange('en')" icon>EN</v-btn>
-				<v-btn icon v-if="authenticated" @click="logout">
-					<v-icon>exit_to_app</v-icon>
-				</v-btn>
+				<v-menu v-if="authenticated" offset-y>
+					<template v-slot:activator="{ on }">
+						<v-avatar v-on="on">
+							<img
+							:src="`https://hypertube.tk${user.image}`"
+							style="width: 36px; height: 36px;">
+						</v-avatar>
+					</template>
+					<v-list>
+						<v-list-item to="/profile" nuxt>
+							<v-btn icon>
+								<v-icon>account_circle</v-icon>
+							</v-btn>
+							<v-list-item-title>{{user.username}}</v-list-item-title>
+						</v-list-item>
+						<v-list-item @click="logout">
+							<v-btn icon>
+								<v-icon>exit_to_app</v-icon>
+							</v-btn>
+							<v-list-item-title>Logout</v-list-item-title>
+						</v-list-item>
+					</v-list>
+				</v-menu>
 			</v-layout>
 		</v-toolbar>
 	</nav>
@@ -40,7 +60,10 @@
 		data: () => ({
 			query: ""
 		}),
-		computed: mapGetters(["authenticated"]),
+		computed: {
+			...mapGetters(["authenticated"]),
+			...mapGetters(["user"])
+		},
 		methods: {
 			...mapActions({
 				out: 'logout'
