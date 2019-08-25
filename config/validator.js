@@ -52,6 +52,18 @@ module.exports = {
 		const schema = Joi.object().keys(rules)
 		Joi.validate(obj, schema, opts, f)
 	},
+	passwordupdate: (obj, f) => {
+		const schema = Joi.object().keys(
+			{
+				password: passRule,
+				newPassword: passRule,
+				confNewPassword: Joi.any()
+				.valid(Joi.ref('newPassword'))
+				.required()
+				.options({ language: { any: { allowOnly: 'must match password' } } })
+			})
+		Joi.validate(obj, schema, opts, f)
+	},
 	login: (obj, f) => {
 		const schema = Joi.object().keys({
 			username: rules.username,

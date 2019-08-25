@@ -156,6 +156,27 @@ router.post('/update', authJwt, (req, res) => {
 	})
 })
 
+router.post('/passwordupdate', authJwt, (req, res) => {
+	const { password, newPassword, confNewPassword } = req.body
+	const user = req.user
+	const data = { password, newPassword, confNewPassword }
+	validator.passwordupdate(data, err => {
+		if (!err) {
+			user.cmpPassword(password, (err, match) => {
+				if (err) throw err
+				if (match) {
+					user.password = data.newPassword
+					user.save()
+					.then(user => res.json(user.addToken()))
+					.catch(err => console.log(err))
+				} else { res.json({ err: true, errors: [`Wrong password`] }) }
+			})
+		} else {
+			res.json({ err: true, errors: validator.getErrors(err) })
+		}
+	})
+})
+
 router.get('/verify/:key', (req, res) => {
 	User.findOne({ vkey: req.params.key })
 		.then(user => {
