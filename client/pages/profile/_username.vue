@@ -1,15 +1,62 @@
 <template>
-	<div v-if="loaded" class="user">
+	<v-layout column class="settings user" v-if="loaded">
 		<div v-if="user">
-			<h1>{{user.firstName}}</h1>
-			<h1>{{user.lastName}}</h1>
-			<h1>{{user.username}}</h1>
-			<img :src="user.image">
+			<v-layout class="mt-4 strap dark">
+				<v-container py-0>
+					<v-layout>
+						<v-flex xs12 sm8 md4 class="avatar">
+							<v-avatar slot="offset" class="mx-auto d-block" size="200">
+								<img :src="`https://hypertube.tk${user.image}`" class="avatar__img">
+							</v-avatar>
+						</v-flex>
+					</v-layout>
+				</v-container>
+			</v-layout>
+			<v-container fill-height grid-list-xl>
+				<v-card class="mx-auto px-4 pb-4 mt-4" width="100%">
+					<v-layout justify-center wrap>
+						<v-container>
+							<v-card-title class="heading display-2 font-weight-thin pt-4 pb-3 mb-4">
+							Informations
+						</v-card-title>
+						<v-layout wrap>
+							<v-flex xs12 sm6>
+									<v-text-field
+										disabled
+										outlined
+										color="primary"
+										label="First Name"
+										v-model="user.firstName"
+									></v-text-field>
+								</v-flex>
+								<v-flex xs12 sm6>
+									<v-text-field
+										disabled
+										outlined
+										color="primary"
+										label="Last Name"
+										v-model="user.lastName"
+									></v-text-field>
+								</v-flex>
+								<v-flex xs12 sm6>
+									<v-text-field
+										disabled
+										outlined
+										color="primary"
+										label="Username"
+										v-model="user.username"
+									></v-text-field>
+								</v-flex>
+						</v-layout>
+						</v-container>
+					</v-layout>
+				</v-card>
+			</v-container>
 		</div>
 		<div v-else>
 			<h1>User not found</h1>
 		</div>
-	</div>
+	</v-layout>
 	<loader v-else/>
 </template>
 
