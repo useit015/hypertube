@@ -161,7 +161,9 @@
 					</v-form>
 					<v-card-actions>
 						<v-spacer></v-spacer>
-						<v-btn text color="primary" @click="updatePassword">Save</v-btn>
+						<v-btn text color="primary" @click="updatePassword" :disabled="!password || !newPassword ||!confNewPassword">
+							Save
+						</v-btn>
 						<v-btn text color="primary" @click="closePass">Cancel</v-btn>
 					</v-card-actions>
 				</v-container>
