@@ -30,7 +30,7 @@
 				outlined
 				absolute
 				color="primary"
-				class="movie_close"
+				class="trailer_close"
 				@click="trailer = false"
 			>
 				<v-icon>close</v-icon>
@@ -140,6 +140,11 @@
 	transform: translate(-50%, 125%);
 }
 
+.trailer_close {
+	z-index: 2 !important;
+	transform: translate(0%, 225%);
+}
+
 @media all and (max-width: 1200px) {
 	.movie_content {
 		width: 60vw;
@@ -177,6 +182,9 @@
 	transform: scale(0.85);
 }
 iframe {
-  height: 100%;
+  position:absolute;
+	left: 0.7rem;
+	width:100vw;
+	height:100vh;
 }
 </style>
