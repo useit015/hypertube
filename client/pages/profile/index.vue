@@ -36,7 +36,7 @@
 										:disabled="!isEditing"
 										outlined
 										color="primary"
-										label="First Name"
+										:label="$t('firstname')"
 										v-model="user.firstName"
 										:rules="rules.name"
 										required
@@ -47,7 +47,7 @@
 										:disabled="!isEditing"
 										outlined
 										color="primary"
-										label="Last Name"
+										:label="$t('lastname')"
 										v-model="user.lastName"
 										:rules="rules.name"
 										required
@@ -58,7 +58,7 @@
 										:disabled="!isEditing"
 										outlined
 										color="primary"
-										label="Username"
+										:label="$t('username')"
 										v-model="user.username"
 										:rules="rules.username"
 										required
@@ -69,7 +69,7 @@
 										:disabled="!isEditing"
 										outlined
 										color="primary"
-										label="Email"
+										:label="$t('email')"
 										v-model="user.email"
 										:rules="rules.email"
 										required
@@ -82,7 +82,7 @@
 											outlined
 											color="primary"
 											value="**********"
-											label="Password"
+											:label="$t('password')"
 											type="password"
 										></v-text-field>
 										<div :hidden="!isEditing">
@@ -97,7 +97,7 @@
 										outlined
 										color="primary"
 										:items="languages"
-										label="Default Language"
+										:label="$t('defaultLanguage')"
 										v-model="user.langue"
 									></v-select>
 								</v-flex>
@@ -243,6 +243,7 @@
 						};
 						const res = await axios.post(url, data, { headers });
 						console.log(res.data);
+						this.isEditing = false;
 					} catch (err) {
 						console.error(err);
 					}

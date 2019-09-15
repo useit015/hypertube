@@ -40,5 +40,6 @@
     "Popularity": "Popularity",
     "Date added": "Date added",
     "Year": "Year",
-    "Title": "Title"
+    "Title": "Title",
+    "defaultLanguage": "Default Language"
 }
