@@ -85,7 +85,10 @@
 											label="Password"
 											type="password"
 										></v-text-field>
-										<v-icon color="light" class="ml-3" @click="passDialog = true">edit</v-icon>
+										<div :hidden="!isEditing">
+											<v-icon color="light" class="ml-3" hidden @click="passDialog = true">edit
+											</v-icon>
+										</div>
 									</v-layout>
 								</v-flex>
 								<v-flex xs12 sm6>
@@ -113,7 +116,7 @@
 					</v-container>
 				</v-layout>
 			</v-card>
-			<v-dialog v-model="passDialog" max-width="500" persistent>
+			<v-dialog v-model="passDialog" max-width="500" persistent @keydown.esc="passDialog = false">
 				<v-card class="dark lighten-3">
 				<v-container>
 					<h5 class="display-1 display-2 text-xs-center text-md-left font-weight-thin pt-3 pb-3 mb-4 hidden-sm-and-down">Change password</h5>
