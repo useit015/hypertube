@@ -53,13 +53,13 @@ router.post('/login', (req, res) => {
 							if (match && user.verified) {
 								res.json(user.addToken())
 							} else if (!user.verified) {
-								res.json({ err: true, errors: [`User not verified`] })
+								res.json({ err: true, errors: ['verified'] })
 							} else {
-								res.json({ err: true, errors: [`Wrong password`] })
+								res.json({ err: true, errors: ['pass'] })
 							}
 						})
 					} else {
-						res.json({ err: true, errors: [`Username dosn't exist`] })
+						res.json({ err: true, errors: ['user'] })
 					}
 				})
 				.catch(err => console.log(err))
@@ -80,21 +80,21 @@ router.post(
 					.then(user => {
 						if (user) {
 							if (user.email == email && user.username != username)
-								res.json({ err: true, errors: ['Email already exists'] })
+								res.json({ err: true, errors: ['email'] })
 							else if (user.username == username && user.email != email)
-								res.json({ err: true, errors: ['Username already exists'] })
-							else res.json({ err: true, errors: ['User already exists'] })
+								res.json({ err: true, errors: ['username'] })
+							else res.json({ err: true, errors: ['user'] })
 						} else {
 							let image
 							try {
 								image = base64Img.imgSync(avatar, 'uploads', username)
 							} catch (error) {
-								return res.json({ err: true, errors: ['File is not an image'] })
+								return res.json({ err: true, errors: ['img'] })
 							}
 							Jimp.read(image, (err, img) => {
 								if (err) {
 									fs.unlink(image, (err) => {})
-									return res.json({ err: true, errors: ['File is not an image'] })
+									return res.json({ err: true, errors: ['img'] })
 								}	
 								img
 									.resize(256, Jimp.AUTO)
@@ -114,7 +114,7 @@ router.post(
 									.save()
 									.then(user => {
 										sendMail(email, vkey, 'verify')
-										res.json({status: 'User registred succesfully ! please verify your account.'})
+										res.json({status: 'success'})
 									})
 									.catch(err => console.log(err))
 							});
