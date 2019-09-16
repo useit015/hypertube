@@ -27,9 +27,7 @@
 				<v-menu v-if="authenticated" offset-y>
 					<template v-slot:activator="{ on }">
 						<v-avatar v-on="on">
-							<img
-							:src="`https://hypertube.tk${user.image}`"
-							style="width: 36px; height: 36px;">
+							<img :src="`https://hypertube.tk${user.image}`" style="width: 36px; height: 36px;">
 						</v-avatar>
 					</template>
 					<v-list>
@@ -66,14 +64,14 @@
 		},
 		methods: {
 			...mapActions({
-				out: 'logout'
+				out: "logout"
 			}),
 			async logout() {
 				try {
 					const url = `https://hypertube.tk/api/users/logout`;
-					const token = localStorage.getItem('token');
-					const headers = { Authorization: `jwt ${token}` }
-					const res = await axios.get(url, { headers })
+					const token = localStorage.getItem("token");
+					const headers = { Authorization: `jwt ${token}` };
+					const res = await axios.get(url, { headers });
 					if (res.data.ok) this.out();
 					this.$router.push("/");
 				} catch (err) {
@@ -89,7 +87,10 @@
 				}
 			},
 			changeLange(lang) {
-				this.$i18n.locale = lang;
+				if (lang != this.$i18n.locale) {
+					this.$i18n.locale = lang;
+					this.$bus.$emit("langChange");
+				}
 			}
 		}
 	};

@@ -1,46 +1,36 @@
-const reg = {
-    name: /^(([a-zA-Z])+([-\ \.])?([a-zA-Z])+)+$/,
-    username: /^([a-zA-Z_])+([a-zA-Z0-9-_])*$/,
-    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-}
+const rules = context => {
+    const reg = {
+        name: /^(([a-zA-Z])+([-\ \.])?([a-zA-Z])+)+$/,
+        username: /^([a-zA-Z_])+([a-zA-Z0-9-_])*$/,
+        password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    }
 
-const errors = {
-    name: {
-        valid: 'Name can contain only letters and valid separators',
-        len: 'Name must be at least 3 characters long'
-    },
-    username: {
-        valid: 'Username can contain only letters, numbers, _ and - characters',
-        len: 'Username must be between 5 and 30 characters long'
-    },
-    password: {
-        valid: 'Password must contain at least one uppercase, one lowercase, one number and one special char',
-        len: 'Password must be at least 8 characters long'
-    },
-    email: {
-        valid: 'E-mail must be valid'
+    const required = v => !!v || context.$t('rules.required')
+
+    return {
+        name: [
+            required,
+            v => reg.name.test(v) || context.$t('rules.name.valid'),
+            v => (v.length >= 3 && v.length <= 255) || context.$t('rules.name.len')
+        ],
+        username: [
+            required,
+            v => (v.length >= 5 && v.length <= 30) || context.$t('rules.username.len'),
+            v => reg.username.test(v) || context.$t('rules.username.valid')
+        ],
+        password: [
+            required,
+            v => v.length >= 8 || context.$t('rules.password.len'),
+            v => reg.password.test(v) || context.$t('rules.password.valid')
+        ],
+        email: [required, v => reg.email.test(v) || context.$t('rules.email.valid')],
+        avatar: [
+            v => (!!v && !!v.name) || context.$t('rules.required'),
+            v => (!!v && ['image/png', 'image/jpeg'].includes(v.type)) || context.$t('rules.avatar.ext'),
+            v => (!!v && v.size) <= 1024 * 1024 * 4 || context.$t('rules.avatar.size')
+        ]
     }
 }
 
-const required = v => !!v || 'This field is required'
-
-export default {
-    name: [
-        required,
-        v => reg.name.test(v) || errors.name.valid,
-        v => (v.length >= 3 && v.length <= 255) || errors.name.len
-    ],
-    username: [
-        required,
-        v => (v.length >= 5 && v.length <= 30) || errors.username.len,
-        v => reg.username.test(v) || errors.username.valid
-    ],
-    password: [required, v => v.length >= 8 || errors.password.len, v => reg.password.test(v) || errors.password.valid],
-    email: [required, v => reg.email.test(v) || errors.email.valid],
-    avatar: [
-        v => (!!v && !!v.name) || 'This field is required',
-        v => (!!v && ['image/png', 'image/jpeg'].includes(v.type)) || 'Must be a JPEG or PNG file',
-        v => (!!v && v.size) <= 1024 * 1024 * 4 || 'Image must be less than 4 MB'
-    ]
-}
+export default rules

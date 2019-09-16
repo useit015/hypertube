@@ -41,5 +41,43 @@
     "Date added": "Date added",
     "Year": "Year",
     "Title": "Title",
-    "defaultLanguage": "Default Language"
+    "defaultLanguage": "Default Language",
+    "rules": {
+        "required": "This field is required",
+        "name": {
+            "valid": "Name can contain only letters and valid separators",
+            "len": "Name must be at least 3 characters long"
+        },
+        "username": {
+            "valid": "Username can contain only letters, numbers, _ and - characters",
+            "len": "Username must be between 5 and 30 characters long"
+        },
+        "password": {
+            "valid": "Password must contain at least one uppercase, one lowercase, one number and one special char",
+            "len": "Password must be at least 8 characters long",
+            "match": "Passwords must match"
+        },
+        "email": {
+            "valid": "E-mail must be valid"
+        },
+        "avatar": {
+            "ext": "Must be a JPEG or PNG file",
+            "size": "Image must be less than 4 MB",
+            "empty": "File is empty"
+        }
+    },
+    "api": {
+        "login": {
+            "verified": "User not verified",
+            "pass": "Wrong password",
+            "user": "Username doesn't exist"
+        },
+        "register": {
+            "email": "Email already exists",
+            "username": "Username already exists",
+            "user": "User already exists",
+            "img": "File is not an image",
+            "success": "User registred succesfully ! please verify your account."
+        }
+    }
 }

@@ -30,18 +30,8 @@ body {
 }
 .app {
 	background: #424242;
-	background: -webkit-linear-gradient(
-		#424242 10%,
-		#353535 30%,
-		#272727 60%,
-		#212121 90%
-	);
-	background: linear-gradient(
-		#424242 10%,
-		#353535 30%,
-		#272727 60%,
-		#212121 90%
-	) !important;
+	background: -webkit-linear-gradient(#424242 0%, #212121 100%);
+	background: linear-gradient(#424242 0%, #212121 100%) !important;
 }
 .cta_btn {
 	border: 1px solid rgba(100, 214, 196, 0.5) !important;

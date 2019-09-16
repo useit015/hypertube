@@ -5,17 +5,21 @@
 				<h2 class="display-2 font-weight-thin my-5 py-5 text-center">{{ $t('title') }}</h2>
 				<v-form ref="form" v-model="valid" lazy-validation class="mt-5">
 					<v-text-field
+						v-if="renderer"
 						outlined
 						color="primary"
 						v-model="username"
+						validate-on-blur
 						:rules="rules.username"
 						:label="$t('username')"
 						required
 					></v-text-field>
 					<v-text-field
+						v-if="renderer"
 						outlined
 						color="primary"
 						v-model="password"
+						validate-on-blur
 						:rules="rules.password"
 						:label="$t('password')"
 						required
@@ -57,7 +61,7 @@
 	import axios from "axios";
 	import { mapActions } from "vuex";
 	import rules from "@/assets/rules";
-	import utility from '../utility.js';
+	import utility from "../utility.js";
 
 	export default {
 		name: "Login",
@@ -67,18 +71,20 @@
 		data: () => ({
 			alert: {
 				state: false,
-				color: '',
-				text: ''
+				color: "",
+				text: ""
 			},
 			valid: false,
+			renderer: true,
 			showPass: false,
 			username: "",
 			password: "",
-			rules: {
-				username: rules.username,
-				password: rules.password
-			}
+			rules: {}
 		}),
+		created() {
+			this.rules = rules(this);
+			this.$bus.$on("langChange", this.langChange);
+		},
 		methods: {
 			...mapActions(["login"]),
 			...utility,
@@ -92,9 +98,11 @@
 						};
 						const res = await axios.post(url, data);
 						if (!!res.data.err) {
-							this.showAlert('red', res.data.errors.join(', '), this)
-						}
-						else {
+							const txt = res.data.errors
+								.map(cur => this.$t(`api.login.${cur}`))
+								.join(", ");
+							this.showAlert("red", txt, this);
+						} else {
 							this.login(res.data);
 							this.$i18n.locale = res.data.langue;
 							this.$router.push("/library");
@@ -103,6 +111,11 @@
 						console.error(err);
 					}
 				}
+			},
+			langChange() {
+				if (this.$refs.form) this.$refs.form.resetValidation();
+				this.renderer = false;
+				this.$nextTick(() => (this.renderer = true));
 			}
 		}
 	};
@@ -113,5 +126,3 @@
 	margin-top: -0.5rem !important;
 }
 </style>
-
-

@@ -59,19 +59,19 @@
 			items: [
 				{
 					value: "Popularity",
-					text: "Popularity",
+					text: "Popularity"
 				},
 				{
 					value: "Date added",
-					text: "Date added",
+					text: "Date added"
 				},
 				{
 					value: "Year",
-					text: "Year",
+					text: "Year"
 				},
 				{
 					value: "Title",
-					text: "Title",
+					text: "Title"
 				}
 			],
 			mini: true,
@@ -81,17 +81,21 @@
 		methods: {
 			filterMovie(genre) {
 				this.$bus.$emit("filterMovie", genre);
-				document.getElementsByClassName("v-navigation-drawer__content")[0].scrollTo(0,0)
+				document
+					.getElementsByClassName("v-navigation-drawer__content")[0]
+					.scrollTo(0, 0);
 				this.mini = true;
 			},
 			sortMovie(item) {
 				this.$bus.$emit("sortMovie", item);
-				this.selected = item
-				document.getElementsByClassName("v-navigation-drawer__content")[0].scrollTo(0,0)
+				this.selected = item;
+				document
+					.getElementsByClassName("v-navigation-drawer__content")[0]
+					.scrollTo(0, 0);
 				this.mini = true;
 			},
 			trad(item) {
-				return this.$t(item.value)
+				return this.$t(item.value);
 			}
 		}
 	};

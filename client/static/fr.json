@@ -41,5 +41,43 @@
     "Date added": "Date d'ajout",
     "Year": "Année",
     "Title": "Titre",
-    "defaultLanguage": "Langage par défaut"
+    "defaultLanguage": "Langage par défaut",
+    "rules": {
+        "required": "Ce champ doit etre rempli",
+        "name": {
+            "valid": "Le nom ne doit contenir que des lettres ou des separateurs valide",
+            "len": "Le nom doit contenir 3 characteres au minimum"
+        },
+        "username": {
+            "valid": "Username can contain only letters, numbers, _ and - characters",
+            "len": "Le pseudo doit contenir entre 3 et 5 characteres"
+        },
+        "password": {
+            "valid": "Le mot de passe doit contenir un miniscule, un majiscule, un nombre et un charactere special",
+            "len": "Le mot de passe doit contenir 8 characteres au minimum",
+            "match": "Les mots de passe doivent etre identique"
+        },
+        "email": {
+            "valid": "l'e-mail doit etre valide"
+        },
+        "avatar": {
+            "ext": "L'image doit etre format JPEG ou PNG",
+            "size": "L'image ne doit pas depasser 4 MB",
+            "empty": "Le fichier est vide"
+        }
+    },
+    "api": {
+        "login": {
+            "verified": "Ce compte n'est pas verifié",
+            "pass": "Le mot de passe est incorecte",
+            "user": "Le pseudo n'existe pas"
+        },
+        "register": {
+            "email": "Cet email existe deja",
+            "username": "Ce pseudo existe deja",
+            "user": "Ce compte existe deja",
+            "img": "Ce ficher n'est pas une image",
+            "success": "Votre compte est crée, veuillez verifier votre email."
+        }
+    }
 }
