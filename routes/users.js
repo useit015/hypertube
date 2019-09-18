@@ -1,11 +1,13 @@
 const express = require('express')
-// const multer = require('multer')
 const jwt = require('jsonwebtoken')
 const base64Img = require('base64-img')
 const Jimp = require('jimp')
 const fs = require('fs')
+const path = require('path')
 const passport = require('passport')
 const { randomBytes } = require('crypto')
+const { promisify } = require('util')
+const unlinkAsync = promisify(fs.unlink)
 const User = require('../models/User')
 const sendMail = require('../config/mailer')
 const validator = require('../config/validator')
@@ -18,7 +20,6 @@ const authJwt = (req, res, next) => {
 		next()
 	})(req, res, next)
 }
-// const upload = multer({ limits: { fileSize: 4 * 1024 * 1024 } })
 
 const randomHex = () => randomBytes(10).toString('hex')
 
@@ -70,8 +71,7 @@ router.post('/login', (req, res) => {
 })
 
 router.post(
-	'/register',
-	/*upload.single('image'),*/ (req, res) => {
+	'/register', (req, res) => {
 		const { firstName, lastName, username, email, password, confPassword, avatar } = req.body
 		const data = { firstName, lastName, username, email, password, confPassword }
 		validator.register(data, err => {
@@ -127,6 +127,30 @@ router.post(
 		})
 	}
 )
+
+router.post('/image', authJwt, async (req, res) => {
+	try {
+		unlinkAsync(path.dirname(__dirname) + req.user.image)
+		let image = base64Img.imgSync(req.body.img, 'uploads', req.user.username)
+		Jimp.read(image, (err, img) => {
+			if (err) {
+				unlinkAsync(image)
+				return res.json({ err: true, errors: ['img'] })
+			}
+			img
+				.resize(256, Jimp.AUTO)
+				.quality(90)
+				.write(image)
+			req.user.image = image = `/${image}`
+			req.user.save()
+				.then(user => res.json({ status: 'success', image }))
+				.catch(err => console.log(err))
+		});
+	} catch (err) {
+		return res.json({ msg: 'Fatal error',err })
+	}
+
+})
 
 router.get('/isloggedin', authJwt, (req, res) => {
 	res.json(req.user.addToken())
