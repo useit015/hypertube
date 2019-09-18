@@ -79,5 +79,12 @@
             "img": "File is not an image",
             "success": "User registred succesfully ! please verify your account."
         }
+    },
+    "edit": {
+        "cur": "Current password",
+        "new": "New password",
+        "conf": "Confirm new password",
+        "fail": "Something went wrong, please try again",
+        "success": "Your profile has been updated successfuly"
     }
 }

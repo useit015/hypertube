@@ -1,108 +1,111 @@
 <template>
-	<v-layout column class="settings user" v-if="loaded">
-		<v-layout class="mt-4 strap dark">
-			<v-container py-0>
-				<v-layout>
-					<v-flex xs12 sm8 md4 class="avatar">
-						<v-avatar slot="offset" class="mx-auto d-block" size="200">
-							<img :src="`https://hypertube.tk${user.image}`" class="avatar__img">
-							<div class="avatar__btn">
-								<v-fab-transition>
-									<v-btn color="dark" fab small @click.stop="openEditor">
-										<v-icon>add_a_photo</v-icon>
-									</v-btn>
-								</v-fab-transition>
-							</div>
-						</v-avatar>
-					</v-flex>
-				</v-layout>
-			</v-container>
-		</v-layout>
-		<v-container fill-height grid-list-xl>
+	<v-layout justify-center wrap class="user" v-if="loaded">
+		<div class="avatar__container">
+			<v-avatar tile slot="offset" class="avatar" size="200">
+				<img :src="`https://hypertube.tk${user.image}`" class="avatar__img">
+				<div class="avatar__btn">
+					<v-fab-transition>
+						<v-btn color="dark" fab small @click.stop="openEditor">
+							<v-icon>add_a_photo</v-icon>
+						</v-btn>
+					</v-fab-transition>
+				</div>
+			</v-avatar>
+		</div>
+		<v-container class="mx-0 main" fill-height grid-list-xl>
 			<v-card class="mx-auto px-4 pb-4 mt-4" width="100%">
 				<v-layout justify-center wrap>
 					<v-container>
-						<v-btn class="edit" color="primary" fab small @click="isEditing = !isEditing">
+						<v-btn class="edit" color="primary" fab small @click="toggleEdit">
 							<v-icon v-if="isEditing">close</v-icon>
 							<v-icon v-else>edit</v-icon>
 						</v-btn>
-						<v-card-title class="heading display-2 font-weight-thin pt-4 pb-3 mb-4">
-							Informations
-						</v-card-title>
+						<v-card-title class="display-2 font-weight-thin">Informations</v-card-title>
 						<v-form class="mt-4" ref="form" v-model="valid" lazy-validation>
 							<v-layout wrap>
-								<v-flex xs12 sm6>
+								<v-flex xs12 md6>
 									<v-text-field
 										:disabled="!isEditing"
 										outlined
 										color="primary"
+										v-if="renderer"
 										:label="$t('firstname')"
 										v-model="user.firstName"
 										:rules="rules.name"
 										required
+										@input="sync"
 									></v-text-field>
 								</v-flex>
-								<v-flex xs12 sm6>
+								<v-flex xs12 md6>
 									<v-text-field
 										:disabled="!isEditing"
 										outlined
 										color="primary"
+										v-if="renderer"
 										:label="$t('lastname')"
 										v-model="user.lastName"
 										:rules="rules.name"
 										required
+										@input="sync"
 									></v-text-field>
 								</v-flex>
-								<v-flex xs12 sm6>
+								<v-flex xs12 md6>
 									<v-text-field
 										:disabled="!isEditing"
 										outlined
 										color="primary"
+										v-if="renderer"
 										:label="$t('username')"
 										v-model="user.username"
 										:rules="rules.username"
 										required
+										@input="sync"
 									></v-text-field>
 								</v-flex>
-								<v-flex xs12 sm6>
+								<v-flex xs12 md6>
 									<v-text-field
 										:disabled="!isEditing"
 										outlined
 										color="primary"
+										v-if="renderer"
 										:label="$t('email')"
 										v-model="user.email"
 										:rules="rules.email"
 										required
+										@input="sync"
 									></v-text-field>
 								</v-flex>
-								<v-flex xs12 sm6 class="px-3 my-3">
+								<v-flex xs12 md6 class="px-3 my-3 password__container">
 									<v-layout align-center class="px-3">
-										<v-text-field 
+										<v-text-field
 											disabled
 											outlined
 											color="primary"
 											value="**********"
+											v-if="renderer"
 											:label="$t('password')"
 											type="password"
 										></v-text-field>
-										<div :hidden="!isEditing">
-											<v-icon color="light" class="ml-3" hidden @click="passDialog = true">edit
-											</v-icon>
-										</div>
+										<v-btn icon small color="primary" :hidden="!isEditing" class="password__button">
+											<v-icon color="grey lighten-2" hidden @click="openPassDialog">edit</v-icon>
+										</v-btn>
 									</v-layout>
 								</v-flex>
-								<v-flex xs12 sm6>
+								<v-flex xs12 md6>
 									<v-select
 										:disabled="!isEditing"
 										outlined
 										color="primary"
 										:items="languages"
+										v-if="renderer"
 										:label="$t('defaultLanguage')"
 										v-model="user.langue"
+										@input="sync"
 									></v-select>
 								</v-flex>
 								<v-flex xs12 text-xs-right>
 									<v-btn
+										v-if="valid && isEditing && dataChanged"
 										:disabled="!isEditing"
 										class="mx-0 font-weight-light"
 										color="primary"
@@ -116,163 +119,111 @@
 					</v-container>
 				</v-layout>
 			</v-card>
-			<v-dialog v-model="passDialog" max-width="500" persistent @keydown.esc="passDialog = false">
-				<v-card class="dark lighten-3">
-				<v-container>
-					<h5 class="display-1 display-2 text-xs-center text-md-left font-weight-thin pt-3 pb-3 mb-4 hidden-sm-and-down">Change password</h5>
-					<v-form v-model="valid" class="my-4">
-						<v-text-field
-							outlined
-							color="primary"
-							class="mb-4"
-							v-model="password"
-							validate-on-blur
-							:rules="rules.password"
-							label="Current password"
-							required
-							:append-icon="showPass ? 'visibility' : 'visibility_off'"
-							:type="showPass ? 'text' : 'password'"
-							@click:append="showPass = !showPass"
-						></v-text-field>
-						<v-text-field
-							outlined
-							color="primary"
-							class="mb-4"
-							v-model="newPassword"
-							validate-on-blur
-							:rules="rules.password"
-							label="New password"
-							required
-							:append-icon="showNewPass ? 'visibility' : 'visibility_off'"
-							:type="showNewPass ? 'text' : 'password'"
-							@click:append="showNewPass = !showNewPass"
-						></v-text-field>
-						<v-text-field
-							outlined
-							color="primary"
-							class="mb-4"
-							v-model="confNewPassword"
-							:rules="rules.password"
-							validate-on-blur
-							label="Confirm new password"
-							required
-							:append-icon="showConfNewPass ? 'visibility' : 'visibility_off'"
-							:type="showConfNewPass ? 'text' : 'password'"
-							@click:append="showConfNewPass = !showConfNewPass"
-							:error-messages="passwordMatch()"
-						></v-text-field>
-					</v-form>
-					<v-card-actions>
-						<v-spacer></v-spacer>
-						<v-btn text color="primary" @click="updatePassword" :disabled="!password || !newPassword ||!confNewPassword">
-							Save
-						</v-btn>
-						<v-btn text color="primary" @click="closePass">Cancel</v-btn>
-					</v-card-actions>
-				</v-container>
-			</v-card>
-			</v-dialog>
 		</v-container>
+		<passDialog ref="passDialog" :token="user.token" @updated="feedback"/>
+		<imageEditor ref="editor" @updated="feedback"/>
+		<alert :data="alert"></alert>
 	</v-layout>
 	<loader v-else/>
 </template>
 
 <script>
 	import axios from "axios";
-	import rules from "@/assets/rules";
-	import loader from "@/components/loader";
 	import { mapGetters } from "vuex";
+	import rules from "@/assets/rules";
+	import alert from "@/components/alert";
+	import loader from "@/components/loader";
+	import utility from "@/assets/utility.js";
+	import passDialog from "@/components/passDialog";
+	import imageEditor from "@/components/imageEditor";
+
 	export default {
 		middleware: "authenticated",
 		components: {
-			loader
+			loader,
+			alert,
+			passDialog,
+			imageEditor
 		},
 		data: () => ({
-			loaded: false,
+			alert: {
+				state: false,
+				color: "",
+				text: ""
+			},
+			rules: {},
+			storeUser: {},
+			languages: ["en", "fr"],
+			dataChanged: false,
 			isEditing: false,
-			passDialog: false,
-			showPass: false,
-			showNewPass: false,
-			showConfNewPass: false,
-			rules,
-			valid: false,
-			firstName: "",
-			lastName: "",
-			username: "",
-			email: "",
-			password: "",
-			newPassword: "",
-			confNewPassword: "",
-			langue: "",
-			languages: ["en", "fr"]
+			renderer: true,
+			loaded: false,
+			valid: false
 		}),
 		computed: {
-			...mapGetters(["user"])
+			...mapGetters(["user"]),
+			langue() {
+				return this.user.langue;
+			}
+		},
+		watch: {
+			langue() {
+				this.$i18n.locale = this.langue;
+				this.renderer = false;
+				this.$nextTick(() => {
+					this.renderer = true;
+					this.$nextTick(() => (this.valid = this.$refs.form.validate()));
+				});
+			}
 		},
 		async created() {
 			this.loaded = true;
+			this.rules = rules(this);
+			this.storeUser = { ...this.user };
 		},
 		methods: {
-			toggleEdit () {
-				this.isEditing = !this.isEditing
+			...utility,
+			toggleEdit() {
+				this.isEditing = !this.isEditing;
 			},
-			closePass () {
-				this.passDialog = false
-				this.password = ""
-				this.newPassword = ""
-				this.confNewPassword = ""
+			openEditor() {
+				this.$refs.editor.pickFile();
 			},
-			passwordMatch() {
-				if (this.confNewPassword === this.newPassword) return "";
-				return !this.confNewPassword.length ||
-					this.newPassword === this.confNewPassword
-					? ""
-					: "Passwords must match";
+			openPassDialog() {
+				this.$refs.passDialog.open();
 			},
 			async updateUser() {
 				if (this.$refs.form.validate()) {
-					try {
-						const url = `https://hypertube.tk/api/users/update`;
-						const headers = { Authorization: `jwt ${this.user.token}` }
-						const data = {
-							firstName: this.user.firstName,
-							lastName: this.user.lastName,
-							username: this.user.username,
-							email: this.user.email,
-							langue: this.user.langue
-						};
-						const res = await axios.post(url, data, { headers });
-						console.log(res.data);
-						this.isEditing = false;
-					} catch (err) {
-						console.error(err);
-					}
+					const url = `https://hypertube.tk/api/users/update`;
+					const headers = { Authorization: `jwt ${this.user.token}` };
+					const data = {
+						firstName: this.user.firstName,
+						lastName: this.user.lastName,
+						username: this.user.username,
+						email: this.user.email,
+						langue: this.user.langue
+					};
+					axios
+						.post(url, data, { headers })
+						.then(res => this.feedback(!res.data.err))
+						.catch(err => console.error(err));
+					this.isEditing = false;
 				}
 			},
-			async updatePassword() {
-				if (this.$refs.form.validate()) {
-					try {
-						const url = `https://hypertube.tk/api/users/passwordupdate`;
-						const headers = { Authorization: `jwt ${this.user.token}` }
-						const data = {
-							password: this.password,
-							newPassword: this.newPassword,
-							confNewPassword: this.confNewPassword
-						};
-						const res = await axios.post(url, data, { headers });
-						if (!res.err) {
-							console.log(res.data);
-							this.password = ''
-							this.newPassword = ''
-							this.confNewPassword = ''
-							this.valid = false
-							this.passDialog = false
-						} else {
-							console.log(res.data);
-						}
-					} catch (err) {
-						console.error(err);
-					}
+			toggleEdit() {
+				if (this.isEditing) this.user = { ...this.storeUser };
+				this.isEditing = !this.isEditing;
+			},
+			sync() {
+				const user = JSON.stringify(this.user);
+				const storeUser = JSON.stringify(this.storeUser);
+				this.dataChanged = this.user !== this.storeUser;
+			},
+			feedback(state) {
+				if (state) {
+					this.showAlert("green", this.$t("edit.success"), this);
+				} else {
+					this.showAlert("red", this.$t("edit.fail"), this);
 				}
 			}
 		}
@@ -280,25 +231,49 @@
 </script>
 <style>
 .user {
-	margin-top: 70px;
+	width: 90vw;
+	max-width: 80rem;
+	margin: 10rem auto 0;
 }
+
+.main {
+	flex: 1 1 60vw;
+	min-width: 50rem;
+	max-width: 60rem;
+	overflow: hidden;
+}
+
+@media only screen and (max-width: 50rem) {
+	.main {
+		min-width: 0;
+	}
+}
+
 .avatar {
-	position: relative;
-	flex-shrink: 0;
+	margin: 1rem;
 }
+
+.avatar__container {
+	padding: 12px;
+}
+
 .avatar__btn {
 	position: absolute;
 	top: 85%;
 	left: 85%;
-	transform: translate(-50%, -50%) scale(.95);
+	transform: translate(-50%, -50%) scale(0.95);
 }
+
 .avatar__img {
-	box-shadow: 0 0 0 3px rgba(65, 65, 65, 0.4),
-		0 1px 5px rgba(0, 0, 0, .2);
+	box-shadow: 0 0 0 3px rgba(65, 65, 65, 0.4), 0 1px 5px rgba(0, 0, 0, 0.2);
 }
-.edit, .edit:hover, .edit:focus {
+
+.edit,
+.edit:hover,
+.edit:focus {
 	position: absolute;
 }
+
 .edit {
 	right: 0;
 	transform: translate(20%, -30%);

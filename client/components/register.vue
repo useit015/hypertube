@@ -3,7 +3,7 @@
 		<v-flex xs12 sm7 md6 lg5 xl3>
 			<v-layout column justify-center>
 				<h2 class="display-2 font-weight-thin mt-3 mb-5 py-4 text-center">{{$t('joinus')}}</h2>
-				<v-form ref="form" v-model="valid" lazy-validation>
+				<v-form ref="form" v-model="valid" lazy-validation class="form">
 					<v-text-field
 						v-if="renderer"
 						outlined
@@ -94,10 +94,11 @@
 </template>
 
 <script>
-	import Alert from "./alert";
 	import axios from "axios";
 	import rules from "@/assets/rules";
-	import utility from "../utility.js";
+	import Alert from "@/components/alert";
+	import utility from "@/assets/utility.js";
+
 	export default {
 		name: "Register",
 		components: {
@@ -143,13 +144,6 @@
 					reader.onload = () => resolve(reader.result);
 					reader.onerror = error => resolve("");
 				}),
-			passwordMatch() {
-				if (this.confPassword === this.password) return "";
-				return !this.confPassword.length ||
-					this.password === this.confPassword
-					? ""
-					: this.$t("rules.password.match");
-			},
 			async registerUser() {
 				if (this.$refs.form.validate()) {
 					try {
@@ -193,7 +187,7 @@
 	};
 </script>
 <style>
-.v-input__prepend-outer {
+.form > .v-input__prepend-outer {
 	display: none;
 }
 </style>

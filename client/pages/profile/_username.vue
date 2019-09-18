@@ -16,11 +16,9 @@
 				<v-card class="mx-auto px-4 pb-4 mt-4" width="100%">
 					<v-layout justify-center wrap>
 						<v-container>
-							<v-card-title class="heading display-2 font-weight-thin pt-4 pb-3 mb-4">
-							Informations
-						</v-card-title>
-						<v-layout wrap>
-							<v-flex xs12 sm6>
+							<v-card-title class="heading display-2 font-weight-thin pt-4 pb-3 mb-4">Informations</v-card-title>
+							<v-layout wrap>
+								<v-flex xs12 sm6>
 									<v-text-field
 										disabled
 										outlined
@@ -30,24 +28,12 @@
 									></v-text-field>
 								</v-flex>
 								<v-flex xs12 sm6>
-									<v-text-field
-										disabled
-										outlined
-										color="primary"
-										label="Last Name"
-										v-model="user.lastName"
-									></v-text-field>
+									<v-text-field disabled outlined color="primary" label="Last Name" v-model="user.lastName"></v-text-field>
 								</v-flex>
 								<v-flex xs12 sm6>
-									<v-text-field
-										disabled
-										outlined
-										color="primary"
-										label="Username"
-										v-model="user.username"
-									></v-text-field>
+									<v-text-field disabled outlined color="primary" label="Username" v-model="user.username"></v-text-field>
 								</v-flex>
-						</v-layout>
+							</v-layout>
 						</v-container>
 					</v-layout>
 				</v-card>
@@ -85,7 +71,6 @@
 			loaded: false
 		}),
 		async created() {
-			console.log(this.$route.params);
 			const res = await fetchUser(this.$route.params.username);
 			this.user = res;
 			this.loaded = true;

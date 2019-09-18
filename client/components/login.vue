@@ -61,7 +61,7 @@
 	import axios from "axios";
 	import { mapActions } from "vuex";
 	import rules from "@/assets/rules";
-	import utility from "../utility.js";
+	import utility from "@/assets/utility.js";
 
 	export default {
 		name: "Login",

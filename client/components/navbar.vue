@@ -22,8 +22,8 @@
 					@change="clearSearch"
 				></v-text-field>
 				<v-spacer></v-spacer>
-				<v-btn @click="changeLange('fr')" icon>FR</v-btn>
-				<v-btn @click="changeLange('en')" icon>EN</v-btn>
+				<v-btn v-if="!authenticated" @click="changeLange('fr')" icon>FR</v-btn>
+				<v-btn v-if="!authenticated" @click="changeLange('en')" icon>EN</v-btn>
 				<v-menu v-if="authenticated" offset-y>
 					<template v-slot:activator="{ on }">
 						<v-avatar v-on="on">

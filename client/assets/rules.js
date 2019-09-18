@@ -12,16 +12,16 @@ const rules = context => {
         name: [
             required,
             v => reg.name.test(v) || context.$t('rules.name.valid'),
-            v => (v.length >= 3 && v.length <= 255) || context.$t('rules.name.len')
+            v => (v && (v.length >= 3 && v.length <= 255)) || context.$t('rules.name.len')
         ],
         username: [
             required,
-            v => (v.length >= 5 && v.length <= 30) || context.$t('rules.username.len'),
+            v => (v && (v.length >= 5 && v.length <= 30)) || context.$t('rules.username.len'),
             v => reg.username.test(v) || context.$t('rules.username.valid')
         ],
         password: [
             required,
-            v => v.length >= 8 || context.$t('rules.password.len'),
+            v => (v && v.length >= 8) || context.$t('rules.password.len'),
             v => reg.password.test(v) || context.$t('rules.password.valid')
         ],
         email: [required, v => reg.email.test(v) || context.$t('rules.email.valid')],

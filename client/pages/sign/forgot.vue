@@ -30,21 +30,21 @@
 </template>
 
 <script>
-	import Alert from "@/components/alert";
+	import utility from "@/assets/utility.js";
+	import alert from "@/components/alert";
 	import rules from "@/assets/rules";
 	import axios from "axios";
-	import utility from '../../utility.js';
 
 	export default {
 		name: "Forgot",
 		components: {
-			Alert
+			alert
 		},
 		data: () => ({
 			alert: {
 				state: false,
-				color: '',
-				text: ''
+				color: "",
+				text: ""
 			},
 			valid: false,
 			email: "",
@@ -59,10 +59,9 @@
 						const data = { email: this.email };
 						const res = await axios.post(url, data);
 						if (!res.data.ok || !!res.data.err) {
-							this.showAlert('red', res.data.errors.join(', '), this)
-						}
-						else {
-							this.showAlert('green', res.data.status, this)
+							this.showAlert("red", res.data.errors.join(", "), this);
+						} else {
+							this.showAlert("green", res.data.status, this);
 						}
 					} catch (err) {
 						console.error(err);

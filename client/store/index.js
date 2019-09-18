@@ -14,13 +14,16 @@ export const mutations = {
         state.user = user
     },
     logout: state => {
-        state.user = {},
+        state.user = {}
         state.authenticated = false
+    },
+    updateAvatar: (state, image) => {
+        state.user.image = `${image}?${new Date().getTime()}`
     }
 }
 
 export const actions = {
-    login: ({ commit, dispatch }, user) => {
+    login: ({ commit }, user) => {
         if (user._id) {
             localStorage.setItem('token', user.token)
             commit('login', user)
@@ -29,6 +32,9 @@ export const actions = {
     logout: ({ commit }) => {
         localStorage.clear()
         commit('logout')
+    },
+    updateAvatar: ({ commit }, image) => {
+        commit('updateAvatar', image)
     }
 }
 

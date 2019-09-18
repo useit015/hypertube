@@ -79,5 +79,12 @@
             "img": "Ce ficher n'est pas une image",
             "success": "Votre compte est crée, veuillez verifier votre email."
         }
+    },
+    "edit": {
+        "cur": "Mot de pass actuel",
+        "new": "Nouveau mot de pass",
+        "conf": "Confirmez le mot de pass",
+        "fail": "Veuillez ressayer avec des informations valide",
+        "success": "Votre profile a bien été modifié"
     }
 }
