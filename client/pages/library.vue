@@ -18,69 +18,13 @@
 	import movieDesc from "@/components/movieDesc";
 
 	const fetchMovieList = async (page, query, genre, sort) => {
-		let sortType = "";
+  const body = { page, query, genre, sort };
 
-		if (sort === undefined) sort = "seeds"
+  const res = await axios.post("http://hypertube.tk/api/movies?", body);
 
-		if (sort === "Popularity") sortType = "seeds";
+  return res.data;
+};
 
-		if (sort === "Date added") sortType = "dateadded";
-
-		if (sort === "Year") sortType = "year";
-
-		if (sort === "Title") sortType = "title";
-
-		let purl = `https://api.apiumadomain.com/list?sort=${sortType}&short=1&cb=&quality=720p,1080p,3d&page=${page}`;
-		let yurl = `https://yts.lt/api/v2/list_movies.json?limit=1&sort_by=${sortType}&page=${page}`;
-		if (query) {
-			purl = `${purl}&keywords=${query}`;
-			yurl = `${yurl}&query_term=${query}`;
-		} else if (genre) {
-			purl = `${purl}&genre=${genre}`;
-			yurl = `${yurl}&genre=${genre}`;
-		}
-		const { data } = await axios.get(purl);
-		let popcornList = [];
-		try {
-			if (data.MovieList.length) {
-				popcornList = data.MovieList.map(cur => ({
-					title: cur.title,
-					year: cur.year,
-					rating: cur.rating,
-					imdb: cur.imdb,
-					poster_med: cur.poster_med
-				}));
-			}
-		} catch (error) {
-			console.log("got error : ", error.message);
-		}
-		return popcornList;
-		let ytsList = [];
-		try {
-			const res = await axios.get(yurl);
-			if (res.data.data.movie_count) {
-				ytsList = res.data.data.movies.map(cur => ({
-					title: cur.title,
-					year: cur.year,
-					rating: cur.rating,
-					imdb: cur.imdb_code,
-					poster_med: cur.medium_cover_image
-				}));
-			}
-		} catch (error) {
-			console.log("got error : ", error.message);
-		}
-		const merged = [
-			...popcornList.filter(cur => {
-				for (let item of ytsList) {
-					if (cur.imdb === item.imdb) return false;
-				}
-				return true;
-			}),
-			...ytsList
-		];
-		return merged;
-	};
 
 	const getBottomDist = () => {
 		const offsetHeight = document.body.offsetHeight;
