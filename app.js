@@ -42,6 +42,7 @@ mongoose
 app.use('/api/users', require('./routes/users'))
 app.use('/api/oauth', require('./routes/oauth'))
 app.use('/oauth', require('./routes/oauth_ret'))
+app.use('/api/movies', require('./routes/movies'));
 app.use(express.static(indexPath))
 app.use('/uploads', express.static(uploadPath))
 app.get(/.*/, (req, res) => res.sendFile(`${indexPath}/index.html`))
