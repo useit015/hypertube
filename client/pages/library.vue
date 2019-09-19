@@ -18,13 +18,12 @@
 	import movieDesc from "@/components/movieDesc";
 
 	const fetchMovieList = async (page, query, genre, sort) => {
-  const body = { page, query, genre, sort };
+		const body = { page, query, genre, sort };
 
-  const res = await axios.post("http://hypertube.tk/api/movies?", body);
+		const res = await axios.post("http://hypertube.tk/api/movies?", body);
 
-  return res.data;
-};
-
+		return res.data;
+	};
 
 	const getBottomDist = () => {
 		const offsetHeight = document.body.offsetHeight;
@@ -89,15 +88,25 @@
 				this.query = "";
 				this.genre = genre === "popular" ? "" : genre;
 				this.sort = this.sort;
-				this.list = await fetchMovieList(this.page, this.query, this.genre, this.sort);
+				this.list = await fetchMovieList(
+					this.page,
+					this.query,
+					this.genre,
+					this.sort
+				);
 				window.scrollTo(0, 0);
 			},
 			async sortMovie(sort) {
 				this.page = 1;
 				this.query = this.query;
 				this.genre = this.genre;
-				this.sort = sort
-				this.list = await fetchMovieList(this.page, this.query, this.genre, this.sort);
+				this.sort = sort;
+				this.list = await fetchMovieList(
+					this.page,
+					this.query,
+					this.genre,
+					this.sort
+				);
 				window.scrollTo(0, 0);
 			},
 			openTrailer(isTrailer) {
@@ -106,16 +115,16 @@
 			movieMounted() {
 				if (this.isOpen === false) {
 					window.removeEventListener("scroll", this.handleScroll);
-					document.documentElement.style.overflowY = 'hidden'
+					document.documentElement.style.overflowY = "hidden";
 					this.isOpen = true;
 				} else if (this.isTrailer === true) {
 					window.removeEventListener("scroll", this.handleScroll);
-					document.documentElement.style.overflowY = 'hidden'
+					document.documentElement.style.overflowY = "hidden";
 					this.isTrailer = false;
 					this.isOpen = false;
 				} else {
 					window.addEventListener("scroll", this.handleScroll);
-					document.documentElement.style.overflowY = 'auto'
+					document.documentElement.style.overflowY = "auto";
 					this.isOpen = false;
 				}
 			}

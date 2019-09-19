@@ -20,6 +20,21 @@
 					<v-img ref="img" src="/trailer.svg" width="20" class="movie_trailer"/>
 				</v-btn>
 			</v-row>
+			<v-row justify="center">
+				<v-list dense>
+					<v-list-item-group color="primary">
+						<v-list-item v-for="(item, i) in movie.items" :key="i">
+							<!-- <v-list-item-icon>
+							<v-icon v-text="item.icon"></v-icon>
+							</v-list-item-icon>-->
+							<v-list-item-content>
+								<nuxt-link :to="`/watch/${id}/${i}`">{{ item.file }}</nuxt-link>
+								<!-- <v-list-item-title nuxt :to="`/watch/${id}/${i}`">{{ item.file }}</v-list-item-title> -->
+							</v-list-item-content>
+						</v-list-item>
+					</v-list-item-group>
+				</v-list>
+			</v-row>
 		</div>
 		<v-row v-if="trailer" column align="center" justify="center" class="trailer_overlay">
 			<v-btn
@@ -58,6 +73,7 @@
 	export default {
 		name: "movieDesc",
 		data: () => ({
+			id: null,
 			open: false,
 			movie: {},
 			timer: null,
@@ -67,7 +83,7 @@
 		computed: {
 			genre() {
 				if (!this.movie.genres || !this.movie.genres.length) return "";
-				return this.movie.genres.join(',');
+				return this.movie.genres.join(",");
 			}
 		},
 		created() {
@@ -76,7 +92,8 @@
 		methods: {
 			async openDesc(id) {
 				try {
-					const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&short=1&imdb=${id}`;
+					this.id = id;
+					const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`;
 					const { data } = await axios.get(url);
 					this.movie = data;
 					this.open = true;
@@ -182,9 +199,9 @@
 	transform: scale(0.85);
 }
 iframe {
-  position:absolute;
+	position: absolute;
 	left: 0.7rem;
-	width:100vw;
-	height:100vh;
+	width: 100vw;
+	height: 100vh;
 }
 </style>
