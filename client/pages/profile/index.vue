@@ -13,15 +13,15 @@
 			</v-avatar>
 		</div>
 		<v-container class="mx-0 main" fill-height grid-list-xl>
-			<v-card class="mx-auto px-4 pb-4 mt-4" width="100%">
+			<v-card class="mx-auto px-4 py-4 mt-4" width="100%">
 				<v-layout justify-center wrap>
 					<v-container>
 						<v-btn class="edit" color="primary" fab small @click="toggleEdit">
 							<v-icon v-if="isEditing">close</v-icon>
 							<v-icon v-else>edit</v-icon>
 						</v-btn>
-						<v-card-title class="display-2 font-weight-thin">Informations</v-card-title>
-						<v-form class="mt-4" ref="form" v-model="valid" lazy-validation>
+						<v-card-title class="display-2 font-weight-thin mb-5">Informations</v-card-title>
+						<v-form class="pt-4" ref="form" v-model="valid" lazy-validation>
 							<v-layout wrap>
 								<v-flex xs12 md6>
 									<v-text-field
@@ -103,18 +103,18 @@
 										@input="sync"
 									></v-select>
 								</v-flex>
-								<v-flex xs12 text-xs-right>
-									<v-btn
-										v-if="valid && isEditing && dataChanged"
-										:disabled="!isEditing"
-										class="mx-0 font-weight-light"
-										color="primary"
-										large
-										dark
-										@click="updateUser"
-									>Save</v-btn>
-								</v-flex>
 							</v-layout>
+							<v-flex xs12 text-xs-right class="save__container px-0 py-0">
+								<v-btn
+									:disabled="!valid || !isEditing || !dataChanged"
+									class="mx-0 font-weight-light"
+									color="primary"
+									large
+									text
+									dark
+									@click="save"
+								>{{ $t('save') }}</v-btn>
+							</v-flex>
 						</v-form>
 					</v-container>
 				</v-layout>
@@ -129,7 +129,7 @@
 
 <script>
 	import axios from "axios";
-	import { mapGetters } from "vuex";
+	import { mapGetters, mapActions } from "vuex";
 	import rules from "@/assets/rules";
 	import alert from "@/components/alert";
 	import loader from "@/components/loader";
@@ -152,7 +152,7 @@
 				text: ""
 			},
 			rules: {},
-			storeUser: {},
+			storeUser: "",
 			languages: ["en", "fr"],
 			dataChanged: false,
 			isEditing: false,
@@ -179,10 +179,11 @@
 		async created() {
 			this.loaded = true;
 			this.rules = rules(this);
-			this.storeUser = { ...this.user };
+			this.storeUser = JSON.stringify(this.user);
 		},
 		methods: {
 			...utility,
+			...mapActions(["updateUser"]),
 			toggleEdit() {
 				this.isEditing = !this.isEditing;
 			},
@@ -192,7 +193,7 @@
 			openPassDialog() {
 				this.$refs.passDialog.open();
 			},
-			async updateUser() {
+			async save() {
 				if (this.$refs.form.validate()) {
 					const url = `https://hypertube.tk/api/users/update`;
 					const headers = { Authorization: `jwt ${this.user.token}` };
@@ -205,19 +206,20 @@
 					};
 					axios
 						.post(url, data, { headers })
-						.then(res => this.feedback(!res.data.err))
+						.then(res => {
+							this.feedback(!res.data.err);
+							this.storeUser = JSON.stringify(this.user);
+						})
 						.catch(err => console.error(err));
 					this.isEditing = false;
 				}
 			},
 			toggleEdit() {
-				if (this.isEditing) this.user = { ...this.storeUser };
+				if (this.isEditing) this.updateUser(this.storeUser);
 				this.isEditing = !this.isEditing;
 			},
 			sync() {
-				const user = JSON.stringify(this.user);
-				const storeUser = JSON.stringify(this.storeUser);
-				this.dataChanged = this.user !== this.storeUser;
+				this.dataChanged = JSON.stringify(this.user) !== this.storeUser;
 			},
 			feedback(state) {
 				if (state) {
@@ -275,7 +277,15 @@
 }
 
 .edit {
-	right: 0;
-	transform: translate(20%, -30%);
+	top: 0;
+	left: 100%;
+	transform: translate(-75%, -25%);
+}
+
+.save__container {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-top: -0.5rem;
 }
 </style>

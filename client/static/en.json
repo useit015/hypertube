@@ -11,6 +11,7 @@
     "login": "Login",
     "register": "Register",
     "send": "Send",
+    "save": "Save",
     "recover_password": "Recover password",
     "forgot": "I forgot my password",
     "or": "or",
