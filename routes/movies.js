@@ -1,59 +1,76 @@
 const express = require("express");
+const router = express.Router();
 const axios = require("axios");
 const cloudscraper = require("cloudscraper");
-
-const router = express.Router();
 const torrentStream = require('torrent-stream');
-const { extname } = require('path')
+const FFmpeg = require('fluent-ffmpeg');
+const { extname, resolve, join, dirname } = require('path')
+const fs = require('fs');
 
-const testDownload = uri => {
+const movieList = {}
 
-	const engine = torrentStream(uri);
+// const testDownload = uri => {
 
-	engine.on('ready', function() {
-		console.log('***********************************');
-		engine.files = engine.files.sort(function (a, b) {
-			return b.length - a.length
-		}).slice(0, 1)
-		let file = engine.files[0]
-		file.createReadStream().pipe(res)
-		console.log('File found! (' + file.name + ')')
-		console.log('***********************************');
-	});
-}
+// 	const engine = torrentStream(uri);
 
-router.get('/:id/:i', async (req, res) => {
-	const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${req.params.id}`;
-	const { data } = await axios.get(url);
+// 	engine.on('ready', function() {
+// 		console.log('***********************************');
+// 		engine.files = engine.files.sort(function (a, b) {
+// 			return b.length - a.length
+// 		}).slice(0, 1)
+// 		let file = engine.files[0]
+// 		file.createReadStream().pipe(res)
+// 		console.log('File found! (' + file.name + ')')
+// 		console.log('***********************************');
+// 	});
+// }
+
+router.get('/:id', async (req, res) => {
 	const range = req.headers.range
 	console.log('range -->', range);
-	const engine = torrentStream(data.items[req.params.i].torrent_magnet);
-	engine.on('ready', () => {
-		engine.files = engine.files.sort(function (a, b) {
-			return b.length - a.length
-		}).slice(0, 1)
-		let file = engine.files[0]
-		const parts = range.replace(/bytes=/, "").split("-")
-		const start = parseInt(parts[0], 10)
-		const end = parts[1] ? parseInt(parts[1], 10) : file.length - 1
-		const chunksize = end - start + 1
-		const head = {
-			'Content-Range': `bytes ${start}-${end}/${file.length}`,
-			'Accept-Ranges': 'bytes',
-			'Content-Length': chunksize,
-			'Content-Type': 'video/mp4',
-		}
-		res.writeHead(206, head);
-		const stream = file.createReadStream({start, end}).on('end', () => {
-			console.log('Response stream has reached is end')
-			res.end()
+	const torrent = movieList[req.params.id]
+	if (torrent) {
+		const uploadPath = resolve(dirname(__dirname), 'movies')
+		const engine = torrentStream(torrent.magnet, { path: uploadPath });
+		// fs.readdir(engine.path, (err, files) => {
+		// 	console.log(join(files[0]))
+		// 	fs.readdir(join(files[0]), (err, file) => {
+		// 		if (err) console.log(err)
+		// 		else console.log(file)
+		// 	})
+		// })
+		engine.on('ready', () => {
+			engine.files = engine.files.sort((a, b) => b.length - a.length).slice(0, 1)
+			let file = engine.files[0]
+			const parts = range.replace(/bytes=/, '').split('-')
+			const start = parseInt(parts[0], 10)
+			const end = parts[1] ? parseInt(parts[1], 10) : file.length - 1
+			const chunksize = end - start + 1
+			const ext = file.name.split('.').pop()
+			const head = {
+				'Content-Range': `bytes ${start}-${end}/${file.length}`,
+				'Accept-Ranges': 'bytes',
+				'Content-Length': chunksize,
+				'Content-Type': 'video/mp4',
+			}
+			res.writeHead(206, head);
+			const stream = file.createReadStream({start, end}).on('end', () => {
+				console.log('Response stream has reached its end')
+				res.end()
+			})
+			if (ext == 'mp4') {
+				stream.pipe(res)
+			} else {
+				// FFmpeg({ source: stream}).
+			}
 		})
-		stream.pipe(res)
-	});
+	}
 })
 
 router.post("/", async (req, res) => {
-  let { page, query, genre, sort } = req.body;
+	let { page, query, genre, sort } = req.body;
+	
+	console.log("__dir")
 
   let sortType = "";
 
@@ -67,7 +84,7 @@ router.post("/", async (req, res) => {
 
   if (sort === "Title") sortType = "title";
 
-  let purl = `https://api.apiumadomain.com/list?sort=${sortType}&short=0&cb=&quality=720p,1080p,3d&page=${page}`;
+  let purl = `https://api.apiumadomain.com/list?sort=${sortType}&cb=&quality=720p,1080p,3d&page=${page}`;
 
   let yurl = `https://yts.lt/api/v2/list_movies.json?&page=${page}`;
 
@@ -117,7 +134,6 @@ router.post("/", async (req, res) => {
 		  }),
 		  ...popcornList
         ];
-
         return res.json(merged);
       });
     } catch (error) {
@@ -137,13 +153,25 @@ router.post("/", async (req, res) => {
           year: cur.year,
           rating: cur.rating,
           imdb: cur.imdb,
-          poster_med: cur.poster_med
+		  poster_med: cur.poster_med,
+		  items: [...cur.items, ...cur.items_lang].map(cur => ({
+				id: cur.id,
+				size: cur.size_bytes,
+				magnet: cur.torrent_magnet
+			}))
         }));
       }
     } catch (error) {
       console.log("got error : ", error.message);
     }
-
+	popcornList.forEach(movie => {
+		movie.items.forEach(cur => {
+			movieList[cur.id] = {
+				magnet: cur.magnet,
+				size: cur.size
+			}
+		})
+	})
     return res.json(popcornList);
   }
 });
