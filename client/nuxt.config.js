@@ -19,6 +19,11 @@ export default {
      ** Customize the progress-bar color
      */
     loading: { color: '#64D6C4' },
+    loadingIndicator: {
+        name: 'rectangle-bounce',
+        color: '#64D6C4',
+        background: colors.grey.darken3
+    },
     /*
      ** Global CSS
      */
@@ -26,7 +31,7 @@ export default {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: ['~/plugins/bus', '~/plugins/vue-youtube', '~/plugins/i18n'],
+    plugins: ['~/plugins/bus', '~/plugins/vue-youtube', '~/plugins/i18n', '~/plugins/vue-video'],
     /*
      ** Nuxt.js dev-modules
      */

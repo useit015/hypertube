@@ -1,10 +1,14 @@
 export const state = () => ({
-    authenticated: false,
-    user: {}
+    user: {},
+    movie: {},
+    watching: false,
+    authenticated: false
 })
 
 export const getters = {
     user: state => state.user,
+    movie: state => state.movie,
+    watching: state => state.watching,
     authenticated: state => state.authenticated
 }
 
@@ -22,6 +26,14 @@ export const mutations = {
     },
     updateAvatar: (state, image) => {
         state.user.image = `${image}?${new Date().getTime()}`
+    },
+    watch: (state, movie) => {
+        state.movie = movie
+        state.watching = true
+    },
+    exitWatch: state => {
+        state.movie = {}
+        state.watching = false
     }
 }
 
@@ -41,6 +53,12 @@ export const actions = {
     },
     updateAvatar: ({ commit }, image) => {
         commit('updateAvatar', image)
+    },
+    watch: ({ commit }, movie) => {
+        commit('watch', movie)
+    },
+    exitWatch: ({ commit }) => {
+        commit('exitWatch')
     }
 }
 
