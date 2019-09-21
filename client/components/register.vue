@@ -150,7 +150,7 @@ export default {
                         alert(image)
                         return
                     }
-                    const url = `https://hypertube.tk/api/users/register`
+                    const url = `http://localhost:4000/api/users/register`
                     const data = {
                         firstName: this.firstName,
                         lastName: this.lastName,

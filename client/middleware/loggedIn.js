@@ -3,7 +3,7 @@ import axios from 'axios'
 const checkToken = async store => {
     try {
         const token = localStorage.getItem('token')
-        const url = `https://hypertube.tk/api/users/isloggedin`
+        const url = `http://localhost:4000/api/users/isloggedin`
         const headers = { Authorization: `jwt ${token}` }
         const res = await axios.get(url, { headers })
         if (!res.data.err) {

@@ -30,7 +30,7 @@ export default {
                 sources: [
                     {
                         type: 'video/mp4',
-                        src: `http://hypertube.tk/api/movies/${id}`
+                        src: `http://localhost:4000/api/movies/${id}`
                     }
                 ]
             }

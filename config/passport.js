@@ -136,7 +136,7 @@ module.exports = passport => {
 			},
 			async (accessToken, refreshToken, profile, done) => {
 				const opts = {
-					url: 'https://graph.facebook.com/v4.0/me?fields=id,email,first_name,last_name',
+					url: 'http://graph.facebook.com/v4.0/me?fields=id,email,first_name,last_name',
 					headers: { Authorization: `Bearer ${accessToken}` }
 				}
 				request(opts, async (err, res) => {
@@ -146,7 +146,7 @@ module.exports = passport => {
 						firstName: profile.first_name,
 						lastName: profile.last_name,
 						username: userName,
-						image: `https://graph.facebook.com/${profile.id}/picture?width=300&height=300`,
+						image: `http://graph.facebook.com/${profile.id}/picture?width=300&height=300`,
 						email: profile.email,
 						fbId: profile.id,
 						verified: true

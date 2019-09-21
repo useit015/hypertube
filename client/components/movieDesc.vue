@@ -76,7 +76,7 @@ export default {
         async openDesc(id) {
             try {
                 this.id = id
-                const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`
+                const url = `http://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`
                 const { data } = await axios.get(url)
                 this.movie = data
                 this.open = true
