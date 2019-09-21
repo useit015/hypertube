@@ -9,22 +9,6 @@ const fs = require('fs');
 
 const movieList = {}
 
-// const testDownload = uri => {
-
-// 	const engine = torrentStream(uri);
-
-// 	engine.on('ready', function() {
-// 		console.log('***********************************');
-// 		engine.files = engine.files.sort(function (a, b) {
-// 			return b.length - a.length
-// 		}).slice(0, 1)
-// 		let file = engine.files[0]
-// 		file.createReadStream().pipe(res)
-// 		console.log('File found! (' + file.name + ')')
-// 		console.log('***********************************');
-// 	});
-// }
-
 router.get('/:id', async (req, res) => {
 	const range = req.headers.range
 	console.log('range -->', range);
@@ -32,36 +16,55 @@ router.get('/:id', async (req, res) => {
 	if (torrent) {
 		const uploadPath = resolve(dirname(__dirname), 'movies')
 		const engine = torrentStream(torrent.magnet, { path: uploadPath });
-		// fs.readdir(engine.path, (err, files) => {
-		// 	console.log(join(files[0]))
-		// 	fs.readdir(join(files[0]), (err, file) => {
-		// 		if (err) console.log(err)
-		// 		else console.log(file)
-		// 	})
-		// })
-		engine.on('ready', () => {
+		engine.on('torrent', () => {
+			console.log('----------------------------');
+			console.log(engine.swarm.downloaded);
+			console.log('----------------------------');
+			
+			
 			engine.files = engine.files.sort((a, b) => b.length - a.length).slice(0, 1)
 			let file = engine.files[0]
 			const parts = range.replace(/bytes=/, '').split('-')
 			const start = parseInt(parts[0], 10)
 			const end = parts[1] ? parseInt(parts[1], 10) : file.length - 1
 			const chunksize = end - start + 1
-			const ext = file.name.split('.').pop()
+			const name = file.name.split('.').slice(0, -1).join('.');
+			const ext = file.name.split('.').pop();
+			const finalExt = ext == 'mp4' || ext == 'webm' ? ext : 'webm'
 			const head = {
 				'Content-Range': `bytes ${start}-${end}/${file.length}`,
 				'Accept-Ranges': 'bytes',
 				'Content-Length': chunksize,
-				'Content-Type': 'video/mp4',
+				'Content-Type': `video/${finalExt}`,
 			}
-			res.writeHead(206, head);
-			const stream = file.createReadStream({start, end}).on('end', () => {
-				console.log('Response stream has reached its end')
-				res.end()
-			})
-			if (ext == 'mp4') {
-				stream.pipe(res)
+			res.writeHead(206, head)
+			if (finalExt == ext) {
+				file.createReadStream({ start, end })
+					.on('end', () => {
+						console.log('Response stream has reached its end')
+						res.end()
+					})
+					.on('error', err => console.log('Here is your error -->', err))
+					.pipe(res)
 			} else {
-				// FFmpeg({ source: stream}).
+				new FFmpeg(file.createReadStream())
+					.videoCodec('libvpx')
+					.audioCodec('libvorbis')
+					.format('webm')
+					.audioBitrate(128)
+					.videoBitrate(8 * 1000)
+					.outputOptions([
+						'-threads 2',
+						'-deadline realtime',
+						'-error-resilient 1'
+					])
+					.on('end', () => {
+						console.log('File is now webm !')
+						res.end()
+					})
+					.on('error', err => console.log('Here is your error --> ', err))
+					.output(res, { end: true }).run()
+					// .pipe(res)
 			}
 		})
 	}
