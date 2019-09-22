@@ -4,69 +4,74 @@ const axios = require("axios");
 const cloudscraper = require("cloudscraper");
 const torrentStream = require('torrent-stream');
 const FFmpeg = require('fluent-ffmpeg');
+const pump = require('pump')
 const { extname, resolve, join, dirname } = require('path')
 const fs = require('fs');
 
 const movieList = {}
+const downloadList = {}
+
+const stream = (range, file, res, engine) => {
+	const parts = range.replace(/bytes=/, '').split('-')
+	const start = parseInt(parts[0], 10)
+	const end = parts[1] ? parseInt(parts[1], 10) : file.length - 1
+	const chunksize = end - start + 1
+	const name = file.name.split('.').slice(0, -1).join('.');
+	const ext = file.name.split('.').pop();
+	const finalExt = ext == 'mp4' || ext == 'webm' ? ext : 'webm'
+	const head = {
+		'Content-Range': `bytes ${start}-${end}/${file.length}`,
+		'Accept-Ranges': 'bytes',
+		'Content-Length': chunksize,
+		'Content-Type': `video/${finalExt}`,
+	}
+	res.writeHead(206, head)
+	let stream
+	if (finalExt == ext) {
+		stream = file.createReadStream({ start, end })
+	} else {
+		stream = new FFmpeg(file.createReadStream())
+			.videoCodec('libvpx')
+			.audioCodec('libvorbis')
+			.format('webm')
+			.audioBitrate(128 * 100)
+			.videoBitrate(8 * 1000)
+			.outputOptions([
+				'-threads 8',
+				'-deadline realtime',
+				'-error-resilient 1'
+			])
+	}
+	if (engine)
+		stream
+			.on('data', data => console.log('i have downloaded --> ', engine.swarm.downloaded))
+			.on('error', err => console.log('Here is your error -->', err.message))
+			.on('end', () => {
+				console.log('Here is the end !')
+				engine.destroy(() => console.log('--> i destroyed the engine --->'))
+				res.end()
+			})
+	pump(stream, res, err => console.log('error in pump !!!'))
+}
 
 router.get('/:id', async (req, res) => {
 	const range = req.headers.range
 	console.log('range -->', range);
-	const torrent = movieList[req.params.id]
-	if (torrent) {
-		const uploadPath = resolve(dirname(__dirname), 'movies')
-		const engine = torrentStream(torrent.magnet, { path: uploadPath });
-		engine.on('torrent', () => {
-			console.log('----------------------------');
-			console.log(engine.swarm.downloaded);
-			console.log('----------------------------');
-			
-			
-			engine.files = engine.files.sort((a, b) => b.length - a.length).slice(0, 1)
-			let file = engine.files[0]
-			const parts = range.replace(/bytes=/, '').split('-')
-			const start = parseInt(parts[0], 10)
-			const end = parts[1] ? parseInt(parts[1], 10) : file.length - 1
-			const chunksize = end - start + 1
-			const name = file.name.split('.').slice(0, -1).join('.');
-			const ext = file.name.split('.').pop();
-			const finalExt = ext == 'mp4' || ext == 'webm' ? ext : 'webm'
-			const head = {
-				'Content-Range': `bytes ${start}-${end}/${file.length}`,
-				'Accept-Ranges': 'bytes',
-				'Content-Length': chunksize,
-				'Content-Type': `video/${finalExt}`,
-			}
-			res.writeHead(206, head)
-			if (finalExt == ext) {
-				file.createReadStream({ start, end })
-					.on('end', () => {
-						console.log('Response stream has reached its end')
-						res.end()
-					})
-					.on('error', err => console.log('Here is your error -->', err))
-					.pipe(res)
-			} else {
-				new FFmpeg(file.createReadStream())
-					.videoCodec('libvpx')
-					.audioCodec('libvorbis')
-					.format('webm')
-					.audioBitrate(128)
-					.videoBitrate(8 * 1000)
-					.outputOptions([
-						'-threads 2',
-						'-deadline realtime',
-						'-error-resilient 1'
-					])
-					.on('end', () => {
-						console.log('File is now webm !')
-						res.end()
-					})
-					.on('error', err => console.log('Here is your error --> ', err))
-					.output(res, { end: true }).run()
-					// .pipe(res)
-			}
-		})
+	if (range) {
+		const downloaded = downloadList[req.params.id]
+		if (downloaded) return stream(range, downloaded, res)
+
+		const torrent = movieList[req.params.id]
+		if (torrent) {
+			const uploadPath = resolve(dirname(__dirname), 'movies')
+			const engine = torrentStream(torrent.magnet, { path: uploadPath });
+			engine.on('torrent', () => {
+				engine.files = engine.files.sort((a, b) => b.length - a.length)
+				const file = engine.files[0]
+				downloadList[req.params.id] = file
+				stream(range, file, res, engine)
+			})
+		}
 	}
 })
 

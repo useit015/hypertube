@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 80
 const SPORT = process.env.PORT || 443
 const indexPath = resolve(__dirname, 'client', 'dist')
 const uploadPath = resolve(__dirname, 'uploads')
+const moviePath = resolve(__dirname, 'movies')
 const options = {
 	key: readFileSync('./key.pem'),
 	cert: readFileSync('./certificate.pem')
@@ -45,6 +46,7 @@ app.use('/oauth', require('./routes/oauth_ret'))
 app.use('/api/movies', require('./routes/movies'));
 app.use(express.static(indexPath))
 app.use('/uploads', express.static(uploadPath))
+app.use('/movies', express.static(moviePath))
 app.get(/.*/, (req, res) => res.sendFile(`${indexPath}/index.html`))
 
 app
