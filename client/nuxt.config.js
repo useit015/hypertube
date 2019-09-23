@@ -31,7 +31,16 @@ export default {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: ['~/plugins/bus', '~/plugins/vue-youtube', '~/plugins/i18n', '~/plugins/vue-video'],
+    plugins: [
+        { src: '~/plugins/bus' },
+        { src: '~/plugins/vue-youtube' },
+        { src: '~/plugins/i18n' },
+        { src: '~/plugins/vue-video' },
+        {
+            src: '~/plugins/socket.js',
+            ssr: false
+        }
+    ],
     /*
      ** Nuxt.js dev-modules
      */

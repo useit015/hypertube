@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export const state = () => ({
     user: {},
     movie: {},
@@ -54,9 +56,10 @@ export const actions = {
     updateAvatar: ({ commit }, image) => {
         commit('updateAvatar', image)
     },
-    watch: ({ commit }, movie) => {
-        commit('watch', movie)
-    },
+    // watch: ({ commit }, movie) => {
+    //     new Vue().$socket.client.emit('watch', movie)
+    //     commit('watch', movie)
+    // },
     exitWatch: ({ commit }) => {
         commit('exitWatch')
     }

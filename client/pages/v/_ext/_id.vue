@@ -1,52 +1,47 @@
 <template>
-	<videoPlayer
+	<video-player
 		class="video__box"
 		ref="videoPlayer"
-		:options.sync="options"
+		:options="options"
 		:playsinline="true"
 		@loadeddata="onPlayerLoadeddata($event)"
 		@statechanged="playerStateChanged($event)"
 		@progress="progress"
-	/>
+	></video-player>
 </template>
 
 <script>
-	import axios from "axios";
-	import { mapGetters } from "vuex";
 	import { videoPlayer } from "vue-video-player";
 
 	export default {
 		components: {
 			videoPlayer
 		},
+		data() {
+			const { id, ext } = this.$route.params;
+			return {
+				options: {
+					fluid: true,
+					muted: false,
+					preload: "auto",
+					autoplay: true,
+					language: this.$i18n.locale,
+					playbackRates: [0.5, 1.0, 1.5, 2.0],
+					sources: [
+						{
+							type: `video/${ext}`,
+							src: `http://hypertube.tk/api/movies/${id}`
+						}
+					]
+				}
+			};
+		},
+		mounted() {
+			console.log("this is current player instance object", this.player);
+		},
 		computed: {
-			...mapGetters(["watching", "movie"]),
 			player() {
 				return this.$refs.videoPlayer.player;
-			},
-			options() {
-				if (this.watching) {
-					const { id, file } = this.movie;
-					const ext = file.split(".").pop();
-					const finalExt = ext == "mp4" || ext == "webm" ? ext : "webm";
-					return {
-						fluid: true,
-						muted: false,
-						preload: "auto",
-						autoplay: true,
-						language: this.$i18n.locale,
-						playbackRates: [0.5, 1.0, 1.5, 2.0],
-						sources: [
-							{
-								type: `video/${finalExt}`,
-								src: `http://hypertube.tk/api/movies/${id}`
-							}
-						]
-					};
-				} else {
-					this.$router.push("/");
-					return {};
-				}
 			}
 		},
 		methods: {
@@ -65,6 +60,9 @@
 			progress() {
 				console.log();
 			}
+		},
+		beforeDestroy() {
+			this.$socket.client.emit("cleanup");
 		}
 	};
 </script>
