@@ -30,7 +30,7 @@
 					sources: [
 						{
 							type: `video/${ext}`,
-							src: `http://hypertube.tk/api/movies/${id}`
+							src: `https://hypertube.tk/api/movies/${id}`
 						}
 					]
 				}
