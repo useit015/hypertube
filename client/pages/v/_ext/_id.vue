@@ -4,6 +4,7 @@
 		ref="videoPlayer"
 		:options="options"
 		:playsinline="true"
+		@ended="onPlayerEnded($event)"
 		@loadeddata="onPlayerLoadeddata($event)"
 		@statechanged="playerStateChanged($event)"
 		@progress="progress"
@@ -42,20 +43,26 @@
 		computed: {
 			player() {
 				return this.$refs.videoPlayer.player;
+			},
+			playerError() {
+				return this.$refs.videoPlayer.player.error_;
 			}
 		},
 		methods: {
 			playerStateChanged() {
-				const percent = (this.player.bufferedPercent() * 100).toFixed(1);
-				console.log("------>", percent + " %");
-				console.log("this.player.buffered() -->", this.player.buffered());
-				console.log(
-					"this.player.bufferedEnd() -->",
-					this.player.bufferedEnd()
-				);
+				// const percent = (this.player.bufferedPercent() * 100).toFixed(1);
+				// console.log("------>", percent + " %");
+				// console.log("this.player.buffered() -->", this.player.buffered());
+				// console.log(
+				// 	"this.player.bufferedEnd() -->",
+				// 	this.player.bufferedEnd()
+				// );
 			},
 			onPlayerLoadeddata(player) {
 				console.log("onPlayerLoadeddata");
+			},
+			onPlayerEnded() {
+				console.log("The fucking movie has ended !!");
 			},
 			progress() {
 				console.log();
