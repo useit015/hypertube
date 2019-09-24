@@ -20,7 +20,7 @@
 	const fetchMovieList = async (page, query, genre, sort) => {
 		const body = { page, query, genre, sort };
 
-		const res = await axios.post("http://hypertube.tk/api/movies?", body);
+		const res = await axios.post("https://hypertube.tk/api/movies?", body);
 
 		return res.data;
 	};
