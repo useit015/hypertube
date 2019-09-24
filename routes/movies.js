@@ -1,13 +1,11 @@
-const express = require("express");
-const router = express.Router();
-const axios = require("axios");
-const cloudscraper = require("cloudscraper");
-const torrentStream = require('torrent-stream');
-const FFmpeg = require('fluent-ffmpeg');
 const pump = require('pump')
-const Stream = require('stream')
-const { createWriteStream } = require('fs')
+const axios = require("axios")
+const express = require("express")
+const FFmpeg = require('fluent-ffmpeg')
+const cloudscraper = require("cloudscraper")
+const torrentStream = require('torrent-stream')
 const { resolve, join, dirname } = require('path')
+const router = express.Router()
 
 const extractData = (range, file) => {
 	const parts = range.replace(/bytes=/, '').split('-')
@@ -28,13 +26,12 @@ const extractData = (range, file) => {
 	return {
 		head,
 		needConvert,
-		fileName: `${fileName}.webm`,
 		resRange: { start, end }
 	}
 }
 
 const convert = (file, thread = 8) => {
-	return new FFmpeg(file.createReadStream())
+	const stream =  new FFmpeg(file.createReadStream())
 		.videoCodec('libvpx')
 		.audioCodec('libvorbis')
 		.format('webm')
@@ -46,10 +43,17 @@ const convert = (file, thread = 8) => {
 			'-error-resilient 1'
 		])
 		.on('error', err => console.log('Encoding error -->', err.message))
+		stream.ffprobe(function (err, data) {
+			if (err)
+				console.error('ERROR ==> ', err);
+			else
+				console.log('METADATA ==> ', data);
+		})
+		return stream
 }
 
-const stream = (range, file, res, engine) => {
-	const { head, needConvert, fileName, resRange } = extractData(range, file)
+const stream = (range, file, res) => {
+	const { head, needConvert, resRange } = extractData(range, file)
 	res.writeHead(206, head)
 	if (needConvert) {
 		pump(convert(file), res, err => {
@@ -79,7 +83,7 @@ module.exports = (movieList, downloadList) => {
 					engine.files = engine.files.sort((a, b) => b.length - a.length)
 					const file = engine.files[0]
 					downloadList[req.params.id] = { file, engine }
-					stream(range, file, res, engine)
+					stream(range, file, res)
 				})
 				engine.on('download', index => {
 					console.log('The engine downloaded this -->', index)
@@ -87,6 +91,8 @@ module.exports = (movieList, downloadList) => {
 			} else {
 				res.end()
 			}
+		} else {
+			res.end()
 		}
 	})
 	
@@ -129,8 +135,8 @@ module.exports = (movieList, downloadList) => {
 					}
 					const merged = [
 						...ytsList.filter(cur => {
-							for (let item of popcornList) {
-							if (cur.imdb === item.imdb) return false;
+							for (const item of popcornList) {
+								if (cur.imdb === item.imdb) return false;
 							}
 							return true;
 						}),
@@ -144,12 +150,12 @@ module.exports = (movieList, downloadList) => {
 				const { data } = await axios.get(purl);
 					if (data.MovieList.length) {
 						popcornList = data.MovieList.map(cur => ({
-						title: cur.title,
-						year: cur.year,
-						rating: cur.rating,
-						imdb: cur.imdb,
-						poster_med: cur.poster_med,
-						items: [...cur.items, ...cur.items_lang].map(cur => ({
+							title: cur.title,
+							year: cur.year,
+							rating: cur.rating,
+							imdb: cur.imdb,
+							poster_med: cur.poster_med,
+							items: [...cur.items, ...cur.items_lang].map(cur => ({
 								id: cur.id,
 								size: cur.size_bytes,
 								magnet: cur.torrent_magnet
