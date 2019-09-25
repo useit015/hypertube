@@ -27,7 +27,7 @@ const extractData = (range, file) => {
 		}
 	} else {
 		head = {
-			'Content-Range': `bytes ${start}-${end}/${file.length}`,
+			'Content-Range': `bytes ${start}-${end}/*`,
 			'Content-Type': 'video/webm'
 		}
 	}
