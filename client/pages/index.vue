@@ -56,8 +56,9 @@
 			this.$bus.$on("filterMovie", this.filterMovie);
 			this.$bus.$on("sortMovie", this.sortMovie);
 			this.$bus.$on("openTrailer", this.openTrailer);
+			document.documentElement.style.overflowY = "auto";
 		},
-		destroyed() {
+		beforeDestroy() {
 			window.removeEventListener("scroll", this.handleScroll);
 		},
 		methods: {

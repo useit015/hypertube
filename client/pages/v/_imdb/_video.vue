@@ -19,7 +19,9 @@
 			videoPlayer
 		},
 		data() {
-			const { id, ext } = this.$route.params;
+			const { imdb, video } = this.$route.params;
+			const [id, ext] = video.split(".");
+			console.log(`https://hypertube.tk/api/movies/${imdb}/${id}`);
 			return {
 				options: {
 					fluid: true,
@@ -31,7 +33,7 @@
 					sources: [
 						{
 							type: `video/${ext}`,
-							src: `https://hypertube.tk/api/movies/${id}`
+							src: `https://hypertube.tk/api/movies/${imdb}/${id}`
 						}
 					]
 				}

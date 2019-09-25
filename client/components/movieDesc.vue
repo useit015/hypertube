@@ -91,9 +91,9 @@
 			...mapActions(["watch"]),
 			async openDesc(id) {
 				try {
-					this.id = id;
 					const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`;
 					const { data } = await axios.get(url);
+					this.id = id;
 					this.movie = data;
 					this.open = true;
 				} catch (err) {
@@ -104,7 +104,7 @@
 				this.$socket.client.emit("watch", movie);
 				let ext = movie.file.split(".").pop();
 				ext = ext == "mp4" || ext == "webm" ? ext : "webm";
-				this.$router.push(`v/${ext}/${movie.id}`);
+				this.$router.push(`v/${this.id}/${movie.id}.${ext}`);
 			},
 			openTrailer() {
 				this.trailer = true;
