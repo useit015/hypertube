@@ -17,11 +17,19 @@ const extractData = (range, file) => {
 	const fileName = splited.join('.')
 	const finalExt = ext == 'mp4' || ext == 'webm' ? ext : 'webm'
 	const needConvert = finalExt != ext
-	const head = {
-		'Content-Range': `bytes ${start}-${end}/${file.length}`,
-		'Accept-Ranges': 'bytes',
-		'Content-Length': chunksize,
-		'Content-Type': `video/${finalExt}`,
+	let head
+	if (!needConvert) {
+		head = {
+			'Content-Range': `bytes ${start}-${end}/${file.length}`,
+			'Accept-Ranges': 'bytes',
+			'Content-Length': chunksize,
+			'Content-Type': 'video/mp4'
+		}
+	} else {
+		head = {
+			'Content-Range': `bytes ${start}-${end}/${file.length}`,
+			'Content-Type': 'video/webm'
+		}
 	}
 	return {
 		head,
@@ -30,8 +38,8 @@ const extractData = (range, file) => {
 	}
 }
 
-const convert = (file, thread = 8) => {
-	const stream =  new FFmpeg(file.createReadStream())
+const convert = (file, thread = 2) => {
+	return  new FFmpeg(file.createReadStream())
 		.videoCodec('libvpx')
 		.audioCodec('libvorbis')
 		.format('webm')
@@ -43,59 +51,68 @@ const convert = (file, thread = 8) => {
 			'-error-resilient 1'
 		])
 		.on('error', err => console.log('Encoding error -->', err.message))
-		stream.ffprobe(function (err, data) {
-			if (err)
-				console.error('ERROR ==> ', err);
-			else
-				console.log('METADATA ==> ', data);
-		})
-		return stream
 }
 
 const stream = (range, file, res) => {
 	const { head, needConvert, resRange } = extractData(range, file)
 	res.writeHead(206, head)
 	if (needConvert) {
-		pump(convert(file), res, err => {
-			if (err) {
-				console.log('i got a error in pump -->', err.message)
-			}
-		})
+		pump(convert(file), res)
 	} else {
 		file.createReadStream(resRange).pipe(res)
 	}
+}
 
+const fetchTorrent = async (imdb, id) => {
+	try {
+		const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${imdb}`;
+		const { data } = await axios.get(url);
+		const list = [ ...data.items, ...data.items_lang ]
+		for (const cur of list) {
+			if (cur.id == id) return cur
+		}
+	} catch (err) {
+		console.log('I got an error with --> ', err.message)
+	}
 }
 
 module.exports = (movieList, downloadList) => {
 
-	router.get('/:id', async (req, res) => {
-		const range = req.headers.range
-		console.log('range -->', range);
-		if (range) {
-			const downloading = downloadList[req.params.id]
-			if (downloading) return stream(range, downloading.file, res)
-			const torrent = movieList[req.params.id]
-			if (torrent) {
+	router.get('/:imdb/:id', async (req, res) => {
+		try {
+			const { range } = req.headers
+			const { imdb, id } = req.params
+			console.log('range -->', range);
+			if (range) {
+				const downloading = downloadList[id]
+				if (downloading) return stream(range, downloading.file, res)
+				let torrent = movieList[id]
+				if (!torrent) {
+					console.log('im fetching from api ...')
+					torrent = await fetchTorrent(imdb, id)
+					console.log('i fetched this from api --> ', torrent.file)
+					if (!torrent) return res.end()
+					movieList[id] = torrent
+				}
 				const uploadPath = resolve(dirname(__dirname), 'movies')
 				const engine = torrentStream(torrent.torrent_magnet, { path: uploadPath })
 				engine.on('torrent', () => {
 					engine.files = engine.files.sort((a, b) => b.length - a.length)
 					const file = engine.files[0]
-					downloadList[req.params.id] = { file, engine }
+					downloadList[id] = { file, engine }
 					stream(range, file, res)
 				})
 				engine.on('download', index => {
-					console.log('The engine downloaded this -->', index)
+					console.log('The engine downloaded this -->', index, 'for --> ', engine.files[0].name)
 				})
 			} else {
 				res.end()
 			}
-		} else {
-			res.end()
+		} catch (err) {
+			console.log('I got an error with --> ', err.message)
 		}
 	})
-	
+
 	router.post("/", async (req, res) => {
 		try {
 			let { page, query, genre, sort } = req.body;
@@ -148,22 +165,22 @@ module.exports = (movieList, downloadList) => {
 				if (genre) purl = `${purl}&genre=${genre}`;
 				let popcornList = [];
 				const { data } = await axios.get(purl);
-					if (data.MovieList.length) {
-						popcornList = data.MovieList.map(cur => ({
-							title: cur.title,
-							year: cur.year,
-							rating: cur.rating,
-							imdb: cur.imdb,
-							poster_med: cur.poster_med,
-							items: [...cur.items, ...cur.items_lang].map(cur => ({
-								id: cur.id,
-								size: cur.size_bytes,
-								magnet: cur.torrent_magnet
-							}))
-						}));
-					}
-					return res.json(popcornList);
+				if (data.MovieList.length) {
+					popcornList = data.MovieList.map(cur => ({
+						title: cur.title,
+						year: cur.year,
+						rating: cur.rating,
+						imdb: cur.imdb,
+						poster_med: cur.poster_med,
+						items: [...cur.items, ...cur.items_lang].map(cur => ({
+							id: cur.id,
+							size: cur.size_bytes,
+							magnet: cur.torrent_magnet
+						}))
+					}));
 				}
+				return res.json(popcornList);
+			}
 		} catch (error) {
 			console.log("got error : ", error.message);
 		}

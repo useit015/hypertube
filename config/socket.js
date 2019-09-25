@@ -5,18 +5,22 @@ module.exports = (movieList, downloadList) => {
 			movie.engine.destroy(() => {
 				console.log('i destroyed the engine for --> ', fileName)
 			})
+			delete movieList[movie.id]
+			delete downloadList[movie.id]
 		}
 	}
 
 	const cleanup = socket => {
 		Object.values(movieList).forEach(movie => {
-			if (movie.users.has(socket.id)) {
-				movie.users.delete(socket.id)
-				if (!movie.users.size) {
-					freeEngine(downloadList[movie.id], movie.file)
-					delete downloadList[movie.id]
-					delete movieList[movie.id]
+			if (movie.users) {
+				if (movie.users.has(socket.id)) {
+					movie.users.delete(socket.id)
+					if (!movie.users.size) {
+						freeEngine(downloadList[movie.id], movie.file)
+					}
 				}
+			} else {
+				freeEngine(downloadList[movie.id], movie.file)
 			}
 		})
 	}
