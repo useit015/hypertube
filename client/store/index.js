@@ -1,16 +1,11 @@
-import Vue from 'vue'
-
 export const state = () => ({
     user: {},
-    movie: {},
-    watching: false,
     authenticated: false
 })
 
 export const getters = {
     user: state => state.user,
-    movie: state => state.movie,
-    watching: state => state.watching,
+    watched: state => state.user.watched,
     authenticated: state => state.authenticated
 }
 
@@ -29,13 +24,12 @@ export const mutations = {
     updateAvatar: (state, image) => {
         state.user.image = `${image}?${new Date().getTime()}`
     },
-    watch: (state, movie) => {
-        state.movie = movie
-        state.watching = true
-    },
-    exitWatch: state => {
-        state.movie = {}
-        state.watching = false
+    markAsWatched: (state, imdb) => {
+        if (state.user.watched) {
+            state.user.watched.push(imdb)
+        } else {
+            state.user.watched = [imdb]
+        }
     }
 }
 
@@ -56,12 +50,8 @@ export const actions = {
     updateAvatar: ({ commit }, image) => {
         commit('updateAvatar', image)
     },
-    // watch: ({ commit }, movie) => {
-    //     new Vue().$socket.client.emit('watch', movie)
-    //     commit('watch', movie)
-    // },
-    exitWatch: ({ commit }) => {
-        commit('exitWatch')
+    markAsWatched: ({ commit }, imdb) => {
+        commit('markAsWatched', imdb)
     }
 }
 

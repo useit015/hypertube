@@ -91,7 +91,7 @@
 			...mapActions(["watch"]),
 			async openDesc(id) {
 				try {
-					const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`;
+					const url = `https://hypertube.tk/api/movies/info/${id}`;
 					const { data } = await axios.get(url);
 					this.id = id;
 					this.movie = data;
