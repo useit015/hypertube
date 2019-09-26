@@ -1,12 +1,15 @@
+const fs = require('fs')
+const path = require('path')
+
 module.exports = (movieList, downloadList) => {
 
-	const freeEngine = (movie, fileName) => {
-		if (movie && movie.engine) {
-			movie.engine.destroy(() => {
-				console.log('i destroyed the engine for --> ', fileName)
+	const freeEngine = (downloading, movie) => {
+		if (downloading && downloading.engine) {
+			downloading.engine.destroy(() => {
+				console.log('i destroyed the engine for --> ', movie.file)
 			})
-			delete movieList[movie.id]
 			delete downloadList[movie.id]
+			delete movieList[movie.id]
 		}
 	}
 
@@ -16,11 +19,11 @@ module.exports = (movieList, downloadList) => {
 				if (movie.users.has(socket.id)) {
 					movie.users.delete(socket.id)
 					if (!movie.users.size) {
-						freeEngine(downloadList[movie.id], movie.file)
+						freeEngine(downloadList[movie.id], movie)
 					}
 				}
 			} else {
-				freeEngine(downloadList[movie.id], movie.file)
+				freeEngine(downloadList[movie.id], movie)
 			}
 		})
 	}

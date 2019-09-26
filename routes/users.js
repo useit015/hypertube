@@ -23,6 +23,15 @@ const authJwt = (req, res, next) => {
 
 const randomHex = () => randomBytes(10).toString('hex')
 
+router.post('/watched', authJwt, (req, res) => {
+	const { user } = req
+	const { imdb } = req.body
+	user.watched.push(imdb)
+	user.save()
+		.then(user => res.json(user.addToken()))
+		.catch(err => console.log(err))
+})
+
 router.get('/user/:username', authJwt, (req, res) => {
 	User.find({ username: req.params.username })
 		.then(user => {
@@ -96,8 +105,7 @@ router.post(
 									fs.unlink(image, (err) => {})
 									return res.json({ err: true, errors: ['img'] })
 								}	
-								img
-									.resize(256, Jimp.AUTO)
+								img.resize(256, Jimp.AUTO)
 									.quality(90)
 									.write(image)
 								const vkey = randomHex()
@@ -130,8 +138,9 @@ router.post(
 
 router.post('/image', authJwt, async (req, res) => {
 	try {
-		unlinkAsync(path.dirname(__dirname) + req.user.image)
-		let image = base64Img.imgSync(req.body.img, 'uploads', req.user.username)
+		const { user } = req
+		unlinkAsync(path.dirname(__dirname) + user.image)
+		let image = base64Img.imgSync(req.body.img, 'uploads', user.username)
 		Jimp.read(image, (err, img) => {
 			if (err) {
 				unlinkAsync(image)
@@ -141,8 +150,8 @@ router.post('/image', authJwt, async (req, res) => {
 				.resize(256, Jimp.AUTO)
 				.quality(90)
 				.write(image)
-			req.user.image = image = `/${image}`
-			req.user.save()
+			user.image = image = `/${image}`
+			user.save()
 				.then(user => res.json({ status: 'success', image }))
 				.catch(err => console.log(err))
 		});
@@ -161,8 +170,8 @@ router.get('/logout', authJwt, (req, res) => {
 })
 
 router.post('/update', authJwt, (req, res) => {
+	const { user } = req
 	const { firstName, lastName, username, email, langue } = req.body
-	const user = req.user
 	const data = { firstName, lastName, username, email, langue }
 	validator.update(data, err => {
 		if (!err) {
@@ -181,8 +190,8 @@ router.post('/update', authJwt, (req, res) => {
 })
 
 router.post('/passwordupdate', authJwt, (req, res) => {
+	const { user } = req
 	const { password, newPassword, confNewPassword } = req.body
-	const user = req.user
 	const data = { password, newPassword, confNewPassword }
 	validator.passwordupdate(data, err => {
 		if (!err) {
@@ -191,8 +200,8 @@ router.post('/passwordupdate', authJwt, (req, res) => {
 				if (match) {
 					user.password = data.newPassword
 					user.save()
-					.then(user => res.json(user.addToken()))
-					.catch(err => console.log(err))
+						.then(user => res.json(user.addToken()))
+						.catch(err => console.log(err))
 				} else { res.json({ err: true, errors: [`Wrong password`] }) }
 			})
 		} else {
@@ -254,7 +263,7 @@ router.get('/recover/:key', (req, res) => {
 })
 
 router.post('/recovery_check', authJwt, (req, res) => {
-	const key = req.params.key
+	const { key } = req.params
 	const { user } = req
 	if (user.key == key) {
 		user.key = undefined

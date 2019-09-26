@@ -25,7 +25,7 @@ const options = {
 const movieList = {}
 const downloadList = {}
 
-require('./config/clean')
+// require('./config/clean')
 require('./config/passport')(passport)
 
 app.set('view engine', 'ejs')

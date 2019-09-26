@@ -67,6 +67,10 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		enum: ['en', 'fr', 'ar', 'es'],
 		default: 'en'
+	},
+	watched: {
+		type: Array,
+		default: []
 	}
 })
 

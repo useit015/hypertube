@@ -5,7 +5,19 @@ const FFmpeg = require('fluent-ffmpeg')
 const cloudscraper = require("cloudscraper")
 const torrentStream = require('torrent-stream')
 const { resolve, join, dirname } = require('path')
+const fs = require("fs");
+const request = require("request");
+const OS = require("opensubtitles-api");
 const router = express.Router()
+
+const OpenSubtitles = new OS({
+  useragent: "TemporaryUserAgent",
+  username: "hypertube1337",
+  password: "Test@1337",
+  ssl: true
+});
+
+OpenSubtitles.login();
 
 const extractData = (range, file) => {
 	const parts = range.replace(/bytes=/, '').split('-')
@@ -38,19 +50,41 @@ const extractData = (range, file) => {
 	}
 }
 
-const convert = (file, thread = 2) => {
-	return  new FFmpeg(file.createReadStream())
+const convert = (file, thread = 4) => {
+	const converted = new FFmpeg(file.createReadStream())
 		.videoCodec('libvpx')
 		.audioCodec('libvorbis')
 		.format('webm')
 		.audioBitrate(128)
-		.videoBitrate(8 * 1000)
+		.videoBitrate(8000)
 		.outputOptions([
 			`-threads ${thread}`,
 			'-deadline realtime',
 			'-error-resilient 1'
 		])
-		.on('error', err => console.log('Encoding error -->', err.message))
+		.on('error', err => {
+			converted.destroy()
+			console.log('Encoding error -->', err.message)
+		})
+		.stream()
+	return converted
+}
+
+const getSubt = id => {
+	const uploadPath = "./sub/";
+	OpenSubtitles.search({
+		imdbid: id
+	}).then(subtitles => {
+		Object.keys(subtitles).forEach(async sub => {
+			let file = fs.createWriteStream(
+				uploadPath + `${sub}-${subtitles[sub].filename}`
+			);
+	
+			request.get(subtitles[sub].vtt, (err, response, body) =>
+				response.pipe(file)
+			);
+		});
+	});
 }
 
 const stream = (range, file, res) => {
@@ -63,34 +97,47 @@ const stream = (range, file, res) => {
 	}
 }
 
-const fetchTorrent = async (imdb, id) => {
+const fetchMovie = async imdb => {
 	try {
 		const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${imdb}`;
 		const { data } = await axios.get(url);
-		const list = [ ...data.items, ...data.items_lang ]
-		for (const cur of list) {
-			if (cur.id == id) return cur
-		}
+		return data
 	} catch (err) {
 		console.log('I got an error with --> ', err.message)
 	}
 }
 
+const getTorrent = (movie, id) => {
+	const list = [ ...movie.items, ...movie.items_lang ]
+	for (const cur of list) {
+		if (cur.id == id) return cur
+	}
+}
+
 module.exports = (movieList, downloadList) => {
+
+	router.get('/info/:imdb', async (req, res) => {
+		try {
+			const { imdb } = req.params
+			const movie = await fetchMovie(imdb)
+			res.json(movie)
+		} catch (err) {
+			console.log("Got error here --> ", err.message)
+		}
+	})
 
 	router.get('/:imdb/:id', async (req, res) => {
 		try {
 			const { range } = req.headers
 			const { imdb, id } = req.params
-			console.log('range -->', range);
+			console.log('range -->', range)
 			if (range) {
-				const downloading = downloadList[id]
-				if (downloading) return stream(range, downloading.file, res)
+				const downloaded = downloadList[id]
+				if (downloaded) return stream(range, downloaded.file, res)
 				let torrent = movieList[id]
 				if (!torrent) {
-					console.log('im fetching from api ...')
-					torrent = await fetchTorrent(imdb, id)
-					console.log('i fetched this from api --> ', torrent.file)
+					const movie = await fetchMovie(imdb, id)
+					torrent = getTorrent(movie, id)
 					if (!torrent) return res.end()
 					movieList[id] = torrent
 				}
@@ -98,18 +145,21 @@ module.exports = (movieList, downloadList) => {
 				const engine = torrentStream(torrent.torrent_magnet, { path: uploadPath })
 				engine.on('torrent', () => {
 					engine.files = engine.files.sort((a, b) => b.length - a.length)
-					const file = engine.files[0]
-					downloadList[id] = { file, engine }
-					stream(range, file, res)
+					engine.files.forEach((cur, i) => !i ? cur.select() : cur.deselect())
+					downloadList[id] = { file: engine.files[0], engine }
+					stream(range, engine.files[0], res)
 				})
 				engine.on('download', index => {
-					console.log('The engine downloaded this -->', index, 'for --> ', engine.files[0].name)
+					const completion = 100 * engine.swarm.downloaded / engine.files[0].length
+					console.log('completion is -->', completion);
+					console.log('The engine downloaded this -->', index)
+					console.log('for --> ', engine.files[0].name)
 				})
 			} else {
-				res.end()
+				res.sendStatus(416)
 			}
 		} catch (err) {
-			console.log('I got an error with --> ', err.message)
+			console.log('I got an error with --> ', err)
 		}
 	})
 
