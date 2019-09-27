@@ -5,7 +5,27 @@
 		<div class="movie_content">
 			<v-row class="movie" justify="center" align="center">
 				<v-col xs="10" sm="8" md="5">
-					<v-img :src="movie.poster_big" class="movie__img"></v-img>
+					<v-hover>
+						<template v-slot:default="{ hover }">
+							<v-card class="mx-auto">
+								<v-img :src="movie.poster_big" class="movie__img" hover></v-img>
+								<v-fade-transition>
+									<v-overlay v-if="hover" absolute>
+										<v-row justify="center">
+											<v-btn text rounded color="white" class="movie_action" @click>
+												<v-img ref="img" src="/trailer.svg" width="60" class="movie_trailer mr-2"/>
+											</v-btn>
+										</v-row>
+										<v-row>
+											<v-btn text rounded color="white" class="movie_action mr-2">
+												<v-icon>favorite</v-icon>
+											</v-btn>
+										</v-row>
+									</v-overlay>
+								</v-fade-transition>
+							</v-card>
+						</template>
+					</v-hover>
 				</v-col>
 				<v-col xs="12" sm="10" md="7" class="movie__details">
 					<h1 class="movie_title font-weight-black text-uppercase py-5 my-5">{{ movie.title }}</h1>
@@ -18,17 +38,21 @@
 						<v-rating dense class="mx-3" color="white" small readonly :value="movie.rating / 2"/>
 					</v-row>
 					<p class="movie_desc my-5 py-5">{{ movie.description }}</p>
-					<v-row justify="end" class="mr-5">
-						<v-btn text rounded color="white" class="movie_action mr-2">
-							<v-icon>favorite</v-icon>
-						</v-btn>
-						<v-btn text rounded color="white" class="movie_action" @click>
-							<v-img ref="img" src="/trailer.svg" width="20" class="movie_trailer"/>
-						</v-btn>
+					<p class="movie_desc my-5 py-5">Torrent Stream</p>
+				</v-col>
+			</v-row>
+			<v-row class="movie" justify="center" align="center">
+				<v-col xs="12" sm="10" md="7" class="movie__details">
+					<h1 class="movie_title font-weight-black text-uppercase py-5 my-5">Actors</h1>
+					<!-- <v-row align="center" justify="start" class="movie_info my-5">
+						<span class="movie_genre mx-4 text-capitalize title">{{ genre }}</span>
+						<v-icon>calendar_today</v-icon>
+						<span class="movie_year ml-2 mr-4">{{ movie.year }}</span>
+						<v-icon>access_time</v-icon>
+						<span class="movie_duration ml-2 mr-4">{{ `${movie.runtime} min` }}</span>
+						<v-rating dense class="mx-3" color="white" small readonly :value="movie.rating / 2"/>
 					</v-row>
-					<v-row justify="center">
-						<v-btn nuxt outlined :to="`/watch/${movie.imdb}`" color="primary">Watch</v-btn>
-					</v-row>
+					<p class="movie_desc my-5 py-5">{{ movie.description }}</p> -->
 				</v-col>
 			</v-row>
 		</div>
@@ -111,6 +135,8 @@
 	height: 100vh;
 	background-position: center;
 	background-size: cover;
+	filter: blur(6px);
+	-webkit-filter: blur(6px);
 }
 
 .movie {
@@ -128,5 +154,6 @@
 	/* width: 30vw; */
 	/* max-width: 10rem; */
 	/* margin-right: 5rem; */
+	margin-top: 5rem;
 }
 </style>
