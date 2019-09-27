@@ -1,15 +1,17 @@
 <template>
-	<video-player
-		class="video__box"
-		ref="videoPlayer"
-		:options="options"
-		:playsinline="true"
-		@ended="onPlayerEnded($event)"
-		@loadeddata="onPlayerLoadeddata($event)"
-		@statechanged="playerStateChanged($event)"
-		@timeupdate="onPlayerTimeupdate($event)"
-		@progress="progress"
-	></video-player>
+	<div class="main_container">
+		<video-player
+			class="video__box"
+			ref="videoPlayer"
+			:options="options"
+			:playsinline="true"
+			@ended="onPlayerEnded($event)"
+			@loadeddata="onPlayerLoadeddata($event)"
+			@statechanged="playerStateChanged($event)"
+			@timeupdate="onPlayerTimeupdate($event)"
+			@progress="progress"
+		></video-player>
+	</div>
 </template>
 
 <script>

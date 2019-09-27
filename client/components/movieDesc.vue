@@ -21,15 +21,7 @@
 				</v-btn>
 			</v-row>
 			<v-row justify="center">
-				<v-list dense>
-					<v-list-item-group color="primary">
-						<v-list-item v-for="(item, i) in movie.items" :key="i">
-							<v-list-item-content>
-								<v-list-item-title @click="watchMovie(item)">{{ item.file }}</v-list-item-title>
-							</v-list-item-content>
-						</v-list-item>
-					</v-list-item-group>
-				</v-list>
+				<v-btn nuxt outlined :to="`/watch/${movie.imdb}`" color="primary">Watch</v-btn>
 			</v-row>
 		</div>
 		<v-row v-if="trailer" column align="center" justify="center" class="trailer_overlay">
@@ -71,40 +63,34 @@
 	export default {
 		name: "movieDesc",
 		data: () => ({
-			id: null,
 			open: false,
 			movie: {},
-			timer: null,
 			trailer: false,
 			vars: { autoplay: 1 }
 		}),
 		computed: {
 			genre() {
 				if (!this.movie.genres || !this.movie.genres.length) return "";
-				return this.movie.genres.join(",");
+				return this.movie.genres.join(", ");
 			}
 		},
 		created() {
 			this.$bus.$on("openDesc", this.openDesc);
 		},
 		methods: {
-			...mapActions(["watch"]),
+			...mapActions(["addMovie"]),
 			async openDesc(id) {
 				try {
 					const url = `https://hypertube.tk/api/movies/info/${id}`;
 					const { data } = await axios.get(url);
-					this.id = id;
-					this.movie = data;
+					this.movie = data.movie;
+					this.movie.sub = data.sub;
+					this.movie.cast = data.info;
 					this.open = true;
+					this.addMovie(this.movie);
 				} catch (err) {
 					console.log("Got error here --> ", err);
 				}
-			},
-			watchMovie(movie) {
-				this.$socket.client.emit("watch", movie);
-				let ext = movie.file.split(".").pop();
-				ext = ext == "mp4" || ext == "webm" ? ext : "webm";
-				this.$router.push(`v/${this.id}/${movie.id}.${ext}`);
 			},
 			openTrailer() {
 				this.trailer = true;
@@ -148,9 +134,10 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 50vw;
+	width: 80vw;
 }
 .movie_title {
+	font-size: 2.5rem;
 	text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.4);
 }
 .movie_desc,
@@ -167,7 +154,7 @@
 	transform: translate(0%, 225%);
 }
 
-@media all and (max-width: 1200px) {
+/* @media all and (max-width: 1200px) {
 	.movie_content {
 		width: 60vw;
 	}
@@ -189,7 +176,7 @@
 	.movie_content {
 		width: 40vw;
 	}
-}
+} */
 .trailer_overlay {
 	position: absolute;
 	top: 0;

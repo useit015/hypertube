@@ -1,10 +1,12 @@
 export const state = () => ({
     user: {},
+    movies: {},
     authenticated: false
 })
 
 export const getters = {
     user: state => state.user,
+    movies: state => state.movies,
     watched: state => state.user.watched,
     authenticated: state => state.authenticated
 }
@@ -23,6 +25,12 @@ export const mutations = {
     },
     updateAvatar: (state, image) => {
         state.user.image = `${image}?${new Date().getTime()}`
+    },
+    addMovie: (state, movie) => {
+        state.movies[movie.imdb] = movie
+    },
+    removeMovie: (state, imdb) => {
+        delete state.movies[imdb]
     },
     markAsWatched: (state, imdb) => {
         if (state.user.watched) {
@@ -49,6 +57,12 @@ export const actions = {
     },
     updateAvatar: ({ commit }, image) => {
         commit('updateAvatar', image)
+    },
+    addMovie: ({ commit }, movie) => {
+        commit('addMovie', movie)
+    },
+    removeMovie: ({ commit }, imdb) => {
+        commit('removeMovie', imdb)
     },
     markAsWatched: ({ commit }, imdb) => {
         commit('markAsWatched', imdb)
