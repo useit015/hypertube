@@ -101,7 +101,7 @@
 </script>
 
 <style>
-.v-overlay__content {
+/* .v-overlay__content {
 	width: 100vw;
 }
 .movie_poster {
@@ -154,7 +154,7 @@
 	transform: translate(0%, 225%);
 }
 
-/* @media all and (max-width: 1200px) {
+@media all and (max-width: 1200px) {
 	.movie_content {
 		width: 60vw;
 	}
@@ -176,7 +176,7 @@
 	.movie_content {
 		width: 40vw;
 	}
-} */
+}
 .trailer_overlay {
 	position: absolute;
 	top: 0;
@@ -195,5 +195,5 @@ iframe {
 	left: 0.7rem;
 	width: 100vw;
 	height: 100vh;
-}
+} */
 </style>
