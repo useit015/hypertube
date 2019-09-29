@@ -5,8 +5,9 @@ module.exports = (movieList, downloadList) => {
 
 	const freeEngine = (downloading, movie) => {
 		if (downloading && downloading.engine) {
+			const file = movie.file
 			downloading.engine.destroy(() => {
-				console.log('i destroyed the engine for --> ', movie.file)
+				console.log('i destroyed the engine for --> ', file)
 			})
 			delete downloadList[movie.id]
 			delete movieList[movie.id]

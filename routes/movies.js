@@ -6,18 +6,8 @@ const cloudscraper = require("cloudscraper")
 const torrentStream = require('torrent-stream')
 const { resolve, join, dirname } = require('path')
 const fs = require("fs");
-const request = require("request");
-const OS = require("opensubtitles-api");
+const yifysubtitles = require('@amilajack/yifysubtitles');
 const router = express.Router()
-
-const OpenSubtitles = new OS({
-  useragent: "TemporaryUserAgent",
-  username: "hypertube1337",
-  password: "Test@1337",
-  ssl: true
-});
-
-OpenSubtitles.login();
 
 const extractData = (range, file) => {
 	const parts = range.replace(/bytes=/, '').split('-')
@@ -70,21 +60,33 @@ const convert = (file, thread = 4) => {
 	return converted
 }
 
-const getSubt = id => {
-	const uploadPath = "./sub/";
-	OpenSubtitles.search({
-		imdbid: id
-	}).then(subtitles => {
-		Object.keys(subtitles).forEach(async sub => {
-			let file = fs.createWriteStream(
-				uploadPath + `${sub}-${subtitles[sub].filename}`
-			);
-	
-			request.get(subtitles[sub].vtt, (err, response, body) =>
-				response.pipe(file)
-			);
-		});
-	});
+const getSubt = async (id, imdb) => {
+	const uploadPath = `./sub/${imdb}`;
+
+	try {
+		if (!fs.existsSync(uploadPath)) {
+			fs.mkdir(uploadPath, (err) => {
+				if (err) throw err
+			});
+		}
+	} catch (err) {
+		console.log(err.message);
+	}
+
+	return await yifysubtitles(id, { path: uploadPath, langs: ['en', 'fr', 'zh'] }); 
+}
+
+const getInfo = async id => {
+	const url = `http://api.themoviedb.org/3/movie/${id}/casts?api_key=${process.env.MOVIEDB}`;
+
+	const { data } = await axios.get(url);
+
+	return result = {
+		cast: data.cast.slice(0,6),
+		crew: data.crew.slice(0,1)
+
+	};
+
 }
 
 const stream = (range, file, res) => {
@@ -97,19 +99,70 @@ const stream = (range, file, res) => {
 	}
 }
 
-const fetchMovie = async imdb => {
+const formatMovieName = (file, year) => {
+	let splitted = file.split('.')
+	const ext = splitted.pop()
+	splitted = splitted.map(cur => cur.split(' ')).flat()
+	const name = splitted.filter(cur => !cur.includes(year))
+		.filter(cur => !/.*1080p.*/.test(cur) && !/.*720p.*/.test(cur))
+		.join(' ')
+	return { name, ext}
+}
+
+const getTorrentlist = movie => {
+	let allTorrents = [...movie.items, ...movie.items_lang]
+	const langs = []
+	allTorrents = allTorrents.map(cur => {
+		let language = cur.language
+		if (language == "") language = 'us'
+		if (language == "pb") language = 'br'
+		if (!langs.find(item => item == language)) langs.push(language)
+		const { name, ext} = formatMovieName(cur.file, movie.year)
+		return {
+			ext,
+			name,
+			language,
+			quality: cur.quality,
+			id: cur.id,
+			size: cur.size_bytes,
+			magnet: cur.torrent_magnet,
+			peers: cur.torrent_peers,
+			seeds: cur.torrent_seeds
+		}
+	})
+	return {
+		langs,
+		t720: allTorrents.filter(cur => cur.quality == '720p'),
+		t1080: allTorrents.filter(cur => cur.quality == '1080p')
+	}
+}
+
+const fetchMovie = async id => {
 	try {
-		const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${imdb}`;
+		const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`;
 		const { data } = await axios.get(url);
-		return data
+		const { title, year, rating, imdb, poster_big, description, runtime, trailer } = data
+		const torrents = getTorrentlist(data)
+		const movie = {
+			imdb,
+			year,
+			title,
+			rating,
+			runtime,
+			trailer,
+			torrents,
+			poster_big,
+			description
+		}
+		return movie;
 	} catch (err) {
 		console.log('I got an error with --> ', err.message)
 	}
 }
 
 const getTorrent = (movie, id) => {
-	const list = [ ...movie.items, ...movie.items_lang ]
-	for (const cur of list) {
+	const torrents = [ ...movie.torrents.t720, ...movie.torrents.t1080 ]
+	for (const cur of torrents) {
 		if (cur.id == id) return cur
 	}
 }
@@ -118,11 +171,17 @@ module.exports = (movieList, downloadList) => {
 
 	router.get('/info/:imdb', async (req, res) => {
 		try {
-			const { imdb } = req.params
-			const movie = await fetchMovie(imdb)
-			res.json(movie)
+			const { imdb } = req.params;
+			const [ movie, sub, cast ] = await Promise.all([
+				fetchMovie(imdb),
+				getSubt(imdb, imdb),
+				getInfo(imdb)
+			])
+			movie.sub = sub
+			movie.cast = cast
+			res.json({ movie });
 		} catch (err) {
-			console.log("Got error here --> ", err.message)
+			console.log("Got error here --> ", err.message);
 		}
 	})
 
@@ -142,7 +201,7 @@ module.exports = (movieList, downloadList) => {
 					movieList[id] = torrent
 				}
 				const uploadPath = resolve(dirname(__dirname), 'movies')
-				const engine = torrentStream(torrent.torrent_magnet, { path: uploadPath })
+				const engine = torrentStream(torrent.magnet, { path: uploadPath })
 				engine.on('torrent', () => {
 					engine.files = engine.files.sort((a, b) => b.length - a.length)
 					engine.files.forEach((cur, i) => !i ? cur.select() : cur.deselect())
@@ -172,7 +231,7 @@ module.exports = (movieList, downloadList) => {
 			if (sort === "Date added") sortType = "dateadded";
 			if (sort === "Year") sortType = "year";
 			if (sort === "Title") sortType = "title";
-			let purl = `https://api.apiumadomain.com/list?sort=${sortType}&cb=&quality=720p,1080p,3d&page=${page}`;
+			let purl = `https://api.apiumadomain.com/list?short=1&sort=${sortType}&cb=&quality=720p,1080p,3d&page=${page}`;
 			let yurl = `https://yts.lt/api/v2/list_movies.json?&page=${page}`;
 			if (query) {
 				purl = `${purl}&keywords=${query}`;
@@ -221,12 +280,7 @@ module.exports = (movieList, downloadList) => {
 						year: cur.year,
 						rating: cur.rating,
 						imdb: cur.imdb,
-						poster_med: cur.poster_med,
-						items: [...cur.items, ...cur.items_lang].map(cur => ({
-							id: cur.id,
-							size: cur.size_bytes,
-							magnet: cur.torrent_magnet
-						}))
+						poster_med: cur.poster_med
 					}));
 				}
 				return res.json(popcornList);
