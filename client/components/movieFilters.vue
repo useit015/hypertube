@@ -47,6 +47,7 @@
 				large
 				color="primary"
 				class="play__btn my-5"
+				v-if="filteredTorrentsInfo[selectedTorrent]"
 				@click="$emit('play', filteredTorrentsInfo[selectedTorrent])"
 			>
 				Play
