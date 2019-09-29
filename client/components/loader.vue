@@ -1,22 +1,35 @@
 <template>
-	<div class="loader">
-		<div class="spinner">
-			<div class="rect1"></div>
-			<div class="rect2"></div>
-			<div class="rect3"></div>
-			<div class="rect4"></div>
-			<div class="rect5"></div>
+	<div class="loader__overlay">
+		<div class="loader">
+			<div class="spinner">
+				<div class="rect1"></div>
+				<div class="rect2"></div>
+				<div class="rect3"></div>
+				<div class="rect4"></div>
+				<div class="rect5"></div>
+			</div>
 		</div>
 	</div>
 </template>
 
 <style>
-.loader {
+.loader__overlay {
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
+
+.loader {
+	z-index: 16;
+}
+
 .spinner {
 	width: 50px;
 	height: 40px;
