@@ -31,9 +31,25 @@
 		</v-row>
 		<v-list min-width="95%" max-width="95%" class="torrent__list mx-auto mx-md-0">
 			<v-list-item-group v-model="selectedTorrent" color="primary">
-				<v-list-item v-for="(item, i) in filteredTorrentsDisplay" :key="i" class="torrent__item">
+				<v-list-item class="torrent__item" v-for="(item, i) in filteredTorrentsDisplay" :key="i">
 					<v-list-item-icon>
-						<v-icon :color="item.color">fast_forward</v-icon>
+						<v-tooltip color="grey darken-4" right>
+							<template v-slot:activator="{ on }">
+								<v-icon
+									v-text="item.speed.icon"
+									:color="item.speed.color"
+									class="speed__icon mr-3"
+									v-on="on"
+								></v-icon>
+							</template>
+							<span class="tooltip">{{ `Seeds ${item.seeds} / Peers ${item.peers}` }}</span>
+						</v-tooltip>
+						<v-tooltip color="grey darken-4" right>
+							<template v-slot:activator="{ on }">
+								<v-icon v-text="item.seekable.icon" v-on="on"></v-icon>
+							</template>
+							<span class="tooltip">{{ item.seekable.text }}</span>
+						</v-tooltip>
 					</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title v-text="item.name"></v-list-item-title>
@@ -88,8 +104,10 @@
 			filteredTorrentsDisplay() {
 				return this.filteredTorrents.map(cur => ({
 					name: cur.name,
-					color:
-						cur.ext == "mp4" || cur.ext == "webm" ? "success" : "error"
+					seeds: cur.seeds,
+					peers: cur.peers,
+					seekable: this.seekableIcon(cur.ext),
+					speed: this.speedIcon(cur.seeds, cur.peers)
 				}));
 			},
 			filteredTorrentsInfo() {
@@ -100,6 +118,33 @@
 			}
 		},
 		methods: {
+			seekableIcon(ext) {
+				if (ext == "mp4" || ext == "webm") {
+					return {
+						icon: "fast_forward",
+						text: "This movie is seekable"
+					};
+				} else {
+					return {
+						icon: "live_tv",
+						text: "This movie is not seekable"
+					};
+				}
+			},
+			speedIcon(seeds, peers) {
+				const total = parseInt(seeds, 10) + parseInt(peers, 10);
+				if (total > 1500) {
+					return {
+						color: "success",
+						icon: "arrow_drop_up"
+					};
+				} else {
+					return {
+						color: "error",
+						icon: "arrow_drop_down"
+					};
+				}
+			},
 			qualityExists(quality) {
 				if (!this.torrents) return;
 				const list = this.torrents[quality];
@@ -178,6 +223,15 @@
 
 .theme--dark.v-btn-toggle .v-btn.v-btn {
 	border-color: #64d6c450 !important;
+}
+
+.speed__icon {
+	transform: scale(1.5);
+}
+
+.tooltip {
+	font-size: 1.05em;
+	letter-spacing: 1px;
 }
 
 @media only screen and (max-width: 600px) {

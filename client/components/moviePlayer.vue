@@ -1,36 +1,40 @@
 <template>
-	<video-player
-		class="video__box"
-		ref="videoPlayer"
-		:options="options"
-		:playsinline="true"
-		@ended="onPlayerEnded($event)"
-		@loadeddata="onPlayerLoadeddata($event)"
-		@statechanged="playerStateChanged($event)"
-		@timeupdate="onPlayerTimeupdate($event)"
-	></video-player>
+	<div class="video__box">
+		<video ref="videoPlayer" class="video-js" @loadeddata="$emit('loaded')" crossorigin="anonymous">
+			<track
+				v-for="(sub, i) in subs"
+				:key="i"
+				kind="captions"
+				:label="sub.lang"
+				:srclang="sub.langShort"
+				:src="`http://hypertube.tk/${sub.path}`"
+				:default="sub.langShort == $i18n.locale"
+			>
+		</video>
+	</div>
 </template>
 
 <script>
-	import { videoPlayer } from "vue-video-player";
+	import videojs from "video.js";
 
 	export default {
-		components: {
-			videoPlayer
-		},
 		props: {
 			id: { type: String, default: "" },
 			ext: { type: String, default: "" },
-			imdb: { type: String, default: "" }
+			imdb: { type: String, default: "" },
+			subs: { type: Array, default: () => [] }
 		},
 		data() {
 			const ext = this.ext == "mp4" || this.ext == "webm" ? this.ext : "webm";
 			return {
+				player: null,
 				options: {
+					controls: true,
 					fluid: true,
 					muted: false,
 					preload: "auto",
 					autoplay: true,
+					liveui: true,
 					language: this.$i18n.locale,
 					playbackRates: [0.5, 1.0, 1.5, 2.0],
 					sources: [
@@ -44,27 +48,14 @@
 				}
 			};
 		},
-		methods: {
-			playerStateChanged() {
-				// const percent = (this.player.bufferedPercent() * 100).toFixed(1);
-				// console.log("------>", percent + " %");
-				// console.log("this.player.buffered() -->", this.player.buffered());
-				// console.log(
-				// 	"this.player.bufferedEnd() -->",
-				// 	this.player.bufferedEnd()
-				// );
-			},
-			onPlayerTimeupdate(player) {
-				console.log("currentTime -->", player.currentTime());
-				// if (!this.watchedMovie && player.currentTime() > 10) {
-				// 	this.markWatched();
-				// }
-			},
-			onPlayerLoadeddata(player) {
-				this.$emit("loaded");
-			},
-			onPlayerEnded() {
-				console.log("The fucking movie has ended !!");
+		mounted() {
+			this.player = videojs(this.$refs.videoPlayer, this.options, () => {
+				console.log("its loaded ---->");
+			});
+		},
+		beforeDestroy() {
+			if (this.player) {
+				this.player.dispose();
 			}
 		}
 	};

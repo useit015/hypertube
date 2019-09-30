@@ -27,7 +27,7 @@ export default {
     /*
      ** Global CSS
      */
-    css: [],
+    css: ['video.js/dist/video-js.css'],
     /*
      ** Plugins to load before mounting the App
      */
@@ -35,7 +35,6 @@ export default {
         { src: '~/plugins/bus' },
         { src: '~/plugins/vue-youtube' },
         { src: '~/plugins/i18n' },
-        { src: '~/plugins/vue-video' },
         {
             src: '~/plugins/socket.js',
             ssr: false

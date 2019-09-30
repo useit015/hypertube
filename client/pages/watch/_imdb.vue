@@ -41,6 +41,7 @@
 					:ext="selected.ext"
 					:id="selected.id"
 					:imdb="selected.imdb"
+					:subs="selected.sub"
 					@loaded="playing = true"
 				/>
 			</v-row>
@@ -76,13 +77,9 @@
 			playing: false,
 			trailer: false,
 			movieLoading: false,
+			selectedTorrent: null,
 			vars: {
 				autoplay: 1
-			},
-			selected: {
-				id: null,
-				ext: null,
-				imdb: null
 			}
 		}),
 		async created() {
@@ -91,7 +88,7 @@
 				const url = `https://hypertube.tk/api/movies/info/${this.imdb}`;
 				const { data } = await axios.get(url);
 				this.movie = data.movie;
-				this.$socket.client.emit("watch", this.movie);
+				// this.$socket.client.emit("watch", this.movie);
 				this.loading = false;
 			} catch (err) {
 				console.log("i agot an error with --> ", err.message);
@@ -113,7 +110,7 @@
 			}
 		},
 		computed: {
-			...mapGetters(["movies"]),
+			...mapGetters(["movies", "user"]),
 			imdb() {
 				return this.$route.params.imdb;
 			},
@@ -131,18 +128,32 @@
 				const hours = runtime / 60;
 				const mins = runtime % 60;
 				return `${hours.toFixed(0)} h ${mins} min`;
+			},
+			selected() {
+				if (this.selectedTorrent) {
+					return { ...this.selectedTorrent };
+				} else {
+					return {
+						id: null,
+						ext: null,
+						sub: null,
+						imdb: null
+					};
+				}
 			}
 		},
 		methods: {
 			play({ ext, id }) {
 				const { imdb } = this;
-				this.selected = { id, ext, imdb };
+				const { sub } = this.movie;
+				this.selectedTorrent = { id, ext, imdb, sub };
 				this.movieLoading = true;
 				// this.$socket.client.emit("watch");
 			},
 			closeMovie() {
 				this.playing = false;
 				this.movieLoading = false;
+				this.selectedTorrent = null;
 				this.$socket.client.emit("cleanup");
 			}
 		}

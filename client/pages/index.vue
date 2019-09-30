@@ -7,7 +7,6 @@
 		<div v-else class="search_placeholder">
 			<h1>Nothing found</h1>
 		</div>
-		<movieDesc @hook:updated="movieMounted"/>
 	</v-layout>
 </template>
 
@@ -15,7 +14,6 @@
 	import axios from "axios";
 	import drawer from "@/components/drawer";
 	import movieCard from "@/components/movieCard";
-	import movieDesc from "@/components/movieDesc";
 
 	const fetchMovieList = async (page, query, genre, sort) => {
 		const body = { page, query, genre, sort };
@@ -33,8 +31,7 @@
 		middleware: "authenticated",
 		components: {
 			drawer,
-			movieCard,
-			movieDesc
+			movieCard
 		},
 		data: () => ({
 			page: 1,
