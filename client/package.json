@@ -11,7 +11,11 @@
         "generate": "nuxt generate"
     },
     "dependencies": {
+        "@ckeditor/ckeditor5-build-classic": "^12.4.0",
+        "@ckeditor/ckeditor5-build-inline": "^12.4.0",
+        "@ckeditor/ckeditor5-vue": "^1.0.0",
         "@nuxtjs/axios": "^5.3.6",
+        "moment": "^2.24.0",
         "nuxt": "^2.0.0",
         "socket.io-client": "^2.3.0",
         "video.js": "^7.6.5",

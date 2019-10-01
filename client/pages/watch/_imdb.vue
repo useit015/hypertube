@@ -26,6 +26,7 @@
 				</v-col>
 			</v-row>
 			<movie-cast :cast="movie.cast"/>
+			<movie-comments :imdb="this.imdb"/>
 			<v-row v-if="trailer" column align="center" justify="center" class="trailer_overlay">
 				<v-btn fab small outlined color="primary" class="trailer_close" @click="trailer = false">
 					<v-icon>close</v-icon>
@@ -42,7 +43,7 @@
 					:id="selected.id"
 					:imdb="selected.imdb"
 					:subs="selected.sub"
-					@loaded="playing = true"
+					@loaded="movieLoaded"
 				/>
 			</v-row>
 			<v-btn fab outlined small color="primary" class="back pl-2" @click="$router.push('/')">
@@ -61,6 +62,7 @@
 	import moviePlayer from "@/components/moviePlayer";
 	import moviePoster from "@/components/moviePoster";
 	import movieFilters from "@/components/movieFilters";
+	import movieComments from "@/components/movieComments";
 
 	export default {
 		middleware: "authenticated",
@@ -69,7 +71,8 @@
 			movieCast,
 			moviePlayer,
 			moviePoster,
-			movieFilters
+			movieFilters,
+			movieComments
 		},
 		data: () => ({
 			movie: {},
@@ -148,13 +151,20 @@
 				const { sub } = this.movie;
 				this.selectedTorrent = { id, ext, imdb, sub };
 				this.movieLoading = true;
-				// this.$socket.client.emit("watch");
 			},
 			closeMovie() {
 				this.playing = false;
 				this.movieLoading = false;
 				this.selectedTorrent = null;
 				this.$socket.client.emit("cleanup");
+			},
+			movieLoaded() {
+				this.playing = true;
+				const payload = {
+					id: this.selectedTorrent.id,
+					imdb: this.imdb
+				};
+				this.$socket.client.emit("watch", payload);
 			}
 		}
 	};

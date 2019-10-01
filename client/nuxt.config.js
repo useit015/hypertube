@@ -33,8 +33,8 @@ export default {
      */
     plugins: [
         { src: '~/plugins/bus' },
-        { src: '~/plugins/vue-youtube' },
         { src: '~/plugins/i18n' },
+        { src: '~/plugins/vue-youtube' },
         {
             src: '~/plugins/socket.js',
             ssr: false
