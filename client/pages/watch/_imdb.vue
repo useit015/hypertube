@@ -5,7 +5,7 @@
 		<v-container class="movie__content">
 			<v-row class="movie" justify="center" align="start">
 				<v-col xs="10" sm="8" md="5" lg="4" xl="3">
-					<movie-poster :poster="movie.poster_big" @trailerOpen="trailer = true"/>
+					<movie-poster :poster="movie.poster_big" :imdb="imdb" @trailerOpen="trailer = true"/>
 				</v-col>
 				<v-col xs="12" sm="10" md="7" class="movie__details">
 					<h1
@@ -44,6 +44,7 @@
 					:imdb="selected.imdb"
 					:subs="selected.sub"
 					@loaded="movieLoaded"
+					@playerError="playerError"
 				/>
 			</v-row>
 			<v-btn fab outlined small color="primary" class="back pl-2" @click="$router.push('/')">
@@ -56,7 +57,7 @@
 
 <script>
 	import axios from "axios";
-	import { mapGetters } from "vuex";
+	import { mapActions } from "vuex";
 	import loader from "@/components/loader";
 	import movieCast from "@/components/movieCast";
 	import moviePlayer from "@/components/moviePlayer";
@@ -102,18 +103,19 @@
 		},
 		watch: {
 			trailer() {
+				if (this.trailer) window.scrollTo(0, 0);
 				document.documentElement.style.overflow = this.trailer
 					? "hidden"
 					: "auto";
 			},
 			movieLoading() {
+				if (this.movieLoading) window.scrollTo(0, 0);
 				document.documentElement.style.overflow = this.movieLoading
 					? "hidden"
 					: "auto";
 			}
 		},
 		computed: {
-			...mapGetters(["movies", "user"]),
 			imdb() {
 				return this.$route.params.imdb;
 			},
@@ -146,9 +148,10 @@
 			}
 		},
 		methods: {
+			...mapActions(["markAsWatched"]),
 			play({ ext, id }) {
 				const { imdb } = this;
-				const { sub } = this.movie;
+				const sub = this.movie.sub.filter(cur => !!cur.path.length);
 				this.selectedTorrent = { id, ext, imdb, sub };
 				this.movieLoading = true;
 			},
@@ -165,6 +168,12 @@
 					imdb: this.imdb
 				};
 				this.$socket.client.emit("watch", payload);
+				this.markAsWatched(this.imdb);
+			},
+			playerError() {
+				this.playing = false;
+				this.movieLoading = false;
+				this.selectedTorrent = null;
 			}
 		}
 	};

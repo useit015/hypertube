@@ -1,11 +1,11 @@
 <template>
-	<div class="comment__node" :style="`padding-left:${depth ? depth + 25 : 15}px;`">
-		<v-row justify="start" align="baseline" class="my-2 mx-1">
+	<div class="comment__node ml-3" :style="`padding-left:${depth + 25}px;`">
+		<v-row justify="start" align="baseline" class="my-1 mx-1">
 			<nuxt-link class="comment__username" :to="`/profile/${node.username}`">{{ node.username }}</nuxt-link>
 			<span class="comment__time">{{ commentTime }}</span>
 			<v-btn text color="primary" class="ml-auto mr-3 reply" @click="editorState = !editorState">Reply</v-btn>
 		</v-row>
-		<div class="comment__text pl-1" v-html="node.body"></div>
+		<div class="comment__text pl-1" v-show="!collapsed" v-html="node.body"></div>
 		<div class="editor__container" v-if="editorState">
 			<commentEditor @changed="editorUpdated"/>
 			<v-icon class="editor__button" @click="postReply">send</v-icon>
@@ -67,27 +67,27 @@
 				this.editorData = data;
 			},
 			toggleCollapse() {
-				this.collapsed = !this.node.children.length
-					? false
-					: !this.collapsed;
+				this.collapsed = !this.collapsed;
 			},
 			async postReply() {
-				try {
-					const url = `https://hypertube.tk/api/comment`;
-					const headers = { Authorization: `jwt ${this.user.token}` };
-					const opts = {
-						commentImdb: this.node.imdb,
-						commentBody: this.editorData,
-						commentParent: this.node._id
-					};
-					this.editorData = "";
-					this.editorState = false;
-					const { data } = await axios.post(url, opts, { headers });
-					if (!data.err) {
-						this.$bus.$emit("commentAdded", data.comment);
+				if (this.editorData) {
+					try {
+						const url = `https://hypertube.tk/api/comment`;
+						const headers = { Authorization: `jwt ${this.user.token}` };
+						const opts = {
+							commentImdb: this.node.imdb,
+							commentBody: this.editorData,
+							commentParent: this.node._id
+						};
+						this.editorData = "";
+						this.editorState = false;
+						const { data } = await axios.post(url, opts, { headers });
+						if (!data.err) {
+							this.$bus.$emit("commentAdded", data.comment);
+						}
+					} catch (err) {
+						console.log("you got an error on --> ", err);
 					}
-				} catch (err) {
-					console.log("you got an error on --> ", err);
 				}
 			}
 		}
@@ -98,6 +98,7 @@
 .comment__node {
 	font-size: 1.4rem;
 	letter-spacing: 1px;
+	padding-bottom: 0.3rem;
 }
 
 .comment__username {
@@ -119,7 +120,11 @@
 }
 
 .comment__text {
-	padding: 0 0 0.5rem 0;
+	padding: 0 0 0.2rem 0;
+}
+
+.comment__text > p {
+	margin: -0.2rem 0 0 0;
 }
 
 .comment__editor {

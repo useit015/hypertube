@@ -2,7 +2,7 @@
 	<v-hover class="hover">
 		<template v-slot:default="{ hover }">
 			<v-card class="mx-auto">
-				<v-img :src="poster" class="movie__img" hover></v-img>
+				<v-img :src="poster" v-on:error="imageLoadError" class="movie__img" hover></v-img>
 				<v-fade-transition>
 					<v-overlay v-show="hover" class="movie__img--overlay" absolute>
 						<svg
@@ -25,7 +25,11 @@
 								></path>
 							</g>
 						</svg>
-						<v-icon class="movie__action like">favorite</v-icon>
+						<v-icon
+							class="movie__action like"
+							:color="movieLiked ? 'error' : 'white'"
+							@click="toggleLikeMovie"
+						>favorite</v-icon>
 					</v-overlay>
 				</v-fade-transition>
 			</v-card>
@@ -34,11 +38,49 @@
 </template>
 
 <script>
+	import axios from "axios";
+	import { mapGetters, mapActions } from "vuex";
+
 	export default {
 		props: {
+			imdb: {
+				type: String,
+				default: ""
+			},
 			poster: {
 				type: String,
 				default: "https://via.placeholder.com/800?text=No+Picture"
+			}
+		},
+		computed: {
+			...mapGetters(["token", "liked"]),
+			movieLiked() {
+				return this.liked.find(cur => cur == this.imdb);
+			}
+		},
+		methods: {
+			...mapActions(["updateLikes"]),
+			toggleLikeMovie() {
+				try {
+					const url = `https://hypertube.tk/api/users/like`;
+					console.log("token -->", this.token);
+					const headers = { Authorization: `jwt ${this.token}` };
+					const data = { imdb: this.imdb };
+					axios
+						.post(url, data, { headers })
+						.then(res => {
+							if (!res.data.err) {
+								this.updateLikes(res.data.liked);
+								console.log("i liked the movie --> ", res);
+							}
+						})
+						.catch(err => console.error(err));
+				} catch (err) {
+					console.log("err -->", err);
+				}
+			},
+			imageLoadError() {
+				console.log("Cant load image ..");
 			}
 		}
 	};

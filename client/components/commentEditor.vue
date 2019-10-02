@@ -37,7 +37,6 @@
 
 .ck.ck-editor__main > .ck-editor__editable {
 	border: none !important;
-	/* background: transparent !important; */
 	background-color: #64d6c420 !important;
 }
 

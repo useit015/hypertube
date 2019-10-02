@@ -72,16 +72,8 @@
 				out: "logout"
 			}),
 			async logout() {
-				try {
-					const url = `https://hypertube.tk/api/users/logout`;
-					const token = localStorage.getItem("token");
-					const headers = { Authorization: `jwt ${token}` };
-					const res = await axios.get(url, { headers });
-					if (res.data.ok) this.out();
-					this.$router.push("sign");
-				} catch (err) {
-					console.log("problem with -->", err);
-				}
+				this.out();
+				this.$router.push("sign");
 			},
 			searchMovie() {
 				this.$bus.$emit("searchMovie", this.query);

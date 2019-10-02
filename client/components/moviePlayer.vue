@@ -29,6 +29,7 @@
 			return {
 				player: null,
 				options: {
+					errorDisplay: false,
 					controls: true,
 					fluid: true,
 					muted: false,
@@ -44,13 +45,19 @@
 								this.id
 							}`
 						}
-					]
+					],
+					userActions: {
+						doubleClick: true,
+						hotkeys: true
+					}
 				}
 			};
 		},
 		mounted() {
-			this.player = videojs(this.$refs.videoPlayer, this.options, () => {
-				console.log("its loaded ---->");
+			const self = this;
+			videojs.log.level("off");
+			this.player = videojs(this.$refs.videoPlayer, this.options, function() {
+				this.on("error", () => self.$emit("playerError"));
 			});
 		},
 		beforeDestroy() {

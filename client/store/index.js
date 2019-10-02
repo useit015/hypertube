@@ -7,6 +7,8 @@ export const state = () => ({
 export const getters = {
     user: state => state.user,
     movies: state => state.movies,
+    liked: state => state.user.liked,
+    token: state => state.user.token,
     watched: state => state.user.watched,
     authenticated: state => state.authenticated
 }
@@ -33,11 +35,14 @@ export const mutations = {
         delete state.movies[imdb]
     },
     markAsWatched: (state, imdb) => {
-        if (state.user.watched) {
+        if (state.user.watched && state.user.watched.length) {
             state.user.watched.push(imdb)
         } else {
             state.user.watched = [imdb]
         }
+    },
+    updateLikes: (state, liked) => {
+        state.user.liked = [...liked]
     }
 }
 
@@ -66,6 +71,9 @@ export const actions = {
     },
     markAsWatched: ({ commit }, imdb) => {
         commit('markAsWatched', imdb)
+    },
+    updateLikes: ({ commit }, liked) => {
+        commit('updateLikes', liked)
     }
 }
 

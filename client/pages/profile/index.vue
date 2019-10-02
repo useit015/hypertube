@@ -2,7 +2,7 @@
 	<v-layout justify-center wrap class="user" v-if="loaded">
 		<div class="avatar__container">
 			<v-avatar tile slot="offset" class="avatar" size="200">
-				<img :src="`https://hypertube.tk${user.image}`" class="avatar__img">
+				<img :src="avatar" class="avatar__img">
 				<div class="avatar__btn">
 					<v-fab-transition>
 						<v-btn color="dark" fab small @click.stop="openEditor">
@@ -137,6 +137,12 @@
 	import passDialog from "@/components/passDialog";
 	import imageEditor from "@/components/imageEditor";
 
+	const isExternal = url =>
+		url &&
+		(url.indexOf(":") > -1 ||
+			url.indexOf("//") > -1 ||
+			url.indexOf("www.") > -1);
+
 	export default {
 		middleware: "authenticated",
 		components: {
@@ -164,6 +170,11 @@
 			...mapGetters(["user"]),
 			langue() {
 				return this.user.langue;
+			},
+			avatar() {
+				return isExternal(this.user.image)
+					? this.user.image
+					: `https://hypertube.tk${this.user.image}`;
 			}
 		},
 		watch: {

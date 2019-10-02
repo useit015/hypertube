@@ -132,8 +132,8 @@
 	position: relative;
 }
 
-.node.root {
-	padding-bottom: 0.7rem;
+.root.node {
+	padding-bottom: 0.5rem;
 }
 
 .node > .comment__collapse,
@@ -146,7 +146,7 @@
 
 .node::before {
 	width: 1px;
-	height: calc(100% - 2.5rem);
+	height: calc(100% - 2.8rem);
 	background-color: #64d6c4;
 	transform: translate(0.5rem, 1.5rem);
 }
@@ -155,11 +155,6 @@
 	cursor: pointer;
 	border-radius: 50%;
 	transform: translate(-0.2rem, 0.5rem) scale(0.9);
-}
-
-.root.node > .comment__collapse,
-.root.node::before {
-	display: none;
 }
 
 .comment__add {

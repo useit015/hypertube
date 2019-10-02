@@ -1,6 +1,6 @@
 <template>
 	<v-row class="movie" justify="space-around" align="start">
-		<v-col xs="10" sm="8" md="5" lg="4" xl="3" class="movie__actors">
+		<v-col xs="10" sm="8" md="5" lg="4" xl="3" class="movie__actors" v-if="director">
 			<h1 class="movie__title sub text-center font-weight-black text-uppercase mb-5 pb-5">Director</h1>
 			<v-row justify="center">
 				<v-card class="director__card">
@@ -9,7 +9,7 @@
 				</v-card>
 			</v-row>
 		</v-col>
-		<v-col xs="12" sm="10" md="7" lg="6" xl="5" class="movie__actors">
+		<v-col xs="12" sm="10" md="7" lg="6" xl="5" class="movie__actors" v-if="!!cast.cast.length">
 			<h1 class="movie__title sub text-center font-weight-black text-uppercase mb-5 pb-5">Actors</h1>
 			<v-row justify="center">
 				<v-card v-for="actor in cast.cast" :key="actor.cast_id" class="actor__card">
