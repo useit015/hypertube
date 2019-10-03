@@ -45,13 +45,13 @@
 		</v-container>
 		<v-container>
 			<v-row justify="space-around" align="start">
-				<v-col v-if="!!userLoaded.liked.length">
+				<v-col v-if="!!liked.length">
 					<v-divider class="my-5"></v-divider>
 					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Liked Movies</h1>
 					<v-row justify="center">
 						<v-card
 							flat
-							v-for="movie in userLoaded.liked"
+							v-for="movie in liked"
 							:key="movie.imdb"
 							class="movie__card"
 							@click="$router.push(`/watch/${movie.imdb}`)"
@@ -65,13 +65,13 @@
 		</v-container>
 		<v-container>
 			<v-row justify="space-around" align="start">
-				<v-col v-if="!!userLoaded.watched.length">
+				<v-col v-if="!!watched.length">
 					<v-divider class="my-5"></v-divider>
 					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Watched Movies</h1>
 					<v-row justify="center">
 						<v-card
 							flat
-							v-for="movie in userLoaded.watched"
+							v-for="movie in watched"
 							:key="movie.imdb"
 							class="movie__card"
 							@click="$router.push(`/watch/${movie.imdb}`)"
@@ -86,11 +86,11 @@
 	</v-layout>
 	<div class="not__found" v-else-if="!userLoaded && loaded">
 		<h1 class="ml-5">User not found</h1>
-		<v-btn fab outlined small color="primary" class="back__nt pl-2" nuxt to='/'>
-				<v-icon>arrow_back_ios</v-icon>
-			</v-btn>
+		<v-btn fab outlined small color="primary" class="back__nt pl-2" nuxt to="/">
+			<v-icon>arrow_back_ios</v-icon>
+		</v-btn>
 	</div>
-	<loader v-else/>	
+	<loader v-else/>
 </template>
 
 <script>
@@ -132,6 +132,16 @@
 				return isExternal(this.user.image)
 					? this.userLoaded.image
 					: `https://hypertube.tk${this.userLoaded.image}`;
+			},
+			liked() {
+				return this.userLoaded.movies
+					? this.userLoaded.movies.filter(cur => cur.liked)
+					: [];
+			},
+			watched() {
+				return this.userLoaded.movies
+					? this.userLoaded.movies.filter(cur => cur.watched)
+					: [];
 			}
 		},
 		async created() {
@@ -139,7 +149,9 @@
 			this.userLoaded = res;
 			this.loaded = true;
 			this.$bus.$emit("showNavbar");
-			if (this.$route.params.username === this.user.username) { this.$router.push('/profile'); }
+			if (this.$route.params.username === this.user.username) {
+				this.$router.push("/profile");
+			}
 		},
 		beforeDestroy() {
 			this.$bus.$emit("hideNavbar");
@@ -160,6 +172,5 @@
 	transform: translate(10%, 10%);
 	border-radius: 5px !important;
 }
-
 </style>
 

@@ -1,11 +1,14 @@
 <template>
 	<div class="comment__node ml-3" :style="`padding-left:${depth + 25}px;`">
 		<v-row justify="start" align="baseline" class="my-1 mx-1">
-			<nuxt-link class="comment__username" :to="`/profile/${node.username}`">{{ node.username }}</nuxt-link>
+			<nuxt-link
+				class="comment__username text-truncate"
+				:to="`/profile/${node.username ? node.username : ''}`"
+			>{{ node.username ? node.username : 'Deleted account' }}</nuxt-link>
 			<span class="comment__time">{{ commentTime }}</span>
 			<v-btn text color="primary" class="ml-auto mr-3 reply" @click="editorState = !editorState">Reply</v-btn>
 		</v-row>
-		<div class="comment__text pl-1" v-show="!collapsed" v-html="node.body"></div>
+		<div class="comment__text text-truncate pl-1" v-show="!collapsed" v-html="node.body"></div>
 		<div class="editor__container" v-if="editorState">
 			<commentEditor @changed="editorUpdated"/>
 			<v-icon class="editor__button" @click="postReply">send</v-icon>

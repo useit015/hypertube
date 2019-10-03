@@ -1,20 +1,16 @@
-const getImdb = arr => (arr ? arr.map(cur => cur.imdb) : [])
-
 export const state = () => ({
     user: {},
-    movies: {},
     authenticated: false
 })
 
 export const getters = {
     user: state => state.user,
-    movies: state => state.movies,
-    liked: state => state.user.liked,
     token: state => state.user.token,
-    watched: state => state.user.watched,
     authenticated: state => state.authenticated,
-    likedIds: state => (state.user.liked ? state.user.liked.map(cur => cur.imdb) : []),
-    watchedIds: state => (state.user.watched ? state.user.watched.map(cur => cur.imdb) : [])
+    liked: state => state.user.movies.filter(cur => cur.liked),
+    watched: state => state.user.movies.filter(cur => cur.watched),
+    likedIds: state => (state.user.movies ? state.user.movies.filter(cur => cur.liked).map(cur => cur.imdb) : []),
+    watchedIds: state => (state.user.movies ? state.user.movies.filter(cur => cur.watched).map(cur => cur.imdb) : [])
 }
 
 export const mutations = {
@@ -32,12 +28,6 @@ export const mutations = {
     updateAvatar: (state, image) => {
         state.user.image = `${image}?${new Date().getTime()}`
     },
-    addMovie: (state, movie) => {
-        state.movies[movie.imdb] = movie
-    },
-    removeMovie: (state, imdb) => {
-        delete state.movies[imdb]
-    },
     markAsWatched: (state, { imdb, title, poster }) => {
         const movie = { imdb, poster, name: title }
         if (state.user.watched && state.user.watched.length) {
@@ -46,8 +36,8 @@ export const mutations = {
             state.user.watched = [movie]
         }
     },
-    updateLikes: (state, liked) => {
-        state.user.liked = [...liked]
+    updateMovies: (state, movies) => {
+        state.user.movies = [...movies]
     }
 }
 
@@ -68,17 +58,11 @@ export const actions = {
     updateAvatar: ({ commit }, image) => {
         commit('updateAvatar', image)
     },
-    addMovie: ({ commit }, movie) => {
-        commit('addMovie', movie)
-    },
-    removeMovie: ({ commit }, imdb) => {
-        commit('removeMovie', imdb)
-    },
     markAsWatched: ({ commit }, payload) => {
         commit('markAsWatched', payload)
     },
-    updateLikes: ({ commit }, liked) => {
-        commit('updateLikes', liked)
+    updateMovies: ({ commit }, movies) => {
+        commit('updateMovies', movies)
     }
 }
 

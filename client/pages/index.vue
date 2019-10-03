@@ -41,9 +41,7 @@
 			query: "",
 			genre: "",
 			sort: "",
-			polling: false,
-			isOpen: false,
-			isTrailer: false
+			polling: false
 		}),
 		async asyncData({ params }) {
 			return { list: await fetchMovieList(1) };
@@ -53,7 +51,6 @@
 			this.$bus.$on("searchMovie", this.searchMovie);
 			this.$bus.$on("filterMovie", this.filterMovie);
 			this.$bus.$on("sortMovie", this.sortMovie);
-			this.$bus.$on("openTrailer", this.openTrailer);
 			document.documentElement.style.overflowY = "auto";
 		},
 		beforeDestroy() {
@@ -107,25 +104,6 @@
 					this.sort
 				);
 				window.scrollTo(0, 0);
-			},
-			openTrailer(isTrailer) {
-				this.isTrailer = isTrailer;
-			},
-			movieMounted() {
-				if (this.isOpen === false) {
-					window.removeEventListener("scroll", this.handleScroll);
-					document.documentElement.style.overflowY = "hidden";
-					this.isOpen = true;
-				} else if (this.isTrailer === true) {
-					window.removeEventListener("scroll", this.handleScroll);
-					document.documentElement.style.overflowY = "hidden";
-					this.isTrailer = false;
-					this.isOpen = false;
-				} else {
-					window.addEventListener("scroll", this.handleScroll);
-					document.documentElement.style.overflowY = "auto";
-					this.isOpen = false;
-				}
 			}
 		}
 	};
@@ -136,7 +114,6 @@
 	display: grid;
 	flex: 1 1 100%;
 	grid-template-columns: repeat(6, 1fr);
-	/* margin-left: 80px; */
 }
 
 @media all and (min-width: 1350px) {

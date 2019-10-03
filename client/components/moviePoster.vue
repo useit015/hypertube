@@ -63,7 +63,7 @@
 			}
 		},
 		methods: {
-			...mapActions(["updateLikes"]),
+			...mapActions(["updateMovies"]),
 			toggleLikeMovie() {
 				try {
 					const url = `https://hypertube.tk/api/users/like`;
@@ -75,8 +75,7 @@
 						.post(url, data, { headers })
 						.then(res => {
 							if (!res.data.err) {
-								this.updateLikes(res.data.liked);
-								console.log("i liked the movie --> ", res);
+								this.updateMovies(res.data.movies);
 							}
 						})
 						.catch(err => console.error(err));
