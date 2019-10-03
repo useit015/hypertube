@@ -1,5 +1,5 @@
 <template>
-	<v-layout justify-center align-center class="mt-5">
+	<v-layout justify-center align-center class="pt-5 sign_container">
 		<v-flex xs12 sm7 md6 lg5 xl3>
 			<v-layout column justify-center>
 				<h2 class="display-2 font-weight-thin my-5 py-5 text-center">{{$t("recover_password")}}</h2>
@@ -50,6 +50,12 @@
 			email: "",
 			rules
 		}),
+		created() {
+			this.$bus.$emit("showNavbar");
+		},
+		beforeDestroy() {
+			this.$bus.$emit("hideNavbar");
+		},
 		methods: {
 			...utility,
 			async recoverPass() {

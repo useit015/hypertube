@@ -47,15 +47,19 @@
 				type: String,
 				default: ""
 			},
+			name: {
+				type: String,
+				default: ""
+			},
 			poster: {
 				type: String,
 				default: "https://via.placeholder.com/800?text=No+Picture"
 			}
 		},
 		computed: {
-			...mapGetters(["token", "liked"]),
+			...mapGetters(["token", "likedIds"]),
 			movieLiked() {
-				return this.liked.find(cur => cur == this.imdb);
+				return this.likedIds.find(cur => cur == this.imdb);
 			}
 		},
 		methods: {
@@ -65,7 +69,8 @@
 					const url = `https://hypertube.tk/api/users/like`;
 					console.log("token -->", this.token);
 					const headers = { Authorization: `jwt ${this.token}` };
-					const data = { imdb: this.imdb };
+					const { imdb, name, poster } = this;
+					const data = { imdb, name, poster };
 					axios
 						.post(url, data, { headers })
 						.then(res => {

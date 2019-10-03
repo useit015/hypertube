@@ -9,42 +9,12 @@
 					</v-toolbar-title>
 				</nuxt-link>
 				<v-spacer></v-spacer>
-				<v-text-field
-					v-if="authenticated"
-					hide-details
-					append-icon="search"
-					single-line
-					rounded
-					outlined
-					class="nav_search"
-					v-model="query"
-					@keyup.13="searchMovie"
-					@change="clearSearch"
-				></v-text-field>
 				<v-spacer></v-spacer>
 				<v-btn v-if="!authenticated" @click="changeLange('fr')" icon>FR</v-btn>
 				<v-btn v-if="!authenticated" @click="changeLange('en')" icon>EN</v-btn>
-				<v-menu v-if="authenticated" offset-y>
-					<template v-slot:activator="{ on }">
-						<v-avatar v-on="on">
-							<img :src="`https://hypertube.tk${user.image}`" style="width: 36px; height: 36px;">
-						</v-avatar>
-					</template>
-					<v-list>
-						<v-list-item to="/profile" nuxt>
-							<v-btn icon>
-								<v-icon>account_circle</v-icon>
-							</v-btn>
-							<v-list-item-title>{{ user.username }}</v-list-item-title>
-						</v-list-item>
-						<v-list-item @click="logout">
-							<v-btn icon>
-								<v-icon>exit_to_app</v-icon>
-							</v-btn>
-							<v-list-item-title>Logout</v-list-item-title>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+				<v-btn text v-if="authenticated" @click="logout">
+					<v-icon>exit_to_app</v-icon>
+				</v-btn>
 			</v-layout>
 		</v-toolbar>
 	</nav>
@@ -56,12 +26,12 @@
 	export default {
 		name: "Navbar",
 		data: () => ({
-			navbar: true,
+			navbar: false,
 			query: ""
 		}),
 		created() {
-			this.$bus.$on("enterMoviePage", () => (this.navbar = false));
-			this.$bus.$on("leaveMoviePage", () => (this.navbar = true));
+			this.$bus.$on("hideNavbar", () => (this.navbar = false));
+			this.$bus.$on("showNavbar", () => (this.navbar = true));
 		},
 		computed: {
 			...mapGetters(["authenticated"]),
@@ -74,14 +44,6 @@
 			async logout() {
 				this.out();
 				this.$router.push("sign");
-			},
-			searchMovie() {
-				this.$bus.$emit("searchMovie", this.query);
-			},
-			clearSearch() {
-				if (!this.query) {
-					this.$bus.$emit("searchMovie", this.query);
-				}
 			},
 			changeLange(lang) {
 				if (lang != this.$i18n.locale) {
@@ -105,15 +67,5 @@
 }
 .nuxt-link-active {
 	text-decoration: none;
-}
-.nav_search > .v-input__control > .v-input__slot > .v-input__append-inner {
-	margin-top: 0.45rem !important;
-	margin-right: -0.35rem !important;
-}
-.nav_search > .v-input__control > .v-input__slot {
-	height: 2.4rem !important;
-	min-height: 2.4rem !important;
-	max-width: 30vw !important;
-	overflow: hidden;
 }
 </style>

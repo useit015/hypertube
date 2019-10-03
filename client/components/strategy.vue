@@ -4,7 +4,14 @@
 			<v-layout justify-center align-center wrap>
 				<v-flex sm6 md4 v-for="(strategy, i) in strategies" :key="i">
 					<v-layout class="mx-3 my-3" justify-center align-center>
-						<v-btn rounded large outlined color="grey darken-2" :href="strategy.url" width="130">
+						<v-btn
+							large
+							rounded
+							outlined
+							color="grey darken-2"
+							:href="`https://hypertube.tk/api/oauth/${strategy.url}`"
+							width="130"
+						>
 							<v-layout justify-center align-center>
 								<span class="text-capitalize font-weight-slim grey--text">{{ strategy.text }}</span>
 								<v-img class="ml-2" :width="strategy.text === '42 Intra' ? 30 : 20" :src="strategy.img"></v-img>
@@ -25,32 +32,32 @@
 				{
 					text: "42 Intra",
 					img: "/42.svg",
-					url: "https://hypertube.tk/api/oauth/ft"
+					url: "ft"
 				},
 				{
 					text: "Google",
 					img: "/google.svg",
-					url: "https://hypertube.tk/api/oauth/google"
+					url: "google"
 				},
 				{
 					text: "Github",
 					img: "/github.svg",
-					url: "https://hypertube.tk/api/oauth/git"
+					url: "git"
 				},
 				{
 					text: "Facebook",
 					img: "/facebook.svg",
-					url: "https://hypertube.tk/api/oauth/fb"
+					url: "fb"
 				},
 				{
 					text: "LinkedIn",
 					img: "/linkedin.svg",
-					url: "https://hypertube.tk/api/oauth/li"
+					url: "li"
 				},
 				{
 					text: "Twitch",
 					img: "/twitch.svg",
-					url: "https://hypertube.tk/api/oauth/tw"
+					url: "tw"
 				}
 			]
 		})

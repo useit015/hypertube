@@ -1,18 +1,14 @@
 <template>
-	<v-navigation-drawer class="genre_drawer" permanent :mini-variant="mini">
+	<v-navigation-drawer class="genre_drawer" v-model="drawer" absolute temporary>
 		<v-list nav dense class="genre_list">
-			<v-btn icon @click.stop="mini = !mini">
-				<v-icon>{{ `chevron_${mini ? "right" : "left"}` }}</v-icon>
-			</v-btn>
-			<v-divider class="mb-3"></v-divider>
 			<v-list-item link v-for="(genre, i) in genres" :key="i" @click="filterMovie(genre)">
 				<v-list-item-icon>
-					<v-img width="40" class="genre_logo" :src="`/${genre}.svg`"/>
+					<v-img width="45" class="genre_logo" :src="`/${genre}.svg`"/>
 				</v-list-item-icon>
-				<v-list-item-title class="text-capitalize">{{ $t(genre) }}</v-list-item-title>
+				<v-list-item-title class="text-capitalize genre_item">{{ $t(genre) }}</v-list-item-title>
 			</v-list-item>
 			<v-divider></v-divider>
-			<v-list-item v-if="!mini">
+			<v-list-item>
 				<v-col class="d-flex" align="start" justify="center">
 					<v-icon small color="primary" class="sort_icon">sort</v-icon>
 					<v-select
@@ -74,25 +70,28 @@
 					text: "Title"
 				}
 			],
-			mini: true,
-			drawer: true,
+			drawer: false,
 			selected: "Popularity"
 		}),
+		created() {
+			this.$bus.$on("openDrawer", () => (this.drawer = true));
+		},
 		methods: {
+			scroll() {
+				document
+					.querySelector(".v-navigation-drawer__content")
+					.scrollTo(0, 0);
+			},
 			filterMovie(genre) {
 				this.$bus.$emit("filterMovie", genre);
-				document
-					.getElementsByClassName("v-navigation-drawer__content")[0]
-					.scrollTo(0, 0);
-				this.mini = true;
+				this.scroll();
+				this.drawer = false;
 			},
 			sortMovie(item) {
 				this.$bus.$emit("sortMovie", item);
 				this.selected = item;
-				document
-					.getElementsByClassName("v-navigation-drawer__content")[0]
-					.scrollTo(0, 0);
-				this.mini = true;
+				this.scroll();
+				this.drawer = false;
 			},
 			trad(item) {
 				return this.$t(item.value);
@@ -103,22 +102,29 @@
 
 <style>
 .genre_drawer {
-	z-index: 2;
 	position: fixed;
 }
+
 .v-navigation-drawer__content::-webkit-scrollbar {
 	background-color: transparent !important;
 	width: 6px;
 }
+
 .v-navigation-drawer__content::-webkit-scrollbar-thumb {
 	background-color: rgba(255, 255, 255, 0.2) !important;
 	border-radius: 5px;
 }
+
 .genre_list {
-	margin-top: 64px;
+	margin-top: 1.5rem;
 }
+
 .sort_icon {
 	margin: -2rem 1.7rem 0 -0.4rem;
-	transform: scale(1.8);
+	transform: scale(2) translateX(2px);
+}
+
+.genre_item {
+	font-size: 1rem !important;
 }
 </style>

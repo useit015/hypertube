@@ -12,15 +12,15 @@
 				</div>
 			</v-avatar>
 		</div>
-		<v-container class="mx-0 main" fill-height grid-list-xl>
-			<v-card class="mx-auto px-4 py-4 mt-4" width="100%">
+		<v-container class="mx-0 mb-5 main" fill-height grid-list-xl>
+			<v-card class="mx-auto px-4 py-4 mt-4" flat width="100%">
 				<v-layout justify-center wrap>
 					<v-container>
 						<v-btn class="edit" color="primary" fab small @click="toggleEdit">
 							<v-icon v-if="isEditing">close</v-icon>
 							<v-icon v-else>edit</v-icon>
 						</v-btn>
-						<v-card-title class="display-2 font-weight-thin mb-5">Informations</v-card-title>
+						<v-card-title class="movie__title font-weight-thin mb-5">Informations</v-card-title>
 						<v-form class="pt-4" ref="form" v-model="valid" lazy-validation>
 							<v-layout wrap>
 								<v-flex xs12 md6>
@@ -120,6 +120,46 @@
 				</v-layout>
 			</v-card>
 		</v-container>
+		<v-container>
+			<v-divider class="my-5"></v-divider>
+			<v-row justify="space-around" align="start">
+				<v-col v-if="!!liked.length">
+					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Liked Movies</h1>
+					<v-row justify="center">
+						<v-card
+							flat
+							v-for="movie in liked"
+							:key="movie.imdb"
+							class="movie__card"
+							@click="$router.push(`/watch/${movie.imdb}`)"
+						>
+							<v-img :src="movie.poster"></v-img>
+							<h4 class="text-center py-1">{{ movie.name }}</h4>
+						</v-card>
+					</v-row>
+				</v-col>
+			</v-row>
+		</v-container>
+		<v-container>
+			<v-divider class="my-5"></v-divider>
+			<v-row justify="space-around" align="start">
+				<v-col v-if="!!watched.length">
+					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Watched Movies</h1>
+					<v-row justify="center">
+						<v-card
+							flat
+							v-for="movie in watched"
+							:key="movie.imdb"
+							class="movie__card"
+							@click="$router.push(`/watch/${movie.imdb}`)"
+						>
+							<v-img :src="movie.poster"></v-img>
+							<h4 class="text-center py-1">{{ movie.name }}</h4>
+						</v-card>
+					</v-row>
+				</v-col>
+			</v-row>
+		</v-container>
 		<passDialog ref="passDialog" :token="user.token" @updated="feedback"/>
 		<imageEditor ref="editor" @updated="feedback"/>
 		<alert :data="alert"></alert>
@@ -151,23 +191,25 @@
 			passDialog,
 			imageEditor
 		},
-		data: () => ({
-			alert: {
-				state: false,
-				color: "",
-				text: ""
-			},
-			rules: {},
-			storeUser: "",
-			languages: ["en", "fr"],
-			dataChanged: false,
-			isEditing: false,
-			renderer: true,
-			loaded: false,
-			valid: false
-		}),
+		data() {
+			return {
+				alert: {
+					state: false,
+					color: "",
+					text: ""
+				},
+				rules: {},
+				storeUser: "",
+				languages: ["en", "fr"],
+				dataChanged: false,
+				isEditing: false,
+				renderer: true,
+				loaded: false,
+				valid: false
+			};
+		},
 		computed: {
-			...mapGetters(["user"]),
+			...mapGetters(["user", "liked", "watched"]),
 			langue() {
 				return this.user.langue;
 			},
@@ -188,9 +230,13 @@
 			}
 		},
 		async created() {
+			this.$bus.$emit("showNavbar");
 			this.loaded = true;
 			this.rules = rules(this);
 			this.storeUser = JSON.stringify(this.user);
+		},
+		beforeDestroy() {
+			this.$bus.$emit("hideNavbar");
 		},
 		methods: {
 			...utility,
@@ -242,6 +288,7 @@
 		}
 	};
 </script>
+
 <style>
 .user {
 	width: 90vw;
@@ -264,6 +311,7 @@
 
 .avatar {
 	margin: 1rem;
+	border-radius: 5px;
 }
 
 .avatar__container {
@@ -298,5 +346,26 @@
 	justify-content: flex-end;
 	align-items: center;
 	margin-top: -0.5rem;
+}
+
+.movie__card {
+	position: relative;
+	margin: 2rem 1rem;
+	width: calc(25% - 3rem);
+	display: flex;
+	flex-direction: column;
+	background-color: #42424299 !important;
+}
+
+@media only screen and (max-width: 960px) {
+	.movie__card {
+		width: calc(33% - 2rem);
+	}
+}
+
+@media only screen and (max-width: 550px) {
+	.movie__card {
+		width: calc(50% - 2rem);
+	}
 }
 </style>

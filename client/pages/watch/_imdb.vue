@@ -5,7 +5,12 @@
 		<v-container class="movie__content">
 			<v-row class="movie" justify="center" align="start">
 				<v-col xs="10" sm="8" md="5" lg="4" xl="3">
-					<movie-poster :poster="movie.poster_big" :imdb="imdb" @trailerOpen="trailer = true"/>
+					<movie-poster
+						:name="movie.title"
+						:poster="movie.poster_big"
+						:imdb="imdb"
+						@trailerOpen="trailer = true"
+					/>
 				</v-col>
 				<v-col xs="12" sm="10" md="7" class="movie__details">
 					<h1
@@ -47,7 +52,7 @@
 					@playerError="playerError"
 				/>
 			</v-row>
-			<v-btn fab outlined small color="primary" class="back pl-2" @click="$router.push('/')">
+			<v-btn fab outlined small color="primary" class="back pl-2" @click="$router.go(-1)">
 				<v-icon>arrow_back_ios</v-icon>
 			</v-btn>
 		</v-container>
@@ -88,7 +93,6 @@
 		}),
 		async created() {
 			try {
-				this.$bus.$emit("enterMoviePage");
 				const url = `https://hypertube.tk/api/movies/info/${this.imdb}`;
 				const { data } = await axios.get(url);
 				this.movie = data.movie;
@@ -97,9 +101,6 @@
 			} catch (err) {
 				console.log("i agot an error with --> ", err.message);
 			}
-		},
-		beforeDestroy() {
-			this.$bus.$emit("leaveMoviePage");
 		},
 		watch: {
 			trailer() {
@@ -165,10 +166,12 @@
 				this.playing = true;
 				const payload = {
 					id: this.selectedTorrent.id,
-					imdb: this.imdb
+					imdb: this.imdb,
+					title: this.movie.title,
+					poster: this.movie.poster_big
 				};
 				this.$socket.client.emit("watch", payload);
-				this.markAsWatched(this.imdb);
+				this.markAsWatched(payload);
 			},
 			playerError() {
 				this.playing = false;
@@ -180,8 +183,6 @@
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css?family=Bungee&display=swap");
-
 .watch {
 	margin-top: -5rem;
 }
@@ -206,13 +207,6 @@
 .movie__details {
 	position: relative;
 	padding: 0 0 0 2rem;
-}
-
-.movie__title {
-	font-family: "Bungee", cursive;
-	letter-spacing: 3px;
-	font-size: 2.2em;
-	text-shadow: 0 0 15px rgba(100, 214, 197, 0.5);
 }
 
 .movie__genre > .theme--dark.v-btn.v-btn--disabled {
@@ -251,15 +245,6 @@
 	z-index: 11;
 	margin: 0;
 	padding: 0 5rem;
-}
-
-.trailer_close,
-.back {
-	position: absolute;
-	top: 0;
-	left: 0;
-	transform: translate(75%, 75%);
-	border-radius: 5px !important;
 }
 
 @media only screen and (max-width: 960px) {

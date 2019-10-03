@@ -1,3 +1,5 @@
+const getImdb = arr => (arr ? arr.map(cur => cur.imdb) : [])
+
 export const state = () => ({
     user: {},
     movies: {},
@@ -10,7 +12,9 @@ export const getters = {
     liked: state => state.user.liked,
     token: state => state.user.token,
     watched: state => state.user.watched,
-    authenticated: state => state.authenticated
+    authenticated: state => state.authenticated,
+    likedIds: state => (state.user.liked ? state.user.liked.map(cur => cur.imdb) : []),
+    watchedIds: state => (state.user.watched ? state.user.watched.map(cur => cur.imdb) : [])
 }
 
 export const mutations = {
@@ -34,11 +38,12 @@ export const mutations = {
     removeMovie: (state, imdb) => {
         delete state.movies[imdb]
     },
-    markAsWatched: (state, imdb) => {
+    markAsWatched: (state, { imdb, title, poster }) => {
+        const movie = { imdb, poster, name: title }
         if (state.user.watched && state.user.watched.length) {
-            state.user.watched.push(imdb)
+            state.user.watched.push(movie)
         } else {
-            state.user.watched = [imdb]
+            state.user.watched = [movie]
         }
     },
     updateLikes: (state, liked) => {
@@ -69,8 +74,8 @@ export const actions = {
     removeMovie: ({ commit }, imdb) => {
         commit('removeMovie', imdb)
     },
-    markAsWatched: ({ commit }, imdb) => {
-        commit('markAsWatched', imdb)
+    markAsWatched: ({ commit }, payload) => {
+        commit('markAsWatched', payload)
     },
     updateLikes: ({ commit }, liked) => {
         commit('updateLikes', liked)

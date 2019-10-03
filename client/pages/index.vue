@@ -2,16 +2,18 @@
 	<v-layout>
 		<drawer/>
 		<div v-if="list.length" class="library main_container">
-			<movieCard v-for="(movie, i) in list" :key="i" :movie="movie"/>
+			<movieCard v-for="movie in list" :key="movie.imdb" :movie="movie"/>
 		</div>
 		<div v-else class="search_placeholder">
 			<h1>Nothing found</h1>
 		</div>
+		<fab-menu/>
 	</v-layout>
 </template>
 
 <script>
 	import axios from "axios";
+	import fabMenu from "@/components/fabMenu";
 	import drawer from "@/components/drawer";
 	import movieCard from "@/components/movieCard";
 
@@ -31,6 +33,7 @@
 		middleware: "authenticated",
 		components: {
 			drawer,
+			fabMenu,
 			movieCard
 		},
 		data: () => ({
@@ -133,7 +136,7 @@
 	display: grid;
 	flex: 1 1 100%;
 	grid-template-columns: repeat(6, 1fr);
-	margin-left: 80px;
+	/* margin-left: 80px; */
 }
 
 @media all and (min-width: 1350px) {

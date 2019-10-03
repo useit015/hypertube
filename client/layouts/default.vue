@@ -25,8 +25,17 @@
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css?family=Bungee&display=swap");
+
 body {
 	overflow: hidden;
+}
+
+.movie__title {
+	font-family: "Bungee", cursive;
+	letter-spacing: 3px;
+	font-size: 2.2em;
+	text-shadow: 0 0 15px rgba(100, 214, 197, 0.5);
 }
 
 .app {
@@ -43,10 +52,6 @@ body {
 	font-weight: 300;
 }
 
-.main_container {
-	margin-top: 64px;
-}
-
 .page-enter-active,
 .page-leave-active {
 	transition: opacity 0.5s;
@@ -57,8 +62,21 @@ body {
 	opacity: 0;
 }
 
-@media all and (max-width: 1000px) {
-	.main_container {
+.trailer_close,
+.back {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	transform: translate(10%, 10%);
+	border-radius: 5px !important;
+}
+
+.sign_container {
+	margin-top: 64px;
+}
+
+@media only screen and (max-width: 1000px) {
+	.sign_container {
 		margin-top: 56px;
 	}
 }

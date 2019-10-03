@@ -49,6 +49,7 @@
 <script>
 	import axios from "axios";
 	import loader from "@/components/loader";
+
 	const fetchUser = async username => {
 		const token = localStorage.getItem("token");
 		const res = await axios.get(
@@ -61,6 +62,7 @@
 			return null;
 		}
 	};
+
 	export default {
 		middleware: "authenticated",
 		components: {
@@ -74,6 +76,10 @@
 			const res = await fetchUser(this.$route.params.username);
 			this.user = res;
 			this.loaded = true;
+			this.$bus.$emit("showNavbar");
+		},
+		beforeDestroy() {
+			this.$bus.$emit("hideNavbar");
 		}
 	};
 </script>

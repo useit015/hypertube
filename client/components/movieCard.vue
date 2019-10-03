@@ -36,12 +36,18 @@
 			}
 		},
 		computed: {
-			...mapGetters(["watched", "liked"]),
+			...mapGetters(["watchedIds", "likedIds"]),
 			movieWatched() {
-				return this.watched.find(cur => cur == this.movie.imdb);
+				return (
+					this.watchedIds &&
+					this.watchedIds.find(cur => cur == this.movie.imdb)
+				);
 			},
 			movieLiked() {
-				return this.liked.find(cur => cur == this.movie.imdb);
+				return (
+					this.likedIds &&
+					this.likedIds.find(cur => cur == this.movie.imdb)
+				);
 			}
 		},
 		methods: {
