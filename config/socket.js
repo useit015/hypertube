@@ -1,13 +1,12 @@
-const fs = require('fs')
-const path = require('path')
+const User = require('../models/User')
+const Movie = require('../models/Movie')
 
-module.exports = (movieList, downloadList) => {
+module.exports = (users, movieList, downloadList) => {
 
 	const freeEngine = (downloading, movie) => {
 		if (downloading && downloading.engine) {
-			const file = movie.file
 			downloading.engine.destroy(() => {
-				console.log('i destroyed the engine for --> ', file)
+				console.log('i destroyed the engine for --> ', movie.name)
 			})
 			delete downloadList[movie.id]
 			delete movieList[movie.id]
@@ -31,18 +30,41 @@ module.exports = (movieList, downloadList) => {
 
 	return socket => {
 		console.log('i am the socket --> ', socket.id)
-		socket.on('watch', data => {
-			if (data.id) {
-				if (movieList[data.id]) {
-					movieList[data.id].users.add(socket.id)
-				} else {
-					movieList[data.id] = {
-						...data,
-						users: new Set([ socket.id ])
+		socket.on('watch', ({ id, imdb, title, poster }) => {
+			if (downloadList[id]) {
+				let { path } = downloadList[id].engine
+				const { name } = downloadList[id].engine.torrent
+				path = `${path}/${name}`
+				Movie.findOne({ path }, (err, movie) => {
+					if (!movie) {
+						new Movie({
+							imdb,
+							path
+						}).save()
+					} else {
+						movie.date = Date.now()
+						movie.save()
+					}
+				})
+			}
+			console.log('i have --> ', users[socket.id], socket.id)
+			User.findById(users[socket.id], (err, user) => {
+				console.log('user is -> ', user)
+				if (user) {
+					if (user.movies.length) {
+						const movie = user.movies.find(cur => cur.imdb == imdb)
+						if (movie) {
+							movie.watched = true
+						} else {
+							user.watched.push({ imdb, name: title, watched: true, poster})
+						}
+						user.markModified('movies')
+						user.save()
 					}
 				}
-			}
+			})
 		})
+		socket.on('auth', id => users[socket.id] = id)
 		socket.on('cleanup', () => cleanup(socket))
 		socket.on('disconnect', () => cleanup(socket))
 	}

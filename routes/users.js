@@ -1,10 +1,8 @@
 const express = require('express')
-const jwt = require('jsonwebtoken')
 const base64Img = require('base64-img')
 const Jimp = require('jimp')
 const fs = require('fs')
 const path = require('path')
-const passport = require('passport')
 const { randomBytes } = require('crypto')
 const { promisify } = require('util')
 const unlinkAsync = promisify(fs.unlink)
@@ -12,24 +10,31 @@ const User = require('../models/User')
 const sendMail = require('../config/mailer')
 const validator = require('../config/validator')
 const router = express.Router()
-
-const authJwt = (req, res, next) => {
-	passport.authenticate('jwt', { session: false }, (err, user, info) => {
-		if (!user) return res.json({ err: true, errors: ['Not logged in']})
-		req.user = user
-		next()
-	})(req, res, next)
-}
+const authJwt = require('../middleware/auth')
 
 const randomHex = () => randomBytes(10).toString('hex')
 
-router.post('/watched', authJwt, (req, res) => {
+router.post('/like', authJwt, (req, res) => {
 	const { user } = req
-	const { imdb } = req.body
-	user.watched.push(imdb)
+	const { imdb, name, poster } = req.body
+	let i = -1
+	let MovieFound = false
+	while (++i < user.movies.length) {
+		if (user.movies[i].imdb == imdb) {
+			MovieFound = true
+			break
+		}
+	}
+	const finalMovie = { imdb, name, poster }
+	if (MovieFound) {
+		user.movies[i] = { ...finalMovie, liked: !user.movies[i].liked }
+	} else {
+		user.movies.push({ ...finalMovie, liked: true })
+	}
+	user.markModified('movies')
 	user.save()
 		.then(user => res.json(user.addToken()))
-		.catch(err => console.log(err))
+		.catch(err => res.json({ err: true, errors: [err] }))
 })
 
 router.get('/user/:username', authJwt, (req, res) => {
@@ -41,6 +46,8 @@ router.get('/user/:username', authJwt, (req, res) => {
 					firstName: user[0].firstName,
 					lastName: user[0].lastName,
 					image: user[0].image,
+					watched: user[0].watched,
+					liked: user[0].liked,
 					date: user[0].date
 				}
 				return res.json(usr)
@@ -161,13 +168,7 @@ router.post('/image', authJwt, async (req, res) => {
 
 })
 
-router.get('/isloggedin', authJwt, (req, res) => {
-	res.json(req.user.addToken())
-})
-
-router.get('/logout', authJwt, (req, res) => {
-	res.json({ok: true})
-})
+router.get('/isloggedin', authJwt, (req, res) => res.json(req.user.addToken()))
 
 router.post('/update', authJwt, (req, res) => {
 	const { user } = req
@@ -218,7 +219,10 @@ router.get('/verify/:key', (req, res) => {
 					user.verified = true
 					user.vkey = undefined
 					user.save()
-						.then(user => res.json(user.addToken()))
+						.then(user => {
+							const { token } = user.addToken()
+							res.render('redirect', { token })
+						})
 						.catch(err => console.log(err))
 				} else {
 					res.json({ err: true, errors: ['Already verified'] })

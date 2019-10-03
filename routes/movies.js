@@ -52,10 +52,7 @@ const convert = (file, thread = 4) => {
 			'-deadline realtime',
 			'-error-resilient 1'
 		])
-		.on('error', err => {
-			converted.destroy()
-			console.log('Encoding error -->', err.message)
-		})
+		.on('error', err => converted.destroy())
 		.stream()
 	return converted
 }
@@ -77,16 +74,21 @@ const getSubt = async (id, imdb) => {
 }
 
 const getInfo = async id => {
-	const url = `http://api.themoviedb.org/3/movie/${id}/casts?api_key=${process.env.MOVIEDB}`;
-
-	const { data } = await axios.get(url);
-
-	return result = {
-		cast: data.cast.slice(0,6),
-		crew: data.crew.slice(0,1)
-
-	};
-
+	try {
+		const url = `http://api.themoviedb.org/3/movie/${id}/casts?api_key=${process.env.MOVIEDB}`;
+	
+		const { data } = await axios.get(url);
+	
+		return result = {
+			cast: data.cast.slice(0,6),
+			crew: data.crew.slice(0,1)
+		};
+	} catch (err) {
+		return {
+			cast: [],
+			crew: []
+		}
+	}
 }
 
 const stream = (range, file, res) => {
@@ -141,11 +143,12 @@ const fetchMovie = async id => {
 	try {
 		const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`;
 		const { data } = await axios.get(url);
-		const { title, year, rating, imdb, poster_big, description, runtime, trailer } = data
+		const { title, year, genres, rating, imdb, poster_big, description, runtime, trailer } = data
 		const torrents = getTorrentlist(data)
 		const movie = {
 			imdb,
 			year,
+			genres,
 			title,
 			rating,
 			runtime,
@@ -181,7 +184,7 @@ module.exports = (movieList, downloadList) => {
 			movie.cast = cast
 			res.json({ movie });
 		} catch (err) {
-			console.log("Got error here --> ", err.message);
+			console.log("Got error here --> ", err);
 		}
 	})
 
@@ -209,16 +212,13 @@ module.exports = (movieList, downloadList) => {
 					stream(range, engine.files[0], res)
 				})
 				engine.on('download', index => {
-					const completion = 100 * engine.swarm.downloaded / engine.files[0].length
-					console.log('completion is -->', completion);
 					console.log('The engine downloaded this -->', index)
-					console.log('for --> ', engine.files[0].name)
 				})
 			} else {
 				res.sendStatus(416)
 			}
 		} catch (err) {
-			console.log('I got an error with --> ', err)
+			res.end()
 		}
 	})
 
@@ -236,10 +236,10 @@ module.exports = (movieList, downloadList) => {
 			if (query) {
 				purl = `${purl}&keywords=${query}`;
 				yurl = `${yurl}&query_term=${query}`;
-				let popcornList = [];
+				let merged = [];
 				const { data } = await axios.get(purl);
 				if (data.MovieList.length) {
-					popcornList = data.MovieList.map(cur => ({
+					merged = data.MovieList.map(cur => ({
 						title: cur.title,
 						year: cur.year,
 						rating: cur.rating,
@@ -259,17 +259,17 @@ module.exports = (movieList, downloadList) => {
 							poster_med: cur.medium_cover_image
 						}));
 					}
-					const merged = [
+					merged = [
 						...ytsList.filter(cur => {
-							for (const item of popcornList) {
+							for (const item of merged) {
 								if (cur.imdb === item.imdb) return false;
 							}
-							return true;
+							return true
 						}),
-						...popcornList
+						...merged
 					];
-					return res.json(merged);
-				});
+				}).catch(() => 1);
+				return res.json(merged);
 			} else {
 				if (genre) purl = `${purl}&genre=${genre}`;
 				let popcornList = [];

@@ -113,7 +113,6 @@ module.exports = passport => {
 				callbackURL: `${process.env.API_URL}/oauth/ft_ret`
 			},
 			async (accessToken, refreshToken, profile, done) => {
-				const userName = await generateUsername(profile.id, 'ft')
 				const user = {
 					firstName: profile.name.givenName,
 					lastName: profile.name.familyName,
@@ -141,6 +140,7 @@ module.exports = passport => {
 				}
 				request(opts, async (err, res) => {
 					const profile = JSON.parse(res.body)
+					console.log('i am the profile --> ', profile)
 					const userName = await generateUsername(profile.id, 'fb')
 					const user = {
 						firstName: profile.first_name,
