@@ -121,9 +121,9 @@
 			</v-card>
 		</v-container>
 		<v-container>
-			<v-divider class="my-5"></v-divider>
 			<v-row justify="space-around" align="start">
 				<v-col v-if="!!liked.length">
+					<v-divider class="my-5"></v-divider>
 					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Liked Movies</h1>
 					<v-row justify="center">
 						<v-card
@@ -141,9 +141,9 @@
 			</v-row>
 		</v-container>
 		<v-container>
-			<v-divider class="my-5"></v-divider>
 			<v-row justify="space-around" align="start">
 				<v-col v-if="!!watched.length">
+					<v-divider class="my-5"></v-divider>
 					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Watched Movies</h1>
 					<v-row justify="center">
 						<v-card

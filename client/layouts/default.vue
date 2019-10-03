@@ -80,4 +80,84 @@ body {
 		margin-top: 56px;
 	}
 }
+
+.user {
+	width: 90vw;
+	max-width: 80rem;
+	margin: 10rem auto 0;
+}
+
+.main {
+	flex: 1 1 60vw;
+	min-width: 50rem;
+	max-width: 60rem;
+	overflow: hidden;
+}
+
+@media only screen and (max-width: 50rem) {
+	.main {
+		min-width: 0;
+	}
+}
+
+.avatar {
+	margin: 1rem;
+	border-radius: 5px;
+}
+
+.avatar__container {
+	padding: 12px;
+}
+
+.avatar__btn {
+	position: absolute;
+	top: 85%;
+	left: 85%;
+	transform: translate(-50%, -50%) scale(0.95);
+}
+
+.avatar__img {
+	box-shadow: 0 0 0 3px rgba(65, 65, 65, 0.4), 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.edit,
+.edit:hover,
+.edit:focus {
+	position: absolute;
+}
+
+.edit {
+	top: 0;
+	left: 100%;
+	transform: translate(-75%, -25%);
+}
+
+.save__container {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-top: -0.5rem;
+}
+
+.movie__card {
+	position: relative;
+	margin: 2rem 1rem;
+	width: calc(25% - 3rem);
+	display: flex;
+	flex-direction: column;
+	background-color: #42424299 !important;
+}
+
+@media only screen and (max-width: 960px) {
+	.movie__card {
+		width: calc(33% - 2rem);
+	}
+}
+
+@media only screen and (max-width: 550px) {
+	.movie__card {
+		width: calc(50% - 2rem);
+	}
+}
+
 </style>
