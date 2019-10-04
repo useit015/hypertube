@@ -29,43 +29,26 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
-		<alert :data="alert"></alert>
 	</div>
 </template>
 
 <script>
-	import { mapGetters, mapActions } from "vuex";
 	import axios from "axios";
-	import alert from "./alert";
+	import { mapGetters, mapActions } from "vuex";
 	import VueAvatar from "@/components/VueAvatar";
 	import VueAvatarScale from "@/components/VueAvatarScale";
 
 	export default {
 		name: "ProfileEditor",
 		components: {
-			alert,
 			VueAvatar,
 			VueAvatarScale
 		},
 		data: () => ({
 			error: null,
-			dialog: false,
-			alert: {
-				state: false,
-				color: "",
-				text: ""
-			}
+			dialog: false
 		}),
 		computed: mapGetters(["user"]),
-		watch: {
-			// error() {
-			// 	if (this.error == true) {
-			// 		this.$emit("file_error");
-			// 	} else {
-			// 		this.$emit("file_succes");
-			// 	}
-			// }
-		},
 		methods: {
 			...mapActions(["updateAvatar"]),
 			closeEditor() {
@@ -73,27 +56,30 @@
 				this.$refs.vueavatar.init();
 			},
 			pickFile() {
-				// this.$refs.vueavatar.clicked();
 				this.dialog = true;
 			},
 			onChangeScale(scale) {
 				this.$refs.vueavatar.changeScale(scale);
 			},
 			async saveClicked() {
-				const img = this.$refs.vueavatar.getImageScaled().toDataURL();
-				const url = `https://hypertube.tk/api/users/image`;
-				const headers = { Authorization: `jwt ${this.user.token}` };
-				const data = { img };
-				axios
-					.post(url, data, { headers })
-					.then(res => {
-						this.$emit("updated", !res.data.err);
-						if (res.data.image) this.updateAvatar(res.data.image);
-					})
-					.catch(err => console.error(err));
-				this.isEditing = false;
-				this.$refs.vueavatarscale.reset();
-				this.dialog = false;
+				if (!error) {
+					const img = this.$refs.vueavatar.getImageScaled().toDataURL();
+					const url = `https://hypertube.tk/api/users/image`;
+					const headers = { Authorization: `jwt ${this.user.token}` };
+					const data = { img };
+					axios
+						.post(url, data, { headers })
+						.then(res => {
+							this.$emit("updated", !res.data.err);
+							if (res.data.image) this.updateAvatar(res.data.image);
+						})
+						.catch(err => this.openAlert(this, "Something went wrong"));
+					this.isEditing = false;
+					this.$refs.vueavatarscale.reset();
+					this.dialog = false;
+				} else {
+					this.openAlert(this, "Something went wrong");
+				}
 			},
 			onImageReady(scale) {
 				this.$refs.vueavatarscale.setScale(scale);

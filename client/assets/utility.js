@@ -1,10 +1,6 @@
 export default {
-    showAlert(color, text, comp) {
-        comp.alert = {
-            state: true,
-            color,
-            text
-        }
+    openAlert: (context, text, color = 'error') => {
+        context.$bus.$emit('openAlert', { color, text })
     },
     passwordCmp(context) {
         if (context.confPass === context.pass) return ''

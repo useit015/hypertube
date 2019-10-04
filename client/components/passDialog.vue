@@ -113,7 +113,7 @@
 					axios
 						.post(url, data, { headers })
 						.then(res => this.$emit("updated", !res.data.err))
-						.catch(err => console.error(err));
+						.catch(err => this.openAlert(this, "Something went wrong"));
 					this.passDialog = false;
 					this.password = "";
 					this.newPassword = "";

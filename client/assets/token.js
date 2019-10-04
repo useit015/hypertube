@@ -11,7 +11,7 @@ const checkToken = async store => {
         }
         return !res.data.err
     } catch (err) {
-        console.log('Got error here -->', err)
+        return
     }
 }
 

@@ -3,7 +3,7 @@
 		<v-list nav dense class="genre_list">
 			<v-list-item link v-for="(genre, i) in genres" :key="i" @click="filterMovie(genre)">
 				<v-list-item-icon>
-					<v-img width="45" class="genre_logo" :src="`/${genre}.svg`"/>
+					<svg-icon class="genre_logo" width="45" :name="genre"/>
 				</v-list-item-icon>
 				<v-list-item-title class="text-capitalize genre_item">{{ $t(genre) }}</v-list-item-title>
 			</v-list-item>
@@ -19,7 +19,7 @@
 						solo
 						@change="sortMovie"
 						flat
-					></v-select>
+					/>
 				</v-col>
 			</v-list-item>
 		</v-list>
@@ -126,5 +126,9 @@
 
 .genre_item {
 	font-size: 1rem !important;
+}
+
+.genre_logo {
+	height: 2.2rem;
 }
 </style>

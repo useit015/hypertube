@@ -16,8 +16,10 @@
 
 <script>
 	import videojs from "video.js";
+	import utility from "@/assets/utility.js";
 
 	export default {
+		methods: utility,
 		props: {
 			id: { type: String, default: "" },
 			ext: { type: String, default: "" },
@@ -57,7 +59,10 @@
 			const self = this;
 			videojs.log.level("off");
 			this.player = videojs(this.$refs.videoPlayer, this.options, function() {
-				this.on("error", () => self.$emit("playerError"));
+				this.on("error", () => {
+					self.$emit("playerError");
+					self.openAlert(self, "there is a problem with the torrent");
+				});
 			});
 		},
 		beforeDestroy() {

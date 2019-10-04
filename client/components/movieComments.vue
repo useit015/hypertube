@@ -28,6 +28,7 @@
 <script>
 	import axios from "axios";
 	import { mapGetters } from "vuex";
+	import utility from "@/assets/utility.js";
 	import commentTree from "@/components/commentTree";
 	import commentEditor from "@/components/commentEditor";
 
@@ -83,11 +84,13 @@
 			const url = `https://hypertube.tk/api/comment/${this.imdb}`;
 			const { data } = await axios.get(url);
 			if (data.err) {
+				this.openAlert(this, "Can't load comments");
 			} else {
 				this.comments = data.comments;
 			}
 		},
 		methods: {
+			...utility,
 			updateData(data) {
 				this.editorData = data;
 			},
@@ -108,9 +111,11 @@
 					const { data } = await axios.post(url, opts, { headers });
 					if (!data.err) {
 						this.$bus.$emit("commentAdded", data.comment);
+					} else {
+						this.openAlert(this, "Something went wrong");
 					}
 				} catch (err) {
-					console.log("you got an error on --> ", err);
+					this.openAlert(this, "Something went wrong");
 				}
 			}
 		}

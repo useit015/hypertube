@@ -30,6 +30,9 @@
 					<movie-filters :torrents="movie.torrents" @play="play"/>
 				</v-col>
 			</v-row>
+			<div class>
+				<svg-icon name="twitch"/>
+			</div>
 			<movie-cast :cast="movie.cast"/>
 			<movie-comments :imdb="this.imdb"/>
 			<v-row v-if="trailer" column align="center" justify="center" class="trailer_overlay">
@@ -63,6 +66,7 @@
 <script>
 	import axios from "axios";
 	import { mapActions } from "vuex";
+	import utility from "@/assets/utility";
 	import loader from "@/components/loader";
 	import movieCast from "@/components/movieCast";
 	import moviePlayer from "@/components/moviePlayer";
@@ -96,10 +100,9 @@
 				const url = `https://hypertube.tk/api/movies/info/${this.imdb}`;
 				const { data } = await axios.get(url);
 				this.movie = data.movie;
-				// this.$socket.client.emit("watch", this.movie);
 				this.loading = false;
 			} catch (err) {
-				console.log("i agot an error with --> ", err.message);
+				this.openAlert(this, "Something went wrong");
 			}
 		},
 		watch: {
@@ -149,6 +152,7 @@
 			}
 		},
 		methods: {
+			...utility,
 			...mapActions(["markAsWatched"]),
 			play({ ext, id }) {
 				const { imdb } = this;

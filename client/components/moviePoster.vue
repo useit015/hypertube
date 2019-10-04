@@ -39,7 +39,9 @@
 
 <script>
 	import axios from "axios";
+	import utility from "@/assets/utility.js";
 	import { mapGetters, mapActions } from "vuex";
+	import { log } from "util";
 
 	export default {
 		props: {
@@ -63,28 +65,28 @@
 			}
 		},
 		methods: {
+			...utility,
 			...mapActions(["updateMovies"]),
-			toggleLikeMovie() {
+			async toggleLikeMovie() {
 				try {
 					const url = `https://hypertube.tk/api/users/like`;
-					console.log("token -->", this.token);
 					const headers = { Authorization: `jwt ${this.token}` };
 					const { imdb, name, poster } = this;
-					const data = { imdb, name, poster };
-					axios
-						.post(url, data, { headers })
-						.then(res => {
-							if (!res.data.err) {
-								this.updateMovies(res.data.movies);
-							}
-						})
-						.catch(err => console.error(err));
+					const opts = { imdb, name, poster };
+					const { data } = await axios.post(url, opts, { headers });
+					if (!data.err) {
+						this.updateMovies(data.user.movies);
+						const txt = data.liked ? "Movie liked" : "Movie unliked";
+						this.openAlert(this, txt, "success");
+					} else {
+						this.openAlert(this, "Something went wrong");
+					}
 				} catch (err) {
-					console.log("err -->", err);
+					this.openAlert(this, "Something went wrong");
 				}
 			},
 			imageLoadError() {
-				console.log("Cant load image ..");
+				this.openAlert(this, "Image link is broken");
 			}
 		}
 	};

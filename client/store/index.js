@@ -7,8 +7,8 @@ export const getters = {
     user: state => state.user,
     token: state => state.user.token,
     authenticated: state => state.authenticated,
-    liked: state => state.user.movies.filter(cur => cur.liked),
-    watched: state => state.user.movies.filter(cur => cur.watched),
+    liked: state => (state.user.movies ? state.user.movies.filter(cur => cur.liked) : []),
+    watched: state => (state.user.movies ? state.user.movies.filter(cur => cur.watched) : []),
     likedIds: state => (state.user.movies ? state.user.movies.filter(cur => cur.liked).map(cur => cur.imdb) : []),
     watchedIds: state => (state.user.movies ? state.user.movies.filter(cur => cur.watched).map(cur => cur.imdb) : [])
 }

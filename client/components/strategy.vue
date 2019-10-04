@@ -14,7 +14,11 @@
 						>
 							<v-layout justify-center align-center>
 								<span class="text-capitalize font-weight-slim grey--text">{{ strategy.text }}</span>
-								<v-img class="ml-2" :width="strategy.text === '42 Intra' ? 30 : 20" :src="strategy.img"></v-img>
+								<svg-icon
+									class="ml-2"
+									:width="strategy.text === '42 Intra' ? 30 : 20"
+									:name="strategy.img"
+								/>
 							</v-layout>
 						</v-btn>
 					</v-layout>
@@ -31,32 +35,32 @@
 			strategies: [
 				{
 					text: "42 Intra",
-					img: "/42.svg",
+					img: "42",
 					url: "ft"
 				},
 				{
 					text: "Google",
-					img: "/google.svg",
+					img: "google",
 					url: "google"
 				},
 				{
 					text: "Github",
-					img: "/github.svg",
+					img: "github",
 					url: "git"
 				},
 				{
 					text: "Facebook",
-					img: "/facebook.svg",
+					img: "facebook",
 					url: "fb"
 				},
 				{
 					text: "LinkedIn",
-					img: "/linkedin.svg",
+					img: "linkedin",
 					url: "li"
 				},
 				{
 					text: "Twitch",
-					img: "/twitch.svg",
+					img: "twitch",
 					url: "tw"
 				}
 			]

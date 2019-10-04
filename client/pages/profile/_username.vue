@@ -1,5 +1,5 @@
 <template>
-	<v-layout justify-center wrap class="user" v-if="loaded && userLoaded">
+	<v-layout justify-center wrap class="user pb-5 mb-5" v-if="loaded && userLoaded">
 		<div class="avatar__container">
 			<v-avatar tile slot="offset" class="avatar" size="200">
 				<img :src="avatar" class="avatar__img">

@@ -2,7 +2,7 @@
 	<v-layout justify-center align-center class="pt-5 sign_container">
 		<v-flex xs12 sm7 md6 lg5 xl3>
 			<v-layout column justify-center>
-				<h2 class="display-2 font-weight-thin my-5 py-5 text-center">{{$t("recover_password")}}</h2>
+				<h2 class="display-2 font-weight-thin my-5 py-5 text-center" v-text="$t('recover_password')"></h2>
 				<v-form ref="form" v-model="valid" lazy-validation class="mt-5" @submit.prevent="recoverPass">
 					<v-text-field
 						outlined
@@ -11,7 +11,8 @@
 						:rules="rules.email"
 						:label="$t('email')"
 						required
-					></v-text-field>
+						@keyup.13.prevent="recoverPass"
+					/>
 					<v-layout column justify-center align-center class="py-4">
 						<v-btn
 							class="cta_btn"
@@ -20,37 +21,29 @@
 							outlined
 							color="primary"
 							@click.prevent="recoverPass"
-						>{{$t("send")}}</v-btn>
+							v-text="$t('send')"
+						/>
 					</v-layout>
 				</v-form>
 			</v-layout>
 		</v-flex>
-		<alert :data="alert"></alert>
 	</v-layout>
 </template>
 
 <script>
-	import utility from "@/assets/utility.js";
-	import alert from "@/components/alert";
-	import rules from "@/assets/rules";
 	import axios from "axios";
+	import rules from "@/assets/rules";
+	import utility from "@/assets/utility";
 
 	export default {
 		name: "Forgot",
-		components: {
-			alert
-		},
 		data: () => ({
-			alert: {
-				state: false,
-				color: "",
-				text: ""
-			},
 			valid: false,
 			email: "",
-			rules
+			rules: {}
 		}),
 		created() {
+			this.rules = rules(this);
 			this.$bus.$emit("showNavbar");
 		},
 		beforeDestroy() {
@@ -64,13 +57,14 @@
 						const url = `https://hypertube.tk/api/users/forgot`;
 						const data = { email: this.email };
 						const res = await axios.post(url, data);
+						this.email = "";
 						if (!res.data.ok || !!res.data.err) {
-							this.showAlert("red", res.data.errors.join(", "), this);
+							this.openAlert(this, res.data.errors.join(", "));
 						} else {
-							this.showAlert("green", res.data.status, this);
+							this.openAlert(this, res.data.status, "success");
 						}
 					} catch (err) {
-						console.error(err);
+						this.openAlert(this.$bus, "Something went wrong");
 					}
 				}
 			}
@@ -78,5 +72,3 @@
 	};
 </script>
 
-<style>
-</style>

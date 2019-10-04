@@ -15,6 +15,7 @@
         "@ckeditor/ckeditor5-build-inline": "^12.4.0",
         "@ckeditor/ckeditor5-vue": "^1.0.0",
         "@nuxtjs/axios": "^5.3.6",
+        "@nuxtjs/svg-sprite": "^0.4.2",
         "moment": "^2.24.0",
         "nuxt": "^2.0.0",
         "socket.io-client": "^2.3.0",

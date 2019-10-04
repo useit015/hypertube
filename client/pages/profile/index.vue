@@ -1,5 +1,5 @@
 <template>
-	<v-layout justify-center wrap class="user" v-if="loaded">
+	<v-layout justify-center wrap class="user pb-5 mb-5" v-if="loaded">
 		<div class="avatar__container">
 			<v-avatar tile slot="offset" class="avatar" size="200">
 				<img :src="avatar" class="avatar__img">
@@ -162,7 +162,6 @@
 		</v-container>
 		<passDialog ref="passDialog" :token="user.token" @updated="feedback"/>
 		<imageEditor ref="editor" @updated="feedback"/>
-		<alert :data="alert"></alert>
 	</v-layout>
 	<loader v-else/>
 </template>
@@ -171,7 +170,6 @@
 	import axios from "axios";
 	import { mapGetters, mapActions } from "vuex";
 	import rules from "@/assets/rules";
-	import alert from "@/components/alert";
 	import loader from "@/components/loader";
 	import utility from "@/assets/utility.js";
 	import passDialog from "@/components/passDialog";
@@ -187,17 +185,11 @@
 		middleware: "authenticated",
 		components: {
 			loader,
-			alert,
 			passDialog,
 			imageEditor
 		},
 		data() {
 			return {
-				alert: {
-					state: false,
-					color: "",
-					text: ""
-				},
 				rules: {},
 				storeUser: "",
 				languages: ["en", "fr"],
@@ -280,9 +272,9 @@
 			},
 			feedback(state) {
 				if (state) {
-					this.showAlert("green", this.$t("edit.success"), this);
+					this.openAlert(this, this.$t("edit.success"), "success");
 				} else {
-					this.showAlert("red", this.$t("edit.fail"), this);
+					this.openAlert(this, this.$t("edit.fail"));
 				}
 			}
 		}

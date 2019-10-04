@@ -10,19 +10,21 @@
 <script>
 	export default {
 		name: "Alert",
-		data: () => {
-			return {};
-		},
-		props: {
-			data: {
-				type: Object,
-				default: () => {
-					return {
-						state: false,
-						color: "",
-						text: ""
-					};
+		data() {
+			return {
+				data: {
+					state: false,
+					color: "",
+					text: ""
 				}
+			};
+		},
+		created() {
+			this.$bus.$on("openAlert", this.openAlert);
+		},
+		methods: {
+			openAlert(data) {
+				this.data = { ...data, state: true };
 			}
 		}
 	};

@@ -33,6 +33,7 @@
 	import axios from "axios";
 	import moment from "moment";
 	import { mapGetters } from "vuex";
+	import utility from "@/assets/utility.js";
 	import commentEditor from "@/components/commentEditor";
 
 	export default {
@@ -66,6 +67,7 @@
 			}
 		},
 		methods: {
+			...utility,
 			editorUpdated(data) {
 				this.editorData = data;
 			},
@@ -89,7 +91,7 @@
 							this.$bus.$emit("commentAdded", data.comment);
 						}
 					} catch (err) {
-						console.log("you got an error on --> ", err);
+						this.openAlert(this, "Something went wrong");
 					}
 				}
 			}

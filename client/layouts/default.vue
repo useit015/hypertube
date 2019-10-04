@@ -6,20 +6,20 @@
 				<nuxt/>
 			</v-container>
 		</v-content>
+		<alert/>
 	</v-app>
 </template>
 
 <script>
 	import axios from "axios";
 	import { mapActions } from "vuex";
+	import alert from "@/components/alert";
 	import navbar from "@/components/navbar";
 
 	export default {
 		components: {
+			alert,
 			navbar
-		},
-		data() {
-			return {};
 		}
 	};
 </script>
@@ -34,7 +34,7 @@ body {
 .movie__title {
 	font-family: "Bungee", cursive;
 	letter-spacing: 3px;
-	font-size: 2.2em;
+	font-size: 2.2rem;
 	text-shadow: 0 0 15px rgba(100, 214, 197, 0.5);
 }
 
@@ -72,7 +72,7 @@ body {
 }
 
 .sign_container {
-	margin-top: 64px;
+	margin: 64px auto;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -158,6 +158,16 @@ body {
 	.movie__card {
 		width: calc(50% - 2rem);
 	}
+	.movie__title {
+		font-size: 1.7rem;
+	}
 }
 
+@media only screen and (max-width: 400px) {
+	.movie__title.mb-5 {
+		margin-bottom: 5px !important;
+		padding: 0.8rem 0;
+		font-size: 1.4rem;
+	}
+}
 </style>
