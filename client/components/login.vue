@@ -2,7 +2,7 @@
 	<v-layout justify-center align-center class="mt-5">
 		<v-flex xs12 sm7 md6 lg5 xl3>
 			<v-layout column justify-center>
-				<h2 class="display-2 font-weight-thin my-5 py-5 text-center">{{ $t('title') }}</h2>
+				<h2 class="display-2 font-weight-thin my-5 py-5 text-center" v-text="$t('title.login')"></h2>
 				<v-form ref="form" v-model="valid" lazy-validation class="mt-5">
 					<v-text-field
 						v-if="renderer"
@@ -37,7 +37,7 @@
 							class="caption fgt_btn"
 							to="/sign/forgot"
 							nuxt
-							v-text="$t('forgot')"
+							v-text="$t('buttons.forgot')"
 						/>
 					</v-layout>
 					<v-layout justify-center align-center class="mt-5 py-4">
@@ -48,7 +48,7 @@
 							outlined
 							color="primary"
 							@click.prevent="logUser"
-							v-text="$t('login')"
+							v-text="$t('buttons.login')"
 						/>
 					</v-layout>
 				</v-form>
@@ -100,7 +100,7 @@
 							this.$router.push("/");
 						}
 					} catch (err) {
-						this.openAlert(this, "Something went wrong");
+						this.openAlert(this, this.$t("edit.fail"));
 					}
 				}
 			},

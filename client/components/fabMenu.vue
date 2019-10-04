@@ -35,7 +35,7 @@
 						<v-icon color="primary" v-text="item.icon" class="fab__icon" v-on="on"></v-icon>
 					</v-btn>
 				</template>
-				<span class="fab__tooltip" v-text="item.text"></span>
+				<span class="fab__tooltip" v-text="$t(`tooltip.${item.text}`)"></span>
 			</v-tooltip>
 		</v-speed-dial>
 		<div v-if="search" class="search__overlay">
@@ -52,7 +52,7 @@
 				single-line
 				outlined
 				class="nav_search"
-			></v-text-field>
+			/>
 		</div>
 	</div>
 </template>
@@ -71,22 +71,22 @@
 				menu: [
 					{
 						icon: "search",
-						text: "Search",
+						text: "search",
 						event: this.openSearch
 					},
 					{
 						icon: "filter_list",
-						text: "Filters",
+						text: "filter",
 						event: this.filters
 					},
 					{
 						icon: "account_circle",
-						text: "Profile",
+						text: "profile",
 						event: this.profile
 					},
 					{
 						icon: "exit_to_app",
-						text: "Logout",
+						text: "logout",
 						event: this.exit
 					}
 				]

@@ -2,7 +2,7 @@
 	<v-layout justify-center align-center class="pt-5 sign_container">
 		<v-flex xs12 sm7 md6 lg5 xl3>
 			<v-layout column justify-center>
-				<h2 class="display-2 font-weight-thin my-5 py-5 text-center" v-text="$t('recover_password')"></h2>
+				<h2 class="display-2 font-weight-thin my-5 py-5 text-center" v-text="$t('title.forgot')"></h2>
 				<v-form ref="form" v-model="valid" lazy-validation class="mt-5" @submit.prevent="recoverPass">
 					<v-text-field
 						outlined
@@ -21,7 +21,7 @@
 							outlined
 							color="primary"
 							@click.prevent="recoverPass"
-							v-text="$t('send')"
+							v-text="$t('buttons.send')"
 						/>
 					</v-layout>
 				</v-form>

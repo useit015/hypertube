@@ -102,7 +102,7 @@
 				this.movie = data.movie;
 				this.loading = false;
 			} catch (err) {
-				this.openAlert(this, "Something went wrong");
+				this.openAlert(this, this.$t('edit.fail'));
 			}
 		},
 		watch: {

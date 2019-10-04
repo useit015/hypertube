@@ -1,20 +1,26 @@
 <template>
 	<v-row class="movie" justify="space-around" align="start">
 		<v-col xs="10" sm="8" md="5" lg="4" xl="3" class="movie__actors" v-if="director">
-			<h1 class="movie__title sub text-center font-weight-black text-uppercase mb-5 pb-5">Director</h1>
+			<h1
+				class="movie__title sub text-center font-weight-black text-uppercase mb-5 pb-5"
+				v-text="$t('cast.director')"
+			></h1>
 			<v-row justify="center">
 				<v-card class="director__card">
 					<v-img :src="testImage(director.profile_path)"></v-img>
-					<h4 class="text-center">{{ director.name }}</h4>
+					<h4 class="text-center" v-text="director.name"></h4>
 				</v-card>
 			</v-row>
 		</v-col>
 		<v-col xs="12" sm="10" md="7" lg="6" xl="5" class="movie__actors" v-if="!!cast.cast.length">
-			<h1 class="movie__title sub text-center font-weight-black text-uppercase mb-5 pb-5">Actors</h1>
+			<h1
+				class="movie__title sub text-center font-weight-black text-uppercase mb-5 pb-5"
+				v-text="$t('cast.actors')"
+			></h1>
 			<v-row justify="center">
 				<v-card v-for="actor in cast.cast" :key="actor.cast_id" class="actor__card">
 					<v-img :src="testImage(actor.profile_path)"></v-img>
-					<h4 class="text-center mt-auto">{{ actor.name }}</h4>
+					<h4 class="text-center mt-auto" v-text="actor.name"></h4>
 				</v-card>
 			</v-row>
 		</v-col>

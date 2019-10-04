@@ -5,7 +5,7 @@
 				<img :src="avatar" class="avatar__img">
 				<div class="avatar__btn">
 					<v-fab-transition>
-						<v-btn color="dark" fab small @click.stop="openEditor">
+						<v-btn color="primary" fab small @click.stop="openEditor">
 							<v-icon>add_a_photo</v-icon>
 						</v-btn>
 					</v-fab-transition>
@@ -16,10 +16,15 @@
 			<v-card class="mx-auto px-4 py-4 mt-4" flat width="100%">
 				<v-layout justify-center wrap>
 					<v-container>
-						<v-btn class="edit" color="primary" fab small @click="toggleEdit">
-							<v-icon v-if="isEditing">close</v-icon>
-							<v-icon v-else>edit</v-icon>
-						</v-btn>
+						<v-tooltip left>
+							<template v-slot:activator="{ on }">
+								<v-btn class="edit" color="primary" fab small @click="toggleEdit" v-on="on">
+									<v-icon v-if="isEditing">close</v-icon>
+									<v-icon v-else>edit</v-icon>
+								</v-btn>
+							</template>
+							<span class="fab__tooltip" v-text="$t(`tooltip.edit`)"></span>
+						</v-tooltip>
 						<v-card-title class="movie__title font-weight-thin mb-5">Informations</v-card-title>
 						<v-form class="pt-4" ref="form" v-model="valid" lazy-validation>
 							<v-layout wrap>
@@ -34,7 +39,7 @@
 										:rules="rules.name"
 										required
 										@input="sync"
-									></v-text-field>
+									/>
 								</v-flex>
 								<v-flex xs12 md6>
 									<v-text-field
@@ -47,7 +52,7 @@
 										:rules="rules.name"
 										required
 										@input="sync"
-									></v-text-field>
+									/>
 								</v-flex>
 								<v-flex xs12 md6>
 									<v-text-field
@@ -60,7 +65,7 @@
 										:rules="rules.username"
 										required
 										@input="sync"
-									></v-text-field>
+									/>
 								</v-flex>
 								<v-flex xs12 md6>
 									<v-text-field
@@ -73,7 +78,7 @@
 										:rules="rules.email"
 										required
 										@input="sync"
-									></v-text-field>
+									/>
 								</v-flex>
 								<v-flex xs12 md6 class="px-3 my-3 password__container">
 									<v-layout align-center class="px-3">
@@ -101,7 +106,7 @@
 										:label="$t('defaultLanguage')"
 										v-model="user.langue"
 										@input="sync"
-									></v-select>
+									/>
 								</v-flex>
 							</v-layout>
 							<v-flex xs12 text-xs-right class="save__container px-0 py-0">
@@ -112,54 +117,16 @@
 									large
 									text
 									dark
+									v-text="$t('buttons.save')"
 									@click="save"
-								>{{ $t('save') }}</v-btn>
+								/>
 							</v-flex>
 						</v-form>
 					</v-container>
 				</v-layout>
 			</v-card>
 		</v-container>
-		<v-container>
-			<v-row justify="space-around" align="start">
-				<v-col v-if="!!liked.length">
-					<v-divider class="my-5"></v-divider>
-					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Liked Movies</h1>
-					<v-row justify="center">
-						<v-card
-							flat
-							v-for="movie in liked"
-							:key="movie.imdb"
-							class="movie__card"
-							@click="$router.push(`/watch/${movie.imdb}`)"
-						>
-							<v-img :src="movie.poster"></v-img>
-							<h4 class="text-center py-1">{{ movie.name }}</h4>
-						</v-card>
-					</v-row>
-				</v-col>
-			</v-row>
-		</v-container>
-		<v-container>
-			<v-row justify="space-around" align="start">
-				<v-col v-if="!!watched.length">
-					<v-divider class="my-5"></v-divider>
-					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Watched Movies</h1>
-					<v-row justify="center">
-						<v-card
-							flat
-							v-for="movie in watched"
-							:key="movie.imdb"
-							class="movie__card"
-							@click="$router.push(`/watch/${movie.imdb}`)"
-						>
-							<v-img :src="movie.poster"></v-img>
-							<h4 class="text-center py-1">{{ movie.name }}</h4>
-						</v-card>
-					</v-row>
-				</v-col>
-			</v-row>
-		</v-container>
+		<profileMovies :liked="liked" :watched="watched"/>
 		<passDialog ref="passDialog" :token="user.token" @updated="feedback"/>
 		<imageEditor ref="editor" @updated="feedback"/>
 	</v-layout>
@@ -174,6 +141,7 @@
 	import utility from "@/assets/utility.js";
 	import passDialog from "@/components/passDialog";
 	import imageEditor from "@/components/imageEditor";
+	import profileMovies from "@/components/profileMovies";
 
 	const isExternal = url =>
 		url &&
@@ -186,7 +154,8 @@
 		components: {
 			loader,
 			passDialog,
-			imageEditor
+			imageEditor,
+			profileMovies
 		},
 		data() {
 			return {
@@ -299,6 +268,13 @@
 	.main {
 		min-width: 0;
 	}
+}
+
+.password__button {
+	position: absolute;
+	top: 33%;
+	right: 0%;
+	transform: translate(-50%, -50%);
 }
 
 .avatar {

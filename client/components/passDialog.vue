@@ -14,11 +14,12 @@
 					<v-btn
 						dark
 						text
-						@click="updatePassword"
 						color="primary"
+						@click="updatePassword"
+						v-text="$t('buttons.save')"
 						:disabled="!password || !newPassword ||!confNewPassword"
-					>Save</v-btn>
-					<v-btn dark text color="primary" @click="close">Cancel</v-btn>
+					/>
+					<v-btn dark text color="primary" @click="close" v-text="$t('buttons.cancel')"/>
 				</v-toolbar-items>
 			</v-toolbar>
 			<v-layout justify-center align-center class="mt-5">
@@ -37,7 +38,7 @@
 								:append-icon="showPass ? 'visibility' : 'visibility_off'"
 								:type="showPass ? 'text' : 'password'"
 								@click:append="showPass = !showPass"
-							></v-text-field>
+							/>
 							<v-text-field
 								outlined
 								color="primary"
@@ -50,7 +51,7 @@
 								:append-icon="showNewPass ? 'visibility' : 'visibility_off'"
 								:type="showNewPass ? 'text' : 'password'"
 								@click:append="showNewPass = !showNewPass"
-							></v-text-field>
+							/>
 							<v-text-field
 								outlined
 								color="primary"
@@ -64,7 +65,7 @@
 								:type="showConfNewPass ? 'text' : 'password'"
 								@click:append="showConfNewPass = !showConfNewPass"
 								:error-messages="passwordMatch()"
-							></v-text-field>
+							/>
 						</v-form>
 					</v-layout>
 				</v-flex>
@@ -141,13 +142,6 @@
 <style>
 .password__container {
 	position: relative;
-}
-
-.password__button {
-	position: absolute;
-	top: 33%;
-	right: 0%;
-	transform: translate(-50%, -50%);
 }
 
 .password__form {

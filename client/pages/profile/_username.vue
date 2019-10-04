@@ -43,46 +43,7 @@
 				</v-layout>
 			</v-card>
 		</v-container>
-		<v-container>
-			<v-row justify="space-around" align="start">
-				<v-col v-if="!!liked.length">
-					<v-divider class="my-5"></v-divider>
-					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Liked Movies</h1>
-					<v-row justify="center">
-						<v-card
-							flat
-							v-for="movie in liked"
-							:key="movie.imdb"
-							class="movie__card"
-							@click="$router.push(`/watch/${movie.imdb}`)"
-						>
-							<v-img :src="movie.poster"></v-img>
-							<h4 class="text-center py-1">{{ movie.name }}</h4>
-						</v-card>
-					</v-row>
-				</v-col>
-			</v-row>
-		</v-container>
-		<v-container>
-			<v-row justify="space-around" align="start">
-				<v-col v-if="!!watched.length">
-					<v-divider class="my-5"></v-divider>
-					<h1 class="movie__title text-center font-weight-black text-uppercase my-5">Watched Movies</h1>
-					<v-row justify="center">
-						<v-card
-							flat
-							v-for="movie in watched"
-							:key="movie.imdb"
-							class="movie__card"
-							@click="$router.push(`/watch/${movie.imdb}`)"
-						>
-							<v-img :src="movie.poster"></v-img>
-							<h4 class="text-center py-1">{{ movie.name }}</h4>
-						</v-card>
-					</v-row>
-				</v-col>
-			</v-row>
-		</v-container>
+		<profileMovies :liked="liked" :watched="watched"/>
 	</v-layout>
 	<div class="not__found" v-else-if="!userLoaded && loaded">
 		<h1 class="ml-5">User not found</h1>
@@ -97,6 +58,7 @@
 	import axios from "axios";
 	import loader from "@/components/loader";
 	import { mapGetters, mapActions } from "vuex";
+	import profileMovies from "@/components/profileMovies";
 
 	const fetchUser = async username => {
 		const token = localStorage.getItem("token");
@@ -120,7 +82,8 @@
 	export default {
 		middleware: "authenticated",
 		components: {
-			loader
+			loader,
+			profileMovies
 		},
 		data: () => ({
 			userLoaded: null,

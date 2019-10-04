@@ -2,7 +2,7 @@
 	<v-layout justify-center align-center class="mt-5">
 		<v-flex xs12 sm7 md6 lg5 xl3>
 			<v-layout column justify-center>
-				<h2 class="display-2 font-weight-thin mt-3 mb-5 py-4 text-center">{{ $t('joinus') }}</h2>
+				<h2 class="display-2 font-weight-thin mt-3 mb-5 py-4 text-center" v-text="$t('title.register')"></h2>
 				<v-form ref="form" v-model="valid" lazy-validation class="form">
 					<v-text-field
 						v-if="renderer"
@@ -88,7 +88,7 @@
 							outlined
 							color="primary"
 							@click="registerUser"
-							v-text="$t('register')"
+							v-text="$t('buttons.register')"
 						/>
 					</v-layout>
 				</v-form>
@@ -169,7 +169,7 @@
 							this.openAlert(this, txt, "success");
 						}
 					} catch (err) {
-						this.openAlert(this, "Something went wrong");
+						this.openAlert(this, this.$t('edit.fail'));
 					}
 				}
 			},

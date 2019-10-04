@@ -13,7 +13,7 @@
 					<v-spacer></v-spacer>
 					<v-btn v-if="!authenticated" @click="changeLange('fr')" icon>FR</v-btn>
 					<v-btn v-if="!authenticated" @click="changeLange('en')" icon>EN</v-btn>
-					<v-btn text v-if="authenticated" @click="logout">
+					<v-btn text v-if="authenticated" @click="exit">
 						<v-icon>exit_to_app</v-icon>
 					</v-btn>
 				</v-layout>
@@ -51,12 +51,10 @@
 			...mapGetters(["user"])
 		},
 		methods: {
-			...mapActions({
-				out: "logout"
-			}),
-			async logout() {
-				this.out();
-				this.$router.push("sign");
+			...mapActions(["logout"]),
+			async exit() {
+				this.logout();
+				this.$router.push("/sign");
 			},
 			changeLange(lang) {
 				if (lang != this.$i18n.locale) {

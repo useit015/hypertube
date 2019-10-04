@@ -1,91 +1,113 @@
 {
-    "title": "Bon Retour",
-    "username": "Pseudo",
-    "password": "Mot de passe",
-    "login": "Connexion",
-    "joinus": "Rejoignez-nous",
-    "firstname": "Prénom",
-    "lastname": "Nom",
-    "email": "E-mail",
-    "confpassword": "Confirmez mot de passe",
-    "avatar": "Avatar",
-    "register": "Incription",
-    "forgot": "Mot de passe oublié",
     "or": "ou",
-    "signup": "Inscription",
-    "signin": "Connexion",
-    "send": "Envoyer",
-    "save": "Sauvegarder",
-    "recover_password": "Récupérer mot de passe",
-    "popular": "Populaire",
-    "action": "Action",
-    "adventure": "Aventure",
-    "animation": "Animation",
-    "comedy": "Comédie",
-    "history": "Histoire",
-    "sport": "Sport",
-    "family": "Famille",
-    "drama": "Drame",
-    "mystery": "Mystère",
-    "documentary": "Documentaire",
-    "fantasy": "Fantastique",
-    "western": "Western",
-    "war": "Guerre",
-    "crime": "Crime",
-    "music": "Musique",
-    "romance": "Romantique",
-    "horror": "Horreur",
-    "sci-fi": "Sci-fi",
-    "thriller": "Thriller",
-    "biography": "Biographie",
-    "Popularity": "Popularité",
-    "Date added": "Date d'ajout",
-    "Year": "Année",
-    "Title": "Titre",
+    "email": "E-mail",
+    "lastname": "Nom",
+    "avatar": "Avatar",
+    "username": "Pseudo",
+    "firstname": "Prénom",
+    "password": "Mot de passe",
+    "confpassword": "Confirmez mot de passe",
+    "buttons": {
+        "send": "Envoyer",
+        "cancel": "Annuler",
+        "login": "Connexion",
+        "save": "Sauvegarder",
+        "signin": "Connexion",
+        "signup": "Inscription",
+        "register": "Incription",
+        "forgot": "Mot de passe oublié"
+    },
+    "genres": {
+        "war": "Guerre",
+        "crime": "Crime",
+        "sport": "Sport",
+        "drama": "Drame",
+        "sci-fi": "Sci-fi",
+        "action": "Action",
+        "music": "Musique",
+        "horror": "Horreur",
+        "comedy": "Comédie",
+        "family": "Famille",
+        "western": "Western",
+        "mystery": "Mystère",
+        "history": "Histoire",
+        "popular": "Populaire",
+        "thriller": "Thriller",
+        "romance": "Romantique",
+        "adventure": "Aventure",
+        "fantasy": "Fantastique",
+        "animation": "Animation",
+        "biography": "Biographie",
+        "documentary": "Documentaire"
+    },
+    "filters": {
+        "Year": "Année",
+        "Title": "Titre",
+        "Popularity": "Popularité",
+        "Date added": "Date d'ajout"
+    },
     "defaultLanguage": "Langage par défaut",
     "rules": {
         "required": "Ce champ doit etre rempli",
         "name": {
-            "valid": "Le nom ne doit contenir que des lettres ou des separateurs valide",
-            "len": "Le nom doit contenir 3 characteres au minimum"
+            "len": "Le nom doit contenir 3 characteres au minimum",
+            "valid": "Le nom ne doit contenir que des lettres ou des separateurs valide"
         },
         "username": {
-            "valid": "Username can contain only letters, numbers, _ and - characters",
-            "len": "Le pseudo doit contenir entre 3 et 5 characteres"
+            "len": "Le pseudo doit contenir entre 3 et 5 characteres",
+            "valid": "Username can contain only letters, numbers, _ and - characters"
         },
         "password": {
-            "valid": "Le mot de passe doit contenir un miniscule, un majiscule, un nombre et un charactere special",
+            "match": "Les mots de passe doivent etre identique",
             "len": "Le mot de passe doit contenir 8 characteres au minimum",
-            "match": "Les mots de passe doivent etre identique"
+            "valid": "Le mot de passe doit contenir un miniscule, un majiscule, un nombre et un charactere special"
         },
         "email": {
             "valid": "l'e-mail doit etre valide"
         },
         "avatar": {
-            "ext": "L'image doit etre format JPEG ou PNG",
+            "empty": "Le fichier est vide",
             "size": "L'image ne doit pas depasser 4 MB",
-            "empty": "Le fichier est vide"
+            "ext": "L'image doit etre format JPEG ou PNG"
         }
     },
     "api": {
         "login": {
-            "verified": "Ce compte n'est pas verifié",
+            "user": "Le pseudo n'existe pas",
             "pass": "Le mot de passe est incorecte",
-            "user": "Le pseudo n'existe pas"
+            "verified": "Ce compte n'est pas verifié"
         },
         "register": {
+            "user": "Ce compte existe deja",
             "email": "Cet email existe deja",
             "username": "Ce pseudo existe deja",
-            "user": "Ce compte existe deja",
             "img": "Ce ficher n'est pas une image",
             "success": "Votre compte est crée, veuillez verifier votre email."
         }
     },
     "edit": {
-        "cur": "Mot de pass actuel",
-        "new": "Nouveau mot de pass",
-        "conf": "Confirmez le mot de pass",
-        "fail": "Veuillez ressayer avec des informations valide",
-        "success": "Votre profile a bien été modifié"
+        "cur": "Mot de passe actuel",
+        "new": "Nouveau mot de passe",
+        "conf": "Confirmez le mot de passe",
+        "success": "Votre profile a bien été modifié",
+        "fail": "Veuillez ressayer avec des informations valide"
+    },
+    "tooltip": {
+        "filter": "Filtres",
+        "profile": "Profile",
+        "search": "Recherche",
+        "logout": "Se déconnecter",
+        "edit": "Éditer profile"
+    },
+    "title": {
+        "login": "Bon Retour",
+        "liked": "Films aimés",
+        "watched": "Historique",
+        "register": "Rejoignez-nous",
+        "forgot": "Récupérer mot de passe"
+    },
+    "cast": {
+        "actors": "Acteurs",
+        "director": "Réalisateur"
     }
 }

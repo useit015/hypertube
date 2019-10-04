@@ -79,10 +79,10 @@
 						const txt = data.liked ? "Movie liked" : "Movie unliked";
 						this.openAlert(this, txt, "success");
 					} else {
-						this.openAlert(this, "Something went wrong");
+						this.openAlert(this, this.$t("edit.fail"));
 					}
 				} catch (err) {
-					this.openAlert(this, "Something went wrong");
+					this.openAlert(this, this.$t("edit.fail"));
 				}
 			},
 			imageLoadError() {

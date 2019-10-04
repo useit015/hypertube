@@ -112,10 +112,10 @@
 					if (!data.err) {
 						this.$bus.$emit("commentAdded", data.comment);
 					} else {
-						this.openAlert(this, "Something went wrong");
+						this.openAlert(this, this.$t("edit.fail"));
 					}
 				} catch (err) {
-					this.openAlert(this, "Something went wrong");
+					this.openAlert(this, this.$t("edit.fail"));
 				}
 			}
 		}

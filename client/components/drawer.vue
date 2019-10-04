@@ -5,14 +5,14 @@
 				<v-list-item-icon>
 					<svg-icon class="genre_logo" width="45" :name="genre"/>
 				</v-list-item-icon>
-				<v-list-item-title class="text-capitalize genre_item">{{ $t(genre) }}</v-list-item-title>
+				<v-list-item-title class="text-capitalize genre_item" v-text="$t(`genres.${genre}`)"/>
 			</v-list-item>
 			<v-divider></v-divider>
 			<v-list-item>
 				<v-col class="d-flex" align="start" justify="center">
 					<v-icon small color="primary" class="sort_icon">sort</v-icon>
 					<v-select
-						:label="$t(selected)"
+						:label="$t(`filters.${selected}`)"
 						:item-text="trad"
 						:items="items"
 						class="subtitle-2"
@@ -54,19 +54,19 @@
 			],
 			items: [
 				{
-					value: "Popularity",
+					value: "filters.Popularity",
 					text: "Popularity"
 				},
 				{
-					value: "Date added",
+					value: "filters.Date added",
 					text: "Date added"
 				},
 				{
-					value: "Year",
+					value: "filters.Year",
 					text: "Year"
 				},
 				{
-					value: "Title",
+					value: "filters.Title",
 					text: "Title"
 				}
 			],

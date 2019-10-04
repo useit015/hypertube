@@ -78,7 +78,7 @@
 					this.$refs.vueavatarscale.reset();
 					this.dialog = false;
 				} else {
-					this.openAlert(this, "Something went wrong");
+					this.openAlert(this, this.$t("edit.fail"));
 				}
 			},
 			onImageReady(scale) {
