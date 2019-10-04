@@ -86,6 +86,7 @@
         }
     },
     "edit": {
+        "information": "Informations",
         "cur": "Current password",
         "new": "New password",
         "conf": "Confirm new password",

@@ -86,6 +86,7 @@
         }
     },
     "edit": {
+        "information": "Informations",
         "cur": "Mot de passe actuel",
         "new": "Nouveau mot de passe",
         "conf": "Confirmez le mot de passe",

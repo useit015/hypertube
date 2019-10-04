@@ -25,7 +25,7 @@
 							</template>
 							<span class="fab__tooltip" v-text="$t(`tooltip.edit`)"></span>
 						</v-tooltip>
-						<v-card-title class="movie__title font-weight-thin mb-5">Informations</v-card-title>
+						<v-card-title class="movie__title font-weight-thin mb-5" v-text="$t(`edit.information`)"></v-card-title>
 						<v-form class="pt-4" ref="form" v-model="valid" lazy-validation>
 							<v-layout wrap>
 								<v-flex xs12 md6>
@@ -161,7 +161,7 @@
 			return {
 				rules: {},
 				storeUser: "",
-				languages: ["en", "fr"],
+				languages: ["en", "fr", "ar", "es"],
 				dataChanged: false,
 				isEditing: false,
 				renderer: true,
