@@ -61,7 +61,8 @@ app.get(/.*/, (req, res) => res.sendFile(`${indexPath}/index.html`))
 const httpServer = http.createServer(app)
 const httpsServer = https.createServer(options, app)
 
-const io = socketIo(httpServer, { pingInterval: 10, pingTimeout: 4000 })
+const io = socketIo(httpsServer, { pingInterval: 10, pingTimeout: 4000 })
+// const io = socketIo(httpServer, { pingInterval: 10, pingTimeout: 4000 })
 
 io.on('connection', require('./config/socket')(movieList, downloadList))
 
