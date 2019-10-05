@@ -7,7 +7,7 @@
 				kind="captions"
 				:label="sub.lang"
 				:srclang="sub.langShort"
-				:src="`http://hypertube.tk/${sub.path}`"
+				:src="`https://hypertube.tk/${sub.path}`"
 				:default="sub.langShort == $i18n.locale"
 			>
 		</video>
@@ -75,7 +75,7 @@
 
 <style>
 .video__box {
-	width: 100vw;
+	width: 100vmin;
 	margin: 4rem auto 0;
 }
 
