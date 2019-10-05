@@ -33,8 +33,8 @@ router.post('/like', authJwt, (req, res) => {
 	}
 	user.markModified('movies')
 	user.save()
-		.then(user => res.json(user.addToken()))
-		.catch(err => res.json({ err: true, errors: [err] }))
+		.then(user => res.json({ user: user.addToken(), liked: user.movies[i].liked }))
+		.catch(err => res.json({ err: true, errors: [err.message] }))
 })
 
 router.get('/user/:username', authJwt, (req, res) => {
@@ -46,8 +46,7 @@ router.get('/user/:username', authJwt, (req, res) => {
 					firstName: user[0].firstName,
 					lastName: user[0].lastName,
 					image: user[0].image,
-					watched: user[0].watched,
-					liked: user[0].liked,
+					movies: user[0].movies,
 					date: user[0].date
 				}
 				return res.json(usr)
@@ -160,12 +159,11 @@ router.post('/image', authJwt, async (req, res) => {
 			user.image = image = `/${image}`
 			user.save()
 				.then(user => res.json({ status: 'success', image }))
-				.catch(err => console.log(err))
+				.catch(err => res.json({ msg: 'Fatal error', err }))
 		});
 	} catch (err) {
-		return res.json({ msg: 'Fatal error',err })
+		return res.json({ msg: 'Fatal error', err })
 	}
-
 })
 
 router.get('/isloggedin', authJwt, (req, res) => res.json(req.user.addToken()))
@@ -243,14 +241,14 @@ router.post('/forgot', (req, res) => {
 				user.save()
 					.then(user => {
 						sendMail(email, user.rkey, 'recover')
-						res.json({ ok: true, status: `We've sent you an e-mail with recovery steps` })
+						res.json({ ok: true, status: 'api.forgot.success' })
 					})
-					.catch(err => console.log(err))
+					.catch(err => res.json({ err: true, errors: 'edit.fail' }))
 			} else {
-				res.json({ err: true, errors: [`Email doens't exist`] })
+				res.json({ err: true, errors: 'api.forgot.email' })
 			}
 		})
-		.catch(err => console.log(err))
+		.catch(err => res.json({ err: true, errors: 'edit.fail' }))
 })
 
 router.get('/recover/:key', (req, res) => {

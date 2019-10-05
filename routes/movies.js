@@ -70,7 +70,7 @@ const getSubt = async (id, imdb) => {
 		console.log(err.message);
 	}
 
-	return await yifysubtitles(id, { path: uploadPath, langs: ['en', 'fr', 'zh'] }); 
+	return await yifysubtitles(id, { path: uploadPath, langs: ['en', 'fr', 'es', 'ar', 'de', 'it', 'ru', 'bn', 'cs', 'fa', 'el', 'id', 'ro', 'tr', 'vi'] }); 
 }
 
 const getInfo = async id => {
@@ -213,6 +213,7 @@ module.exports = (movieList, downloadList) => {
 				})
 				engine.on('download', index => {
 					console.log('The engine downloaded this -->', index)
+					console.log('For -->', engine.files[0].name)
 				})
 			} else {
 				res.sendStatus(416)

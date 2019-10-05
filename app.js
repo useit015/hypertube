@@ -21,7 +21,6 @@ const options = {
 	cert: readFileSync('./certificate.pem')
 }
 
-const users = {}
 const movieList = {}
 const downloadList = {}
 
@@ -64,7 +63,7 @@ const httpsServer = https.createServer(options, app)
 
 const io = socketIo(httpServer, { pingInterval: 10, pingTimeout: 4000 })
 
-io.on('connection', require('./config/socket')(users, movieList, downloadList))
+io.on('connection', require('./config/socket')(movieList, downloadList))
 
 httpServer.listen(PORT, () => console.log(`Http server started on port ${PORT}`))
 httpsServer.listen(SPORT, () => console.log(`Https server started on port ${SPORT}`))

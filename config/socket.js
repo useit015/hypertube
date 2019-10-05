@@ -1,37 +1,41 @@
 const User = require('../models/User')
 const Movie = require('../models/Movie')
 
-module.exports = (users, movieList, downloadList) => {
+module.exports = (movieList, downloadList) => {
 
-	const freeEngine = (downloading, movie) => {
-		if (downloading && downloading.engine) {
-			downloading.engine.destroy(() => {
-				console.log('i destroyed the engine for --> ', movie.name)
+	const freeEngine = (movie) => {
+		if (movie && movie.engine) {
+			movie.engine.destroy(() => {
+				console.log('i destroyed the engine for --> ', movie.engine.files[0].name)
 			})
-			delete downloadList[movie.id]
-			delete movieList[movie.id]
+			delete downloadList[movie.engine.infoHash]
+			delete movieList[movie.engine.infoHash]
 		}
 	}
 
 	const cleanup = socket => {
-		Object.values(movieList).forEach(movie => {
+		Object.values(downloadList).forEach(movie => {
 			if (movie.users) {
 				if (movie.users.has(socket.id)) {
 					movie.users.delete(socket.id)
 					if (!movie.users.size) {
-						freeEngine(downloadList[movie.id], movie)
+						freeEngine(movie)
 					}
 				}
-			} else {
-				freeEngine(downloadList[movie.id], movie)
 			}
 		})
 	}
 
 	return socket => {
-		console.log('i am the socket --> ', socket.id)
-		socket.on('watch', ({ id, imdb, title, poster }) => {
+		console.log('i am the socket --> ', socket.id, downloadList)
+
+		socket.on('watch', ({ id, imdb, title, poster, userId }) => {
 			if (downloadList[id]) {
+				if (downloadList[id].users) {
+					downloadList[id].users.add(socket.id)
+				} else {
+					downloadList[id].users = new Set([ socket.id ])
+				}
 				let { path } = downloadList[id].engine
 				const { name } = downloadList[id].engine.torrent
 				path = `${path}/${name}`
@@ -47,8 +51,8 @@ module.exports = (users, movieList, downloadList) => {
 					}
 				})
 			}
-			console.log('i have --> ', users[socket.id], socket.id)
-			User.findById(users[socket.id], (err, user) => {
+
+			User.findById(userId, (err, user) => {
 				console.log('user is -> ', user)
 				if (user) {
 					if (user.movies.length) {
@@ -56,15 +60,17 @@ module.exports = (users, movieList, downloadList) => {
 						if (movie) {
 							movie.watched = true
 						} else {
-							user.watched.push({ imdb, name: title, watched: true, poster})
+							user.movies.push({ imdb, name: title, watched: true, poster })
 						}
-						user.markModified('movies')
-						user.save()
+					} else {
+						user.movies.push({ imdb, name: title, watched: true, poster })
 					}
+					user.markModified('movies')
+					user.save()
 				}
 			})
 		})
-		socket.on('auth', id => users[socket.id] = id)
+
 		socket.on('cleanup', () => cleanup(socket))
 		socket.on('disconnect', () => cleanup(socket))
 	}
