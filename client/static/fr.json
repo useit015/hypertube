@@ -22,7 +22,6 @@
         "crime": "Crime",
         "sport": "Sport",
         "drama": "Drame",
-        "sci-fi": "Sci-fi",
         "action": "Action",
         "music": "Musique",
         "horror": "Horreur",
@@ -38,6 +37,7 @@
         "fantasy": "Fantastique",
         "animation": "Animation",
         "biography": "Biographie",
+        "sci fi": "Science fiction",
         "documentary": "Documentaire"
     },
     "filters": {

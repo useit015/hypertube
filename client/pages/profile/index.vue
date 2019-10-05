@@ -129,6 +129,7 @@
 		<profileMovies :liked="liked" :watched="watched"/>
 		<passDialog ref="passDialog" :token="user.token" @updated="feedback"/>
 		<imageEditor ref="editor" @updated="feedback"/>
+		<loader v-if="saving" style="opacity:0"/>
 	</v-layout>
 	<loader v-else/>
 </template>
@@ -142,6 +143,7 @@
 	import passDialog from "@/components/passDialog";
 	import imageEditor from "@/components/imageEditor";
 	import profileMovies from "@/components/profileMovies";
+	import { setTimeout } from "timers";
 
 	const isExternal = url =>
 		url &&
@@ -166,6 +168,7 @@
 				isEditing: false,
 				renderer: true,
 				loaded: false,
+				saving: false,
 				valid: false
 			};
 		},
@@ -222,13 +225,15 @@
 						email: this.user.email,
 						langue: this.user.langue
 					};
+
+					this.saving = true;
 					axios
 						.post(url, data, { headers })
 						.then(res => {
 							this.feedback(!res.data.err);
 							this.storeUser = JSON.stringify(this.user);
 						})
-						.catch(err => console.error(err));
+						.catch(err => this.feedback());
 					this.isEditing = false;
 				}
 			},
@@ -241,10 +246,11 @@
 			},
 			feedback(state) {
 				if (state) {
-					this.openAlert(this, this.$t("edit.success"), "success");
+					this.openAlert(this, "edit.success", "success");
 				} else {
-					this.openAlert(this, this.$t("edit.fail"));
+					this.openAlert(this, "edit.fail");
 				}
+				this.saving = false;
 			}
 		}
 	};

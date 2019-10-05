@@ -73,12 +73,12 @@
 							this.$emit("updated", !res.data.err);
 							if (res.data.image) this.updateAvatar(res.data.image);
 						})
-						.catch(err => this.openAlert(this, "Something went wrong"));
+						.catch(err => this.openAlert(this, "edit.fail"));
 					this.isEditing = false;
 					this.$refs.vueavatarscale.reset();
 					this.dialog = false;
 				} else {
-					this.openAlert(this, this.$t("edit.fail"));
+					this.openAlert(this, "edit.fail");
 				}
 			},
 			onImageReady(scale) {

@@ -1,6 +1,11 @@
 export default {
     openAlert: (context, text, color = 'error') => {
-        context.$bus.$emit('openAlert', { color, text })
+        if (context) {
+            if (context.$t && context.$bus) {
+                text = context.$t(text)
+                context.$bus.$emit('openAlert', { color, text })
+            }
+        }
     },
     passwordCmp(context) {
         if (context.confPass === context.pass) return ''

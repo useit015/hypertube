@@ -1,114 +1,114 @@
 {
-  "or": "ni",
-  "email": "correo electrónico",
-  "avatar": "el avatar",
-  "username": "el nombre de usuario",
-  "password": "la contraseña",
-  "lastname": "el apellido",
-  "firstname": "el nombre de pila",
-  "confpassword": "confirma la contraseña",
-  "defaultLanguage": "Idioma predeterminado",
-  "buttons": {
-      "send": "Enviar",
-      "save": "Salvar",
-      "login": "Iniciar sesión",
-      "cancel": "Cancelar",
-      "signup": "Regístrate",
-      "signin": "Registrarse",
-      "register": "Registro",
-      "forgot": "Olvidé mi contraseña"
-  },
-  "genres": {
-      "war": "guerra",
-      "sport": "deporte",
-      "crime": "crimen",
-      "music": "música",
-      "drama": "drama",
-      "comedy": "comedia",
-      "family": "familia",
-      "action": "acción",
-      "horror": "horror",
-      "sci-fi": "ciencia ficción",
-      "history": "historia",
-      "fantasy": "fantasía",
-      "western": "occidental",
-      "mystery": "mysterio",
-      "popular": "popular",
-      "romance": "romance",
-      "thriller": "novela de suspenso",
-      "biography": "biografía",
-      "adventure": "aventuras",
-      "animation": "animación",
-      "documentary": "documental"
-  },
-  "filters": {
-      "Year": "AñoAño",
-      "Title": "Título",
-      "Date added": "Fecha de agregado",
-      "Popularity": "Popularidad"
-  },
-  "rules": {
-      "required": "este campo es requerido",
-      "name": {
-          "valid": "El nombre solo puede contener letras y separadores válidos",
-          "len": "El nombre debe tener al menos 3 caracteres."
-      },
-      "username": {
-          "valid": "El nombre de usuario solo puede contener letras, números, caracteres _ y -",
-          "len": " El nombre de usuario debe tener entre 5 y 30 caracteres. "
-      },
-      "password": {
-          "valid": "La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial ",
-          "len": "La contraseña debe tener al menos 8 caracteres de longitud ",
-          "match": "Las contraseñas deben coincidir"
-      },
-      "email": {
-          "valid": "correo electrónico debe ser válido"
-      },
-      "avatar": {
-          "ext": "Debe ser un archivo JPEG o PNG",
-          "size": "La imagen debe tener menos de 4 MB.",
-          "empty": "El archivo esta vacio"
-      }
-  },
-  "api": {
-      "login": {
-          "verified": "Usuario no verificado",
-          "pass": "Contraseña incorrecta",
-          "user": "Nombre de usuario no existe"
-      },
-      "register": {
-          "email": "correo electrónico ya existe",
-          "username": "nombre de usuario ya existe",
-          "user": "El usuario ya existe",
-          "img": "El archivo no es una imagen",
-          "success": "Usuario registrado con éxito! Por favor, verifique su cuenta."
-      }
-  },
-  "edit": {
-      "information": "información",
-      "cur": "Contraseña actual",
-      "new": "Nueva contraseña",
-      "conf": "Confirmar nueva contraseña",
-      "fail": "Algo salió mal. Por favor, vuelva a intentarlo",
-      "success": "tu perfil ha sido actualizado exitosamente"
-  },
-  "tooltip": {
-      "search": "Buscar",
-      "filter": "Filtros",
-      "profile": "Perfil",
-      "logout": " Cerrar sesión",
-      "edit": "Editar perfil"
-  },
-  "title": {
-      "login": "Dar una buena acogida",
-      "register": "Únete a nosotros",
-      "liked": "Películas que me gustaron",
-      "watched": "Historia",
-      "forgot": "Recuperar contraseña"
-  },
-  "cast": {
-      "director": "Director",
-      "actors": "Actores "
-  }
+    "or": "ni",
+    "email": "correo electrónico",
+    "avatar": "el avatar",
+    "username": "el nombre de usuario",
+    "password": "la contraseña",
+    "lastname": "el apellido",
+    "firstname": "el nombre de pila",
+    "confpassword": "confirma la contraseña",
+    "defaultLanguage": "Idioma predeterminado",
+    "buttons": {
+        "send": "Enviar",
+        "save": "Salvar",
+        "login": "Iniciar sesión",
+        "cancel": "Cancelar",
+        "signup": "Regístrate",
+        "signin": "Registrarse",
+        "register": "Registro",
+        "forgot": "Olvidé mi contraseña"
+    },
+    "genres": {
+        "war": "guerra",
+        "sport": "deporte",
+        "crime": "crimen",
+        "music": "música",
+        "drama": "drama",
+        "comedy": "comedia",
+        "family": "familia",
+        "action": "acción",
+        "horror": "horror",
+        "sci fi": "ciencia ficción",
+        "history": "historia",
+        "fantasy": "fantasía",
+        "western": "occidental",
+        "mystery": "mysterio",
+        "popular": "popular",
+        "romance": "romance",
+        "thriller": "novela de suspenso",
+        "biography": "biografía",
+        "adventure": "aventuras",
+        "animation": "animación",
+        "documentary": "documental"
+    },
+    "filters": {
+        "Year": "AñoAño",
+        "Title": "Título",
+        "Date added": "Fecha de agregado",
+        "Popularity": "Popularidad"
+    },
+    "rules": {
+        "required": "este campo es requerido",
+        "name": {
+            "valid": "El nombre solo puede contener letras y separadores válidos",
+            "len": "El nombre debe tener al menos 3 caracteres."
+        },
+        "username": {
+            "valid": "El nombre de usuario solo puede contener letras, números, caracteres _ y -",
+            "len": " El nombre de usuario debe tener entre 5 y 30 caracteres. "
+        },
+        "password": {
+            "valid": "La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial ",
+            "len": "La contraseña debe tener al menos 8 caracteres de longitud ",
+            "match": "Las contraseñas deben coincidir"
+        },
+        "email": {
+            "valid": "correo electrónico debe ser válido"
+        },
+        "avatar": {
+            "ext": "Debe ser un archivo JPEG o PNG",
+            "size": "La imagen debe tener menos de 4 MB.",
+            "empty": "El archivo esta vacio"
+        }
+    },
+    "api": {
+        "login": {
+            "verified": "Usuario no verificado",
+            "pass": "Contraseña incorrecta",
+            "user": "Nombre de usuario no existe"
+        },
+        "register": {
+            "email": "correo electrónico ya existe",
+            "username": "nombre de usuario ya existe",
+            "user": "El usuario ya existe",
+            "img": "El archivo no es una imagen",
+            "success": "Usuario registrado con éxito! Por favor, verifique su cuenta."
+        }
+    },
+    "edit": {
+        "information": "información",
+        "cur": "Contraseña actual",
+        "new": "Nueva contraseña",
+        "conf": "Confirmar nueva contraseña",
+        "fail": "Algo salió mal. Por favor, vuelva a intentarlo",
+        "success": "tu perfil ha sido actualizado exitosamente"
+    },
+    "tooltip": {
+        "search": "Buscar",
+        "filter": "Filtros",
+        "profile": "Perfil",
+        "logout": " Cerrar sesión",
+        "edit": "Editar perfil"
+    },
+    "title": {
+        "login": "Dar una buena acogida",
+        "register": "Únete a nosotros",
+        "liked": "Películas que me gustaron",
+        "watched": "Historia",
+        "forgot": "Recuperar contraseña"
+    },
+    "cast": {
+        "director": "Director",
+        "actors": "Actores "
+    }
 }

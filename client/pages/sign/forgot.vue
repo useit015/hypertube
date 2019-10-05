@@ -59,8 +59,10 @@
 						const res = await axios.post(url, data);
 						this.email = "";
 						if (!res.data.ok || !!res.data.err) {
+							// ! TRANSLATE THIS
 							this.openAlert(this, res.data.errors.join(", "));
 						} else {
+							// ! TRANSLATE THIS
 							this.openAlert(this, res.data.status, "success");
 						}
 					} catch (err) {

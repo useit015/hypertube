@@ -28,7 +28,7 @@
         "family": "family",
         "action": "action",
         "horror": "horror",
-        "sci-fi": "sci-fi",
+        "sci fi": "sci fi",
         "history": "history",
         "fantasy": "fantasy",
         "western": "western",
@@ -105,7 +105,9 @@
         "register": "Join Us",
         "liked": "Liked Movies",
         "watched": "History",
-        "forgot": "Recover password"
+        "forgot": "Recover password",
+        "like": "Movie liked",
+        "unlike": "Movie unliked"
     },
     "cast": {
         "director": "Director",

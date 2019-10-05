@@ -91,7 +91,7 @@
 							this.$bus.$emit("commentAdded", data.comment);
 						}
 					} catch (err) {
-						this.openAlert(this, this.$t("edit.fail"));
+						this.openAlert(this, "edit.fail");
 					}
 				}
 			}

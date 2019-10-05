@@ -76,16 +76,20 @@
 					const { data } = await axios.post(url, opts, { headers });
 					if (!data.err) {
 						this.updateMovies(data.user.movies);
-						const txt = data.liked ? "Movie liked" : "Movie unliked";
-						this.openAlert(this, txt, "success");
+						this.openAlert(
+							this,
+							`title.${data.liked ? "" : "un"}like`,
+							"success"
+						);
 					} else {
-						this.openAlert(this, this.$t("edit.fail"));
+						this.openAlert(this, "edit.fail");
 					}
 				} catch (err) {
-					this.openAlert(this, this.$t("edit.fail"));
+					this.openAlert(this, "edit.fail");
 				}
 			},
 			imageLoadError() {
+				// ! TRANSLATE THIS
 				this.openAlert(this, "Image link is broken");
 			}
 		}

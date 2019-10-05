@@ -84,6 +84,7 @@
 			const url = `https://hypertube.tk/api/comment/${this.imdb}`;
 			const { data } = await axios.get(url);
 			if (data.err) {
+				// ! TRANSLATE THIS
 				this.openAlert(this, "Can't load comments");
 			} else {
 				this.comments = data.comments;
@@ -112,10 +113,10 @@
 					if (!data.err) {
 						this.$bus.$emit("commentAdded", data.comment);
 					} else {
-						this.openAlert(this, this.$t("edit.fail"));
+						this.openAlert(this, "edit.fail");
 					}
 				} catch (err) {
-					this.openAlert(this, this.$t("edit.fail"));
+					this.openAlert(this, "edit.fail");
 				}
 			}
 		}

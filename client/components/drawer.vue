@@ -48,7 +48,7 @@
 				"music",
 				"romance",
 				"horror",
-				"sci-fi",
+				"sci fi",
 				"thriller",
 				"biography"
 			],

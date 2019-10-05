@@ -90,17 +90,14 @@
 						};
 						const res = await axios.post(url, data);
 						if (!!res.data.err) {
-							const txt = res.data.errors
-								.map(cur => this.$t(`api.login.${cur}`))
-								.join(", ");
-							this.openAlert(this, txt);
+							this.openAlert(this, `api.login.${res.data.errors[0]}`);
 						} else {
 							this.login(res.data);
 							this.$i18n.locale = res.data.langue;
 							this.$router.push("/");
 						}
 					} catch (err) {
-						this.openAlert(this, this.$t("edit.fail"));
+						this.openAlert(this, "edit.fail");
 					}
 				}
 			},

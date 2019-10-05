@@ -144,6 +144,7 @@
 					try {
 						let image = await this.getBase64(this.avatar);
 						if (/^data:/.test(image) == false) {
+							// ! TRANSLATE THIS
 							this.openAlert(this, "Image is not valid");
 							return;
 						}
@@ -158,18 +159,20 @@
 							avatar: image
 						};
 						const res = await axios.post(url, data);
-						let txt;
 						if (!!res.data.err) {
-							txt = res.data.errors
-								.map(cur => this.$t(`api.register.${cur}`))
-								.join(", ");
-							this.openAlert(this, txt);
+							this.openAlert(
+								this,
+								`api.register.${res.data.errors[0]}`
+							);
 						} else {
-							txt = this.$t(`api.register.${res.data.status}`);
-							this.openAlert(this, txt, "success");
+							this.openAlert(
+								this,
+								`api.register.${res.data.status}`,
+								"success"
+							);
 						}
 					} catch (err) {
-						this.openAlert(this, this.$t('edit.fail'));
+						this.openAlert(this, "edit.fail");
 					}
 				}
 			},

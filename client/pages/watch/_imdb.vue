@@ -24,9 +24,16 @@
 						<v-rating dense class="mx-3" color="white" small readonly :value="movie.rating / 2"/>
 					</v-row>
 					<v-row align="center" justify="start" class="movie__genre my-5 pt-2">
-						<v-btn v-for="(genre, i) in movie.genres" :key="i" outlined disabled class="mx-3">{{ genre }}</v-btn>
+						<v-btn
+							v-for="(genre, i) in movie.genres"
+							:key="i"
+							outlined
+							disabled
+							class="mx-3"
+							v-text="$t(`genres.${genre}`)"
+						/>
 					</v-row>
-					<p class="movie__desc text-md-left text-center my-5 py-5">{{ movie.description }}</p>
+					<p class="movie__desc text-md-left text-center my-5 py-5" v-text="description"></p>
 					<movie-filters :torrents="movie.torrents" @play="play"/>
 				</v-col>
 			</v-row>
@@ -65,7 +72,8 @@
 
 <script>
 	import axios from "axios";
-	import { mapActions } from "vuex";
+	import { mapActions, mapGetters } from "vuex";
+	import translate from "translate";
 	import utility from "@/assets/utility";
 	import loader from "@/components/loader";
 	import movieCast from "@/components/movieCast";
@@ -89,6 +97,7 @@
 			loading: true,
 			playing: false,
 			trailer: false,
+			description: "test",
 			movieLoading: false,
 			selectedTorrent: null,
 			vars: {
@@ -100,9 +109,18 @@
 				const url = `https://hypertube.tk/api/movies/info/${this.imdb}`;
 				const { data } = await axios.get(url);
 				this.movie = data.movie;
+				if (this.locale == "en") {
+					this.description = this.movie.description;
+				} else {
+					this.description = await translate(this.movie.description, {
+						to: this.locale,
+						engine: "google",
+						key: "AIzaSyB0Ixi8-g3o4B0gp-uyM6TqTPKUFoYzW4M"
+					});
+				}
 				this.loading = false;
 			} catch (err) {
-				this.openAlert(this, this.$t('edit.fail'));
+				this.openAlert(this, "edit.fail");
 			}
 		},
 		watch: {
@@ -120,6 +138,7 @@
 			}
 		},
 		computed: {
+			...mapGetters(["user"]),
 			imdb() {
 				return this.$route.params.imdb;
 			},
@@ -149,6 +168,12 @@
 						imdb: null
 					};
 				}
+			},
+			locale() {
+				if (this.$i18n) return this.$i18n.locale;
+			},
+			userId() {
+				return this.user._id;
 			}
 		},
 		methods: {
@@ -169,11 +194,13 @@
 			movieLoaded() {
 				this.playing = true;
 				const payload = {
-					id: this.selectedTorrent.id,
 					imdb: this.imdb,
+					userId: this.userId,
 					title: this.movie.title,
+					id: this.selectedTorrent.id,
 					poster: this.movie.poster_big
 				};
+				console.log("payload -->", payload);
 				this.$socket.client.emit("watch", payload);
 				this.markAsWatched(payload);
 			},
