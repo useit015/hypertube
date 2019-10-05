@@ -9,6 +9,7 @@
     "confpassword": "confirma la contraseña",
     "defaultLanguage": "Idioma predeterminado",
     "buttons": {
+        "play": "Jugar",
         "send": "Enviar",
         "save": "Salvar",
         "login": "Iniciar sesión",
@@ -16,6 +17,8 @@
         "signup": "Regístrate",
         "signin": "Registrarse",
         "register": "Registro",
+        "reply": "la contestación",
+        "comment": "Agregar comentario",
         "forgot": "Olvidé mi contraseña"
     },
     "genres": {
@@ -28,6 +31,7 @@
         "family": "familia",
         "action": "acción",
         "horror": "horror",
+        "sci-fi": "ciencia ficción",
         "sci fi": "ciencia ficción",
         "history": "historia",
         "fantasy": "fantasía",
@@ -83,6 +87,10 @@
             "user": "El usuario ya existe",
             "img": "El archivo no es una imagen",
             "success": "Usuario registrado con éxito! Por favor, verifique su cuenta."
+        },
+        "forgot": {
+            "email": "El correo electrónico no existe",
+            "success": "Le enviamos un correo electrónico con pasos de recuperación"
         }
     },
     "edit": {
@@ -105,10 +113,16 @@
         "register": "Únete a nosotros",
         "liked": "Películas que me gustaron",
         "watched": "Historia",
-        "forgot": "Recuperar contraseña"
+        "forgot": "Recuperar contraseña",
+        "comments": "Comentarios"
     },
     "cast": {
         "director": "Director",
         "actors": "Actores "
+    },
+    "error": {
+        "comment": "No se pueden cargar comentarios",
+        "link": "El enlace de la imagen está roto",
+        "image": "La imagen no es válida"
     }
 }

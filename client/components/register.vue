@@ -144,8 +144,7 @@
 					try {
 						let image = await this.getBase64(this.avatar);
 						if (/^data:/.test(image) == false) {
-							// ! TRANSLATE THIS
-							this.openAlert(this, "Image is not valid");
+							this.openAlert(this, "error.image");
 							return;
 						}
 						const url = `https://hypertube.tk/api/users/register`;
@@ -168,7 +167,7 @@
 							this.openAlert(
 								this,
 								`api.register.${res.data.status}`,
-								"success"
+								"green"
 							);
 						}
 					} catch (err) {

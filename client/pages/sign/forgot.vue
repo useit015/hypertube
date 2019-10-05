@@ -59,14 +59,12 @@
 						const res = await axios.post(url, data);
 						this.email = "";
 						if (!res.data.ok || !!res.data.err) {
-							// ! TRANSLATE THIS
-							this.openAlert(this, res.data.errors.join(", "));
+							this.openAlert(this, res.data.errors);
 						} else {
-							// ! TRANSLATE THIS
-							this.openAlert(this, res.data.status, "success");
+							this.openAlert(this, res.data.status, "green");
 						}
 					} catch (err) {
-						this.openAlert(this.$bus, "Something went wrong");
+						this.openAlert(this, "edit.fail");
 					}
 				}
 			}

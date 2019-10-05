@@ -66,7 +66,7 @@
 				v-if="filteredTorrentsInfo[selectedTorrent]"
 				@click="$emit('play', filteredTorrentsInfo[selectedTorrent])"
 			>
-				Play
+				{{ $t('buttons.play') }}
 				<v-icon class="play__icon" right>play_circle_filled</v-icon>
 			</v-btn>
 		</v-row>

@@ -45,7 +45,7 @@
 			VueAvatarScale
 		},
 		data: () => ({
-			error: null,
+			error: true,
 			dialog: false
 		}),
 		computed: mapGetters(["user"]),
@@ -61,8 +61,8 @@
 			onChangeScale(scale) {
 				this.$refs.vueavatar.changeScale(scale);
 			},
-			async saveClicked() {
-				if (!error) {
+			saveClicked() {
+				if (!this.error) {
 					const img = this.$refs.vueavatar.getImageScaled().toDataURL();
 					const url = `https://hypertube.tk/api/users/image`;
 					const headers = { Authorization: `jwt ${this.user.token}` };
@@ -71,6 +71,7 @@
 						.post(url, data, { headers })
 						.then(res => {
 							this.$emit("updated", !res.data.err);
+							console.log("res -->", res);
 							if (res.data.image) this.updateAvatar(res.data.image);
 						})
 						.catch(err => this.openAlert(this, "edit.fail"));

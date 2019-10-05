@@ -8,14 +8,17 @@
     "password": "Mot de passe",
     "confpassword": "Confirmez mot de passe",
     "buttons": {
+        "play": "Jouer",
         "send": "Envoyer",
         "cancel": "Annuler",
         "login": "Connexion",
         "save": "Sauvegarder",
         "signin": "Connexion",
+        "reply": "Repondre",
         "signup": "Inscription",
         "register": "Incription",
-        "forgot": "Mot de passe oublié"
+        "forgot": "Mot de passe oublié",
+        "comment": "Ajouter un commentaire"
     },
     "genres": {
         "war": "Guerre",
@@ -37,6 +40,7 @@
         "fantasy": "Fantastique",
         "animation": "Animation",
         "biography": "Biographie",
+        "sci-fi": "Science fiction",
         "sci fi": "Science fiction",
         "documentary": "Documentaire"
     },
@@ -83,6 +87,10 @@
             "username": "Ce pseudo existe deja",
             "img": "Ce ficher n'est pas une image",
             "success": "Votre compte est crée, veuillez verifier votre email."
+        },
+        "forgot": {
+            "email": "L'email n'existe pas",
+            "success": "Nous vous avons envoyé un e-mail avec les étapes de récupération"
         }
     },
     "edit": {
@@ -105,10 +113,16 @@
         "liked": "Films aimés",
         "watched": "Historique",
         "register": "Rejoignez-nous",
-        "forgot": "Récupérer mot de passe"
+        "forgot": "Récupérer mot de passe",
+        "comments": "Commentaires"
     },
     "cast": {
         "actors": "Acteurs",
         "director": "Réalisateur"
+    },
+    "error": {
+        "comment": "Impossible de charger les commentaires",
+        "link": "Le lien de l'image n'est pas valide",
+        "image": "L'image n'est pas valide"
     }
 }

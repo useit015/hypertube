@@ -37,9 +37,6 @@
 					<movie-filters :torrents="movie.torrents" @play="play"/>
 				</v-col>
 			</v-row>
-			<div class>
-				<svg-icon name="twitch"/>
-			</div>
 			<movie-cast :cast="movie.cast"/>
 			<movie-comments :imdb="this.imdb"/>
 			<v-row v-if="trailer" column align="center" justify="center" class="trailer_overlay">
@@ -49,7 +46,15 @@
 				<youtube fitParent :player-vars="vars" ref="youtube" :video-id="movie.trailer"/>
 			</v-row>
 			<v-row v-if="movieLoading" column align="center" justify="center" class="trailer_overlay">
-				<v-btn fab small outlined color="primary" class="trailer_close" @click="closeMovie">
+				<v-btn
+					fab
+					small
+					outlined
+					color="primary"
+					class="trailer_close"
+					v-show="playing"
+					@click="closeMovie"
+				>
 					<v-icon>close</v-icon>
 				</v-btn>
 				<movie-player
@@ -72,10 +77,10 @@
 
 <script>
 	import axios from "axios";
-	import { mapActions, mapGetters } from "vuex";
 	import translate from "translate";
 	import utility from "@/assets/utility";
 	import loader from "@/components/loader";
+	import { mapActions, mapGetters } from "vuex";
 	import movieCast from "@/components/movieCast";
 	import moviePlayer from "@/components/moviePlayer";
 	import moviePoster from "@/components/moviePoster";
@@ -186,10 +191,12 @@
 				this.movieLoading = true;
 			},
 			closeMovie() {
-				this.playing = false;
-				this.movieLoading = false;
-				this.selectedTorrent = null;
-				this.$socket.client.emit("cleanup");
+				if (this.playing) {
+					this.playing = false;
+					this.movieLoading = false;
+					this.selectedTorrent = null;
+					this.$socket.client.emit("cleanup");
+				}
 			},
 			movieLoaded() {
 				this.playing = true;
@@ -200,7 +207,6 @@
 					id: this.selectedTorrent.id,
 					poster: this.movie.poster_big
 				};
-				console.log("payload -->", payload);
 				this.$socket.client.emit("watch", payload);
 				this.markAsWatched(payload);
 			},

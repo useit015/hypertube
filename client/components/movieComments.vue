@@ -1,6 +1,9 @@
 <template>
 	<v-container class="comments__container" align="center" direction="column">
-		<h1 class="movie__title sub text-center font-weight-black text-uppercase mb-5 pb-5">Comments</h1>
+		<h1
+			class="movie__title sub text-center font-weight-black text-uppercase mb-5 pb-5"
+			v-text="$t('title.comments')"
+		></h1>
 		<v-row v-for="comment in comments" :key="comment._id" justify="center">
 			<v-col lg="10" md="12" sm="10" xs="12" class="comments px-0 py-0 mx-auto">
 				<commentTree :node="comment" class="root node"/>
@@ -8,11 +11,12 @@
 		</v-row>
 		<v-row justify="center">
 			<v-btn
-				color="primary"
 				text
+				color="primary"
 				class="comment__add my-5"
+				v-text="$t('buttons.comment')"
 				@click="editorState = !editorState"
-			>Add Comment</v-btn>
+			/>
 		</v-row>
 		<v-row justify="center">
 			<v-col lg="10" md="12" sm="10" xs="12" class="main__comment px-0">
@@ -84,8 +88,7 @@
 			const url = `https://hypertube.tk/api/comment/${this.imdb}`;
 			const { data } = await axios.get(url);
 			if (data.err) {
-				// ! TRANSLATE THIS
-				this.openAlert(this, "Can't load comments");
+				this.openAlert(this, "error.comment");
 			} else {
 				this.comments = data.comments;
 			}

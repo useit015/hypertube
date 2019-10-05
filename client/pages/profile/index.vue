@@ -246,7 +246,7 @@
 			},
 			feedback(state) {
 				if (state) {
-					this.openAlert(this, "edit.success", "success");
+					this.openAlert(this, "edit.success", "green");
 				} else {
 					this.openAlert(this, "edit.fail");
 				}

@@ -13,8 +13,9 @@
 					<v-spacer></v-spacer>
 					<v-btn v-if="!authenticated" @click="changeLange('fr')" icon>FR</v-btn>
 					<v-btn v-if="!authenticated" @click="changeLange('en')" icon>EN</v-btn>
-					<v-btn text v-if="authenticated" @click="exit">
-						<v-icon>exit_to_app</v-icon>
+					<v-btn text large v-if="authenticated" @click="exit">
+						<span v-text="$t('tooltip.logout')"></span>
+						<v-icon class="ml-2">exit_to_app</v-icon>
 					</v-btn>
 				</v-layout>
 			</v-toolbar>

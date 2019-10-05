@@ -9,13 +9,16 @@
     "confpassword": "Confirm Password",
     "defaultLanguage": "Default Language",
     "buttons": {
+        "play": "Play",
         "send": "Send",
         "save": "Save",
         "login": "Login",
+        "reply": "Reply",
         "cancel": "Cancel",
         "signup": "Sign Up",
         "signin": "Sign In",
         "register": "Register",
+        "comment": "Add comment",
         "forgot": "I forgot my password"
     },
     "genres": {
@@ -28,6 +31,7 @@
         "family": "family",
         "action": "action",
         "horror": "horror",
+        "sci-fi": "sci fi",
         "sci fi": "sci fi",
         "history": "history",
         "fantasy": "fantasy",
@@ -83,6 +87,10 @@
             "user": "User already exists",
             "img": "File is not an image",
             "success": "User registred succesfully ! please verify your account."
+        },
+        "forgot": {
+            "email": "Email Doesn't exist",
+            "success": "We've sent you an e-mail with recovery steps"
         }
     },
     "edit": {
@@ -107,10 +115,16 @@
         "watched": "History",
         "forgot": "Recover password",
         "like": "Movie liked",
-        "unlike": "Movie unliked"
+        "unlike": "Movie unliked",
+        "comments": "Comments"
     },
     "cast": {
         "director": "Director",
         "actors": "Actors"
+    },
+    "error": {
+        "comment": "Can't load comments",
+        "link": "Image link is broken",
+        "image": "Image is not valid"
     }
 }

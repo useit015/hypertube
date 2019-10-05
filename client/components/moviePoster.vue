@@ -79,7 +79,7 @@
 						this.openAlert(
 							this,
 							`title.${data.liked ? "" : "un"}like`,
-							"success"
+							"green"
 						);
 					} else {
 						this.openAlert(this, "edit.fail");
@@ -89,8 +89,7 @@
 				}
 			},
 			imageLoadError() {
-				// ! TRANSLATE THIS
-				this.openAlert(this, "Image link is broken");
+				this.openAlert(this, "error.link");
 			}
 		}
 	};

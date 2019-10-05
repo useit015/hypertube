@@ -6,7 +6,13 @@
 				:to="`/profile/${node.username ? node.username : ''}`"
 			>{{ node.username ? node.username : 'Deleted account' }}</nuxt-link>
 			<span class="comment__time">{{ commentTime }}</span>
-			<v-btn text color="primary" class="ml-auto mr-3 reply" @click="editorState = !editorState">Reply</v-btn>
+			<v-btn
+				text
+				color="primary"
+				class="ml-auto mr-3 reply"
+				@click="editorState = !editorState"
+				v-text="$t('buttons.reply')"
+			/>
 		</v-row>
 		<div class="comment__text text-truncate pl-1" v-show="!collapsed" v-html="node.body"></div>
 		<div class="editor__container" v-if="editorState">
