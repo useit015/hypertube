@@ -1,5 +1,5 @@
 <template>
-	<div v-show="navbar">
+	<div v-if="navbar">
 		<nav class="navbar">
 			<v-toolbar color="grey darken-2" dark class="elevation-0 px-3">
 				<v-layout align-center justify-space-around>

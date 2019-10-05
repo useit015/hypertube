@@ -1,9 +1,9 @@
 <template>
-	<v-layout justify-center align-center>
+	<v-row justify="center" align="center">
 		<v-flex xs12 sm7 md6 lg5 xl3>
-			<v-layout justify-center align-center wrap>
+			<v-row justify="center" align="center" wrap>
 				<v-flex sm6 md4 v-for="(strategy, i) in strategies" :key="i">
-					<v-layout class="mx-3 my-3" justify-center align-center>
+					<v-row class="mx-3 my-3" justify="center" align="center">
 						<v-btn
 							large
 							rounded
@@ -12,20 +12,21 @@
 							:href="`https://hypertube.tk/api/oauth/${strategy.url}`"
 							width="130"
 						>
-							<v-layout justify-center align-center>
+							<v-row justify="center" align="center">
 								<span class="text-capitalize font-weight-slim grey--text">{{ strategy.text }}</span>
 								<svg-icon
 									class="ml-2"
 									:width="strategy.text === '42 Intra' ? 30 : 20"
+									:height="30"
 									:name="strategy.img"
 								/>
-							</v-layout>
+							</v-row>
 						</v-btn>
-					</v-layout>
+					</v-row>
 				</v-flex>
-			</v-layout>
+			</v-row>
 		</v-flex>
-	</v-layout>
+	</v-row>
 </template>
 
 <script>

@@ -32,7 +32,7 @@
 			<v-tooltip left v-for="item in menu" :key="item.icon">
 				<template v-slot:activator="{ on }">
 					<v-btn fab small color="grey darken-3" class="fab__button" @click="item.event">
-						<v-icon color="primary" v-text="item.icon" class="fab__icon" v-on="on"></v-icon>
+						<v-icon color="primary" v-text="item.icon" class="fab__icon" v-on="on"/>
 					</v-btn>
 				</template>
 				<span class="fab__tooltip" v-text="$t(`tooltip.${item.text}`)"></span>
@@ -142,7 +142,7 @@
 
 <style>
 .fab__menu {
-	position: fixed;
+	position: fixed !important;
 	top: 1rem;
 	right: 1rem;
 }
