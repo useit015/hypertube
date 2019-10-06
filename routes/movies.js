@@ -184,7 +184,7 @@ module.exports = (movieList, downloadList) => {
 			movie.cast = cast
 			res.json({ movie });
 		} catch (err) {
-			console.log("Got error here --> ", err);
+			res.json({ err: true })
 		}
 	})
 

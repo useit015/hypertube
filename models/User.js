@@ -41,7 +41,7 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		default: ''
 	},
-	twId: {
+	spId: {
 		type: String,
 		default: ''
 	},

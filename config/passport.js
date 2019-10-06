@@ -5,7 +5,7 @@ const GithubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy
-const TwitchStrategy = require('passport-twitchtv').Strategy
+const SpotifyStrategy = require('passport-spotify').Strategy;
 const { randomBytes } = require('crypto')
 const request = require('request')
 const User = require('../models/User')
@@ -31,13 +31,15 @@ const findUser = async (data, done, type) => {
 	}
 }
 
-const generateUsername = async (id, type) => {
-	let username = `user_${type}${id}`
-	username = username.substr(0, 30)
+const generateUsername = async (firstName, lastName) => {
+	let username = (firstName[0]+lastName).slice(0,8).toLowerCase();
 	let user = await User.findOne({ username })
+	let i = 1;
 	while (user) {
-		username = `user_${type}${randomBytes(6).toString('hex')}`
+		// username = `user_${type}${randomBytes(6).toString('hex')}`
+		username = (firstName.substring(0,i)+lastName).slice(0,8).toLowerCase();
 		user = await User.findOne({ username })
+		i++;
 	}
 	return username
 }
@@ -69,7 +71,7 @@ module.exports = passport => {
 				callbackURL: `${process.env.API_URL}/oauth/googlered`
 			},
 			async (accessToken, refreshToken, profile, done) => {
-				const userName = await generateUsername(profile.id, 'gl')
+				const userName = await generateUsername(profile.name.givenName, profile.name.familyName)
 				const user = {
 					firstName: profile.name.givenName,
 					lastName: profile.name.familyName,
@@ -91,13 +93,13 @@ module.exports = passport => {
 				callbackURL: `${process.env.API_URL}/oauth/git_ret`
 			},
 			async (accessToken, refreshToken, profile, done) => {
-				const userName = await generateUsername(profile.id, 'gt')
+				console.log('profile --> ', profile)
 				const user = {
 					firstName: '',
 					lastName: '',
-					username: userName,
+					username: profile.username,
 					image: profile.photos[0].value,
-					email: profile._json.email,
+					email: profile._json.email ? profile._json.email : "",
 					githubId: profile.id,
 					verified: true
 				}
@@ -140,8 +142,7 @@ module.exports = passport => {
 				}
 				request(opts, async (err, res) => {
 					const profile = JSON.parse(res.body)
-					console.log('i am the profile --> ', profile)
-					const userName = await generateUsername(profile.id, 'fb')
+					const userName = await generateUsername(profile.first_name, profile.last_name)
 					const user = {
 						firstName: profile.first_name,
 						lastName: profile.last_name,
@@ -166,7 +167,7 @@ module.exports = passport => {
 			},
 			async (token, tokenSecret, profile, done) => {
 				const photos = profile.photos
-				const userName = await generateUsername(profile.id, 'li')
+				const userName = await generateUsername(profile.name.givenName, profile.name.familyName)
 				const user = {
 					firstName: profile.name.givenName,
 					lastName: profile.name.familyName,
@@ -181,26 +182,24 @@ module.exports = passport => {
 		)
 	)
 	passport.use(
-		new TwitchStrategy(
+		new SpotifyStrategy(
 			{
-				clientID: process.env.TW_CLIENT_ID,
-				clientSecret: process.env.TW_CLIENT_SECRET,
-				callbackURL: `${process.env.API_URL}/oauth/tw_ret`,
-				scope: 'user_read'
+				clientID: process.env.SP_CLIENT_ID,
+				clientSecret: process.env.SP_CLIENT_SECRET,
+				callbackURL: `${process.env.API_URL}/oauth/sp_ret`
 			},
-			async (token, tokenSecret, profile, done) => {
-				const photos = profile.photos
-				const userName = await generateUsername(profile.id, 'tw')
+			async (accessToken, refreshToken, expires_in, profile, done) => {
+				const userName = profile.displayName;
 				const user = {
-					firstName: profile.displayName,
-					lastName: profile.displayName,
+					firstName: '',
+					lastName: '',
 					username: userName,
-					image: profile._json.logo,
-					email: profile.email,
-					twId: profile.id,
+					image: profile.photos[0],
+					email: profile._json.email,
+					spId: profile.id,
 					verified: true
 				}
-				findUser(user, done, 'tw')
+				findUser(user, done, 'sp')
 			}
 		)
 	)

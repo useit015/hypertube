@@ -15,7 +15,7 @@ router.get('/ft_ret', passport.authenticate('42'), errorMiddleware, renderMiddle
 router.get('/git_ret', passport.authenticate('github'), errorMiddleware, renderMiddleware)
 router.get('/li_ret', passport.authenticate('linkedin'), errorMiddleware, renderMiddleware)
 router.get('/fb_ret', passport.authenticate('facebook'), errorMiddleware, renderMiddleware)
-router.get('/tw_ret', passport.authenticate('twitchtv'), errorMiddleware, renderMiddleware)
+router.get('/sp_ret', passport.authenticate('spotify'), errorMiddleware, renderMiddleware)
 router.get('/googlered', passport.authenticate('google'), errorMiddleware, renderMiddleware)
 
 module.exports = router

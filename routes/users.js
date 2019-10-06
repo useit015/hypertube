@@ -27,14 +27,14 @@ router.post('/like', authJwt, (req, res) => {
 	}
 	const finalMovie = { imdb, name, poster }
 	if (MovieFound) {
-		user.movies[i] = { ...finalMovie, liked: !user.movies[i].liked }
+		user.movies[i] = { ...finalMovie, liked: !user.movies[i].liked, watched: user.movies[i].watched }
 	} else {
 		user.movies.push({ ...finalMovie, liked: true })
 	}
 	user.markModified('movies')
 	user.save()
 		.then(user => res.json({ user: user.addToken(), liked: user.movies[i].liked }))
-		.catch(err => res.json({ err: true, errors: [err.message] }))
+		.catch(err => res.json({ err: true }))
 })
 
 router.get('/user/:username', authJwt, (req, res) => {
@@ -51,9 +51,9 @@ router.get('/user/:username', authJwt, (req, res) => {
 				}
 				return res.json(usr)
 			}
-			res.json({err:true, errors:[`user '${req.params.username}' not found`]})
+			res.json({ err: true })
 		})
-		.catch(err => res.json({ err:true, error: `Error while searching for user ${req.params.user} : ${err}` }))
+		.catch(err => res.json({ err: true }))
 })
 
 router.post('/login', (req, res) => {
@@ -159,10 +159,10 @@ router.post('/image', authJwt, async (req, res) => {
 			user.image = image = `/${image}`
 			user.save()
 				.then(user => res.json({ status: 'success', image }))
-				.catch(err => res.json({ msg: 'Fatal error', err }))
+				.catch(err => res.json({ msg: 'Fatal error', err: true }))
 		});
 	} catch (err) {
-		return res.json({ msg: 'Fatal error', err })
+		return res.json({ msg: 'Fatal error', err: true })
 	}
 })
 
@@ -177,11 +177,16 @@ router.post('/update', authJwt, (req, res) => {
 			user.firstName = data.firstName
 			user.lastName = data.lastName
 			user.username = data.username
-			user.email = data.email
 			user.langue = data.langue
+			if (user.email != data.email) {
+				user.email = data.email
+				user.vkey = randomHex()
+				user.verified = false
+				sendMail(user.email, user.vkey, 'verify')
+			}
 			user.save()
 				.then(user => res.json(user.addToken()))
-				.catch(err => console.log(err))
+				.catch(err => res.json({ err: true }))
 		} else {
 			res.json({ err: true, errors: validator.getErrors(err) })
 		}
@@ -195,13 +200,15 @@ router.post('/passwordupdate', authJwt, (req, res) => {
 	validator.passwordupdate(data, err => {
 		if (!err) {
 			user.cmpPassword(password, (err, match) => {
-				if (err) throw err
+				if (err) return res.json({ err: true })
 				if (match) {
 					user.password = data.newPassword
 					user.save()
 						.then(user => res.json(user.addToken()))
-						.catch(err => console.log(err))
-				} else { res.json({ err: true, errors: [`Wrong password`] }) }
+						.catch(err => res.json({ err: true }))
+				} else {
+					res.json({ err: true, errors: [`Wrong password`] })
+				}
 			})
 		} else {
 			res.json({ err: true, errors: validator.getErrors(err) })
@@ -221,7 +228,7 @@ router.get('/verify/:key', (req, res) => {
 							const { token } = user.addToken()
 							res.render('redirect', { token })
 						})
-						.catch(err => console.log(err))
+						.catch(err => res.json({ err: true }))
 				} else {
 					res.json({ err: true, errors: ['Already verified'] })
 				}
@@ -229,7 +236,7 @@ router.get('/verify/:key', (req, res) => {
 				res.json({ err: true, errors: ['Invalid key'] })
 			}
 		})
-		.catch(err => console.log(err))
+		.catch(err => res.json({ err: true }))
 })
 
 router.post('/forgot', (req, res) => {
@@ -261,7 +268,7 @@ router.get('/recover/:key', (req, res) => {
 				res.json({ err: true, errors: ['Invalid key'] })
 			}
 		})
-		.catch(err => console.log(err))
+		.catch(err => res.json({ err: true }))
 })
 
 router.post('/recovery_check', authJwt, (req, res) => {
@@ -271,7 +278,7 @@ router.post('/recovery_check', authJwt, (req, res) => {
 		user.key = undefined
 		user.save()
 			.then(user => res.json({ ok: true }))
-			.catch(err => console.log(err))
+			.catch(err => res.json({ err: true }))
 	} else {
 		res.json({ err: true, errors: ['Invalid key'] })
 	}
