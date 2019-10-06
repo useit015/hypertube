@@ -114,6 +114,7 @@
 				const url = `https://hypertube.tk/api/movies/info/${this.imdb}`;
 				const { data } = await axios.get(url);
 				this.movie = data.movie;
+				console.log("movie -->", this.movie);
 				if (this.locale == "en") {
 					this.description = this.movie.description;
 				} else {

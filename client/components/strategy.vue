@@ -60,9 +60,9 @@
 					url: "li"
 				},
 				{
-					text: "Twitch",
-					img: "twitch",
-					url: "tw"
+					text: "Spotify",
+					img: "spotify",
+					url: "sp"
 				}
 			]
 		})

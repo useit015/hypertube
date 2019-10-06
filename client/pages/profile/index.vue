@@ -2,7 +2,7 @@
 	<v-layout justify-center wrap class="user pb-5 mb-5" v-if="loaded">
 		<div class="avatar__container">
 			<v-avatar tile slot="offset" class="avatar" size="200">
-				<img v-if="user.image" :src="avatar" class="avatar__img">
+				<img :src="avatar" class="avatar__img">
 				<div class="avatar__btn">
 					<v-fab-transition>
 						<v-btn color="primary" fab small @click.stop="openEditor">
@@ -178,7 +178,9 @@
 				return this.user.langue;
 			},
 			avatar() {
-				return isExternal(this.user.image)
+				return !this.user.image
+					? "/zdiab.jpg"
+					: isExternal(this.user.image)
 					? this.user.image
 					: `https://hypertube.tk${this.user.image}`;
 			}

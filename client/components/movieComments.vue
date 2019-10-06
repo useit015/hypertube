@@ -108,7 +108,7 @@
 					const headers = { Authorization: `jwt ${this.user.token}` };
 					const opts = {
 						commentImdb: this.imdb,
-						commentBody: this.editorData
+						commentBody: this.editorData.replace(/<p>&nbsp;<\/p>/g, "")
 					};
 					this.editorData = "";
 					this.editorState = false;
