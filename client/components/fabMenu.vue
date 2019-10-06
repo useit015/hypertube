@@ -120,7 +120,7 @@
 				this.search = false;
 				this.menu[0] = {
 					icon: "youtube_searched_for",
-					text: "Clear search",
+					text: "clear",
 					event: this.clearSearch
 				};
 			},
@@ -128,7 +128,7 @@
 				this.query = "";
 				this.menu[0] = {
 					icon: "search",
-					text: "Search",
+					text: "search",
 					event: this.openSearch
 				};
 				this.$bus.$emit("searchMovie", "");
