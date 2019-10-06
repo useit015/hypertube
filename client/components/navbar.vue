@@ -23,7 +23,7 @@
 		<v-footer class="footer grey darken-3">
 			<v-container class="py-0">
 				<v-row justify="center">
-					<div class="footer__content">
+					<div class="footer__content grey--text">
 						<span>Made with</span>
 						<v-icon color="red" class="mx-1 pb-1">favorite</v-icon>
 						<span>by onahiz, iouzzine, yez-zain</span>
@@ -53,7 +53,7 @@
 		},
 		methods: {
 			...mapActions(["logout"]),
-			async exit() {
+			exit() {
 				this.logout();
 				this.$router.push("/sign");
 			},

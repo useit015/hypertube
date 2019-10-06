@@ -114,6 +114,8 @@
         "watched": "Historique",
         "register": "Rejoignez-nous",
         "forgot": "Récupérer mot de passe",
+        "like": "Film aimé",
+        "unlike": "Film non aimé",
         "comments": "Commentaires"
     },
     "cast": {
@@ -123,6 +125,7 @@
     "error": {
         "comment": "Impossible de charger les commentaires",
         "link": "Le lien de l'image n'est pas valide",
-        "image": "L'image n'est pas valide"
+        "image": "L'image n'est pas valide",
+        "complete": "Vous devez compléter votre profil"
     }
 }

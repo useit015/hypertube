@@ -109,22 +109,23 @@
         "edit": "Edit profile"
     },
     "title": {
-        "login": "Welcome Back",
-        "register": "Join Us",
-        "liked": "Liked Movies",
         "watched": "History",
-        "forgot": "Recover password",
+        "register": "Join Us",
         "like": "Movie liked",
+        "comments": "Comments",
+        "login": "Welcome Back",
+        "liked": "Liked Movies",
         "unlike": "Movie unliked",
-        "comments": "Comments"
+        "forgot": "Recover password"
     },
     "cast": {
-        "director": "Director",
-        "actors": "Actors"
+        "actors": "Actors",
+        "director": "Director"
     },
     "error": {
-        "comment": "Can't load comments",
+        "image": "Image is not valid",
         "link": "Image link is broken",
-        "image": "Image is not valid"
+        "comment": "Can't load comments",
+        "complete": "You must complete your profile"
     }
 }

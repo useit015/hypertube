@@ -2,7 +2,7 @@
 	<v-layout justify-center wrap class="user pb-5 mb-5" v-if="loaded">
 		<div class="avatar__container">
 			<v-avatar tile slot="offset" class="avatar" size="200">
-				<img :src="avatar" class="avatar__img">
+				<img v-if="user.image" :src="avatar" class="avatar__img">
 				<div class="avatar__btn">
 					<v-fab-transition>
 						<v-btn color="primary" fab small @click.stop="openEditor">
@@ -80,7 +80,7 @@
 										@input="sync"
 									/>
 								</v-flex>
-								<v-flex xs12 md6 class="px-3 my-3 password__container">
+								<v-flex xs12 md6 class="px-3 my-3 password__container" v-if="!oauthUser">
 									<v-layout align-center class="px-3">
 										<v-text-field
 											disabled
@@ -127,7 +127,7 @@
 			</v-card>
 		</v-container>
 		<profileMovies :liked="liked" :watched="watched"/>
-		<passDialog ref="passDialog" :token="user.token" @updated="feedback"/>
+		<passDialog ref="passDialog" :token="user.token" @updated="feedback" v-if="!oauthUser"/>
 		<imageEditor ref="editor" @updated="feedback"/>
 		<loader v-if="saving" style="opacity:0"/>
 	</v-layout>
@@ -173,7 +173,7 @@
 			};
 		},
 		computed: {
-			...mapGetters(["user", "liked", "watched"]),
+			...mapGetters(["user", "liked", "watched", "oauthUser"]),
 			langue() {
 				return this.user.langue;
 			},
@@ -194,9 +194,9 @@
 			}
 		},
 		async created() {
+			this.rules = rules(this);
 			this.$bus.$emit("showNavbar");
 			this.loaded = true;
-			this.rules = rules(this);
 			this.storeUser = JSON.stringify(this.user);
 		},
 		beforeDestroy() {

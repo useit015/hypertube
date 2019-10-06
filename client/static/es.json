@@ -114,6 +114,8 @@
         "liked": "Películas que me gustaron",
         "watched": "Historia",
         "forgot": "Recuperar contraseña",
+        "like": "Película le gusta",
+        "unlike": "Película no gustada",
         "comments": "Comentarios"
     },
     "cast": {
@@ -123,6 +125,7 @@
     "error": {
         "comment": "No se pueden cargar comentarios",
         "link": "El enlace de la imagen está roto",
-        "image": "La imagen no es válida"
+        "image": "La imagen no es válida",
+        "complete": "Debes completar tu perfil"
     }
 }

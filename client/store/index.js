@@ -10,7 +10,23 @@ export const getters = {
     liked: state => (state.user.movies ? state.user.movies.filter(cur => cur.liked) : []),
     watched: state => (state.user.movies ? state.user.movies.filter(cur => cur.watched) : []),
     likedIds: state => (state.user.movies ? state.user.movies.filter(cur => cur.liked).map(cur => cur.imdb) : []),
-    watchedIds: state => (state.user.movies ? state.user.movies.filter(cur => cur.watched).map(cur => cur.imdb) : [])
+    watchedIds: state => (state.user.movies ? state.user.movies.filter(cur => cur.watched).map(cur => cur.imdb) : []),
+    incompleteProfile: state => {
+        if (state.authenticated) {
+            return !state.user.email || !state.user.lastName || !state.user.firstName || !state.user.username
+        }
+    },
+    oauthUser: state => {
+        if (state.authenticated) {
+            return (
+                !!state.user.fbId ||
+                !!state.user.liId ||
+                !!state.user.spId ||
+                !!state.user.githubId ||
+                !!state.user.googleId
+            )
+        }
+    }
 }
 
 export const mutations = {
@@ -21,6 +37,7 @@ export const mutations = {
     logout: state => {
         state.user = {}
         state.authenticated = false
+        localStorage.clear()
     },
     updateUser: (state, user) => {
         state.user = user
@@ -29,11 +46,23 @@ export const mutations = {
         state.user.image = `${image}?${new Date().getTime()}`
     },
     markAsWatched: (state, { imdb, title, poster }) => {
-        const movie = { imdb, poster, name: title }
-        if (state.user.watched && state.user.watched.length) {
-            state.user.watched.push(movie)
+        const movie = { imdb, poster, name: title, watched: true }
+        if (state.user.movies && state.user.movies.length) {
+            let i = -1
+            let MovieFound = false
+            while (++i < state.user.movies.length) {
+                if (state.user.movies[i].imdb == imdb) {
+                    MovieFound = true
+                    break
+                }
+            }
+            if (MovieFound) {
+                state.user.movies[i] = [{ ...state.user.movies[i], watched: true }]
+            } else {
+                state.user.movies.push(movie)
+            }
         } else {
-            state.user.watched = [movie]
+            state.user.movies = [movie]
         }
     },
     updateMovies: (state, movies) => {
@@ -49,7 +78,6 @@ export const actions = {
         }
     },
     logout: ({ commit }) => {
-        localStorage.clear()
         commit('logout')
     },
     updateUser: ({ commit }, user) => {

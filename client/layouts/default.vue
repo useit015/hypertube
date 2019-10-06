@@ -7,12 +7,17 @@
 			</v-container>
 		</v-content>
 		<alert/>
+		<v-snackbar v-model="incompleteAlert" color="error" :timeout="10000" top right>
+			{{ $t('error.complete') }}
+			<v-btn dark text @click="incompleteAlert = false">
+				<v-icon>close</v-icon>
+			</v-btn>
+		</v-snackbar>
 	</v-app>
 </template>
 
 <script>
-	import axios from "axios";
-	import { mapActions } from "vuex";
+	import { mapGetters } from "vuex";
 	import alert from "@/components/alert";
 	import navbar from "@/components/navbar";
 
@@ -20,6 +25,18 @@
 		components: {
 			alert,
 			navbar
+		},
+		data: () => ({
+			incompleteAlert: false
+		}),
+		computed: mapGetters(["incompleteProfile"]),
+		watch: {
+			incompleteProfile: {
+				immediate: true,
+				handler() {
+					if (this.incompleteProfile) this.incompleteAlert = true;
+				}
+			}
 		}
 	};
 </script>

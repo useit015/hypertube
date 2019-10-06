@@ -113,7 +113,13 @@
 					};
 					axios
 						.post(url, data, { headers })
-						.then(res => this.$emit("updated", !res.data.err))
+						.then(res => {
+							if (!res.data.err) {
+								this.$emit("updated", !res.data.err);
+							} else {
+								this.openAlert(this, "edit.fail");
+							}
+						})
 						.catch(err => this.openAlert(this, "edit.fail"));
 					this.passDialog = false;
 					this.password = "";

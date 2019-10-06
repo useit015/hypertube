@@ -62,15 +62,11 @@
 
 	const fetchUser = async username => {
 		const token = localStorage.getItem("token");
-		const res = await axios.get(
+		const { data } = await axios.get(
 			`https://hypertube.tk/api/users/user/${username}`,
 			{ headers: { Authorization: `jwt ${token}` } }
 		);
-		if (!res.data.err) {
-			return res.data;
-		} else {
-			return null;
-		}
+		return data;
 	};
 
 	const isExternal = url =>
@@ -108,12 +104,20 @@
 			}
 		},
 		async created() {
-			const res = await fetchUser(this.$route.params.username);
-			this.userLoaded = res;
-			this.loaded = true;
-			this.$bus.$emit("showNavbar");
-			if (this.$route.params.username === this.user.username) {
-				this.$router.push("/profile");
+			try {
+				const res = await fetchUser(this.$route.params.username);
+				if (res.err) {
+					this.$router.push("/");
+				} else {
+					this.userLoaded = res;
+					this.loaded = true;
+					this.$bus.$emit("showNavbar");
+					if (this.$route.params.username === this.user.username) {
+						this.$router.push("/profile");
+					}
+				}
+			} catch (err) {
+				this.$router.push("/");
 			}
 		},
 		beforeDestroy() {
