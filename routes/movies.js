@@ -154,7 +154,7 @@ const fetchMovie = async id => {
 			runtime,
 			trailer,
 			torrents,
-			poster_big,
+			poster_big: poster_big.replace('http', 'https'),
 			description
 		}
 		return movie;
@@ -245,7 +245,7 @@ module.exports = (movieList, downloadList) => {
 						year: cur.year,
 						rating: cur.rating,
 						imdb: cur.imdb,
-						poster_med: cur.poster_med
+						poster_med: cur.poster_med.replace('http', 'https')
 					}));
 				}
 				cloudscraper.get(`${yurl}`).then(result => {
@@ -281,7 +281,7 @@ module.exports = (movieList, downloadList) => {
 						year: cur.year,
 						rating: cur.rating,
 						imdb: cur.imdb,
-						poster_med: cur.poster_med
+						poster_med: cur.poster_med.replace('http', 'https')
 					}));
 				}
 				return res.json(popcornList);
