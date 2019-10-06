@@ -105,6 +105,7 @@
         "filter": "Filtres",
         "profile": "Profile",
         "search": "Recherche",
+        "clear": "Effacer la recherche",
         "logout": "Se déconnecter",
         "edit": "Éditer profile"
     },

@@ -103,6 +103,7 @@
     },
     "tooltip": {
         "search": "Search",
+        "clear": "Clear Search",
         "filter": "Filters",
         "profile": "Profile",
         "logout": "Logout",
