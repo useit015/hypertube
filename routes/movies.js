@@ -275,7 +275,7 @@ module.exports = (movieList, downloadList) => {
 						year: cur.year,
 						rating: cur.rating,
 						imdb: cur.imdb,
-						poster_med: cur.poster_med.replace('http', 'https')
+						poster_med: cur.poster_med.replace('http:', 'https:')
 					}));
 				}
 				cloudscraper.get(`${yurl}`).then(result => {
