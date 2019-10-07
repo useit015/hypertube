@@ -238,7 +238,7 @@ module.exports = (movieList, downloadList) => {
 					const path = `${uploadPath}/${name}`;
 					Movie.findOne({ path }, (err, movie) => {
 						if (movie && !movie.downloaded) {
-							movie.id = id;
+							movie.torrentID = id;
 							movie.name = engine.files[0].name;
 							movie.downloaded = true;
 							movie.save();
