@@ -48,6 +48,16 @@ body {
 	overflow: hidden;
 }
 
+body::-webkit-scrollbar {
+	width: 0.3rem !important;
+}
+body::-webkit-scrollbar-track {
+	background: #212121 !important;
+}
+body::-webkit-scrollbar-thumb {
+	background: #64d6c4 !important;
+}
+
 .movie__title {
 	font-family: "Bungee", cursive;
 	letter-spacing: 3px;
@@ -71,12 +81,17 @@ body {
 
 .page-enter-active,
 .page-leave-active {
-	transition: opacity 0.5s;
+	transition: all 0.4s ease-in-out;
 }
 
-.page-enter,
+.page-enter {
+	opacity: 0;
+	transform: translate(0, 50vw);
+}
+
 .page-leave-to {
 	opacity: 0;
+	transform: translate(0, -50vw);
 }
 
 .trailer_close,
@@ -185,6 +200,15 @@ body {
 		margin-bottom: 5px !important;
 		padding: 0.8rem 0;
 		font-size: 1.4rem;
+	}
+}
+
+@keyframes showUp {
+	from {
+		transform: scale(0);
+	}
+	to {
+		transform: scale(1);
 	}
 }
 </style>

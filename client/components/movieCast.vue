@@ -35,9 +35,6 @@
 				default: () => ({})
 			}
 		},
-		created() {
-			console.log("this.cast -->", this.cast);
-		},
 		computed: {
 			director() {
 				if (!this.cast.crew) return;

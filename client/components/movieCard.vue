@@ -1,9 +1,5 @@
 <template>
-	<div
-		class="movie_card"
-		:style="`background-image:url(${movie.poster_med})`"
-		@click="$router.push(`watch/${movie.imdb}`)"
-	>
+	<div class="movie_card" :style="`background-image:url(${movie.poster_med})`" @click="openMovie">
 		<div class="watched__overlay" v-if="movieWatched">
 			<v-icon color="primary" class="watched__icon">remove_red_eye</v-icon>
 		</div>
@@ -51,7 +47,10 @@
 			}
 		},
 		methods: {
-			stripYear: title => title.replace(/\([0-9]{4}\)/, "")
+			stripYear: title => title.replace(/\([0-9]{4}\)/, ""),
+			openMovie() {
+				this.$router.push(`/watch/${this.movie.imdb}`);
+			}
 		}
 	};
 </script>

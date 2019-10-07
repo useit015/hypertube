@@ -71,7 +71,6 @@
 						.post(url, data, { headers })
 						.then(res => {
 							this.$emit("updated", !res.data.err);
-							console.log("res -->", res);
 							if (res.data.image) this.updateAvatar(res.data.image);
 						})
 						.catch(err => this.openAlert(this, "edit.fail"));

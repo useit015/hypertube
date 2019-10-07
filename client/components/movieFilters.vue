@@ -62,11 +62,23 @@
 				outlined
 				large
 				color="primary"
-				class="play__btn my-5"
+				class="play__btn my-5 mx-5"
 				v-if="filteredTorrentsInfo[selectedTorrent]"
 				@click="$emit('play', filteredTorrentsInfo[selectedTorrent])"
 			>
 				{{ $t('buttons.play') }}
+				<v-icon class="play__icon" right>play_circle_filled</v-icon>
+			</v-btn>
+			<v-btn
+				large
+				outlined
+				target="_blank"
+				color="primary"
+				class="play__btn download my-5 mx-5"
+				v-if="filteredTorrentsInfo[selectedTorrent] && filteredTorrentsInfo[selectedTorrent].downloaded"
+				:href="`https://hypertube.tk/api/movies/download/${filteredTorrentsInfo[selectedTorrent].id}`"
+			>
+				{{ $t('buttons.download') }}
 				<v-icon class="play__icon" right>play_circle_filled</v-icon>
 			</v-btn>
 		</v-row>
@@ -113,7 +125,8 @@
 			filteredTorrentsInfo() {
 				return this.filteredTorrents.map(cur => ({
 					id: cur.id,
-					ext: cur.ext
+					ext: cur.ext,
+					downloaded: cur.downloaded
 				}));
 			}
 		},
@@ -178,7 +191,7 @@
 }
 
 .torrent__list {
-	padding: 0;
+	padding: 0 !important;
 	border: 1px solid #64d6c450 !important;
 }
 
@@ -209,6 +222,10 @@
 	font-family: "Bungee", cursive;
 	font-size: 1.2em;
 	transform: scale(1.2);
+}
+
+.play__btn.download {
+	margin-left: 2.5rem !important;
 }
 
 .back,
