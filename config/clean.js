@@ -47,7 +47,7 @@ const sendMail = async movies => {
 			to: "ouzzine.ismail@gmail.com"
 		})
 	} catch (err) {
-		console.log('Got error here -->', err)
+		console.log(`Can't send mail because of: `, err.message)
 	}
 }
 

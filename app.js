@@ -9,6 +9,7 @@ const socketIo = require('socket.io')
 const { resolve } = require('path')
 const { readFileSync } = require('fs')
 
+const httpApp = express();
 const app = express()
 const PORT = process.env.PORT || 80
 const SPORT = process.env.PORT || 443
@@ -43,7 +44,9 @@ mongoose
 		useNewUrlParser: true
 	})
 	.then(() => console.log('MongoDB Connected'))
-	.catch(err => console.log(err))
+	.catch(err => console.log('Error connecting to MongoDB: ', err.message))
+
+httpApp.get("*", (req, res) => res.redirect("https://" + req.headers.host));
 
 app.use('/api/users', require('./routes/users'))
 app.use('/api/oauth', require('./routes/oauth'))
@@ -58,11 +61,10 @@ app.use('/sub', express.static(subPath))
 
 app.get(/.*/, (req, res) => res.sendFile(`${indexPath}/index.html`))
 
-const httpServer = http.createServer(app)
+const httpServer = http.createServer(httpApp)
 const httpsServer = https.createServer(options, app)
 
-const io = socketIo(httpsServer, { pingInterval: 10, pingTimeout: 4000 })
-// const io = socketIo(httpServer, { pingInterval: 10, pingTimeout: 4000 })
+const io = socketIo(httpsServer, { pingInterval: 10, pingTimeout: 60000, })
 
 io.on('connection', require('./config/socket')(movieList, downloadList))
 

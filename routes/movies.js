@@ -9,6 +9,8 @@ const fs = require("fs");
 const yifysubtitles = require('@amilajack/yifysubtitles');
 const router = express.Router()
 
+const Movie = require('../models/Movie')
+
 const extractData = (range, file) => {
 	const parts = range.replace(/bytes=/, '').split('-')
 	const start = parseInt(parts[0], 10)
@@ -60,14 +62,10 @@ const convert = (file, thread = 4) => {
 const getSubt = async (id, imdb) => {
 	const uploadPath = `./sub/${imdb}`;
 
-	try {
-		if (!fs.existsSync(uploadPath)) {
-			fs.mkdir(uploadPath, (err) => {
-				if (err) throw err
-			});
-		}
-	} catch (err) {
-		console.log(err.message);
+	if (!fs.existsSync(uploadPath)) {
+		fs.mkdir(uploadPath, (err) => {
+			if (err) throw err
+		});
 	}
 
 	return await yifysubtitles(id, { path: uploadPath, langs: ['en', 'fr', 'es', 'ar', 'de', 'it', 'ru', 'bn', 'cs', 'fa', 'el', 'id', 'ro', 'tr', 'vi'] }); 
@@ -111,9 +109,21 @@ const formatMovieName = (file, year) => {
 	return { name, ext}
 }
 
-const getTorrentlist = movie => {
+const getTorrentlist = async movie => {
 	let allTorrents = [...movie.items, ...movie.items_lang]
 	const langs = []
+
+	const movies = await Movie.find( {} ).exec();
+	movies.forEach(cur => {
+		if (cur.downloaded) {
+			for (const torrent of allTorrents) {
+				if (torrent.id == cur.torrentID) {
+					torrent.downloaded = true
+					break;
+				}
+			}
+		}
+	})
 	allTorrents = allTorrents.map(cur => {
 		let language = cur.language
 		if (language == "") language = 'us'
@@ -124,6 +134,7 @@ const getTorrentlist = movie => {
 			ext,
 			name,
 			language,
+			downloaded: cur.downloaded,
 			quality: cur.quality,
 			id: cur.id,
 			size: cur.size_bytes,
@@ -131,7 +142,8 @@ const getTorrentlist = movie => {
 			peers: cur.torrent_peers,
 			seeds: cur.torrent_seeds
 		}
-	})
+	});
+
 	return {
 		langs,
 		t720: allTorrents.filter(cur => cur.quality == '720p'),
@@ -140,27 +152,23 @@ const getTorrentlist = movie => {
 }
 
 const fetchMovie = async id => {
-	try {
-		const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`;
-		const { data } = await axios.get(url);
-		const { title, year, genres, rating, imdb, poster_big, description, runtime, trailer } = data
-		const torrents = getTorrentlist(data)
-		const movie = {
-			imdb,
-			year,
-			genres,
-			title,
-			rating,
-			runtime,
-			trailer,
-			torrents,
-			poster_big: poster_big.replace('http', 'https'),
-			description
-		}
-		return movie;
-	} catch (err) {
-		console.log('I got an error with --> ', err.message)
+	const url = `https://api.apiumadomain.com/movie?cb=&quality=720p,1080p,3d&page=1&imdb=${id}`;
+	const { data } = await axios.get(url);
+	const { title, year, genres, rating, imdb, poster_big, description, runtime, trailer } = data
+	const torrents = await getTorrentlist(data)
+	const movie = {
+		imdb,
+		year,
+		genres,
+		title,
+		rating,
+		runtime,
+		trailer,
+		torrents,
+		poster_big: poster_big.replace('http:', 'https:'),
+		description
 	}
+	return movie;
 }
 
 const getTorrent = (movie, id) => {
@@ -188,11 +196,25 @@ module.exports = (movieList, downloadList) => {
 		}
 	})
 
+	router.get('/download/:torrentID', async (req, res) => {
+		const { torrentID } = req.params;
+		Movie.findOne({ torrentID }, (err, movie) => {
+			if (movie.downloaded) {
+				const ext = movie.path.split('.').pop()
+				if ( ext == "mp4" || ext == "mkv" || ext == "avi" || ext == "webm") {
+						return res.download(movie.path);
+					}
+					return res.download(`${movie.path}/${movie.name}`);
+				} else {
+					return res.end();
+				}
+		});
+	})
+
 	router.get('/:imdb/:id', async (req, res) => {
 		try {
 			const { range } = req.headers
 			const { imdb, id } = req.params
-			console.log('range -->', range)
 			if (range) {
 				const downloaded = downloadList[id]
 				if (downloaded) return stream(range, downloaded.file, res)
@@ -211,9 +233,17 @@ module.exports = (movieList, downloadList) => {
 					downloadList[id] = { file: engine.files[0], engine }
 					stream(range, engine.files[0], res)
 				})
-				engine.on('download', index => {
-					console.log('The engine downloaded this -->', index)
-					console.log('For -->', engine.files[0].name)
+				engine.on('idle', () => {
+					const { name } = engine.torrent;
+					const path = `${uploadPath}/${name}`;
+					Movie.findOne({ path }, (err, movie) => {
+						if (movie && !movie.downloaded) {
+							movie.id = id;
+							movie.name = engine.files[0].name;
+							movie.downloaded = true;
+							movie.save();
+						}
+					});
 				})
 			} else {
 				res.sendStatus(416)
@@ -281,13 +311,13 @@ module.exports = (movieList, downloadList) => {
 						year: cur.year,
 						rating: cur.rating,
 						imdb: cur.imdb,
-						poster_med: cur.poster_med.replace('http', 'https')
+						poster_med: cur.poster_med.replace('http:', 'https:')
 					}));
 				}
 				return res.json(popcornList);
 			}
 		} catch (error) {
-			console.log("got error : ", error.message);
+			res.json([]);
 		}
 	});
 

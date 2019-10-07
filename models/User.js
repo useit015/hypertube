@@ -23,7 +23,10 @@ const UserSchema = new mongoose.Schema({
 	email: {
 		type: String,
 		default: '',
-		unique: true
+		index: {
+			unique: true,
+			sparse: true
+  	},
 	},
 	password: {
 		type: String,
@@ -67,14 +70,6 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		enum: ['en', 'fr', 'ar', 'es'],
 		default: 'en'
-	},
-	watched: {
-		type: Array,
-		default: []
-	},
-	liked: {
-		type: Array,
-		default: []
 	},
 	movies: {
 		type: Array,

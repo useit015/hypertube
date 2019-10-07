@@ -78,7 +78,7 @@ router.post('/login', (req, res) => {
 						res.json({ err: true, errors: ['user'] })
 					}
 				})
-				.catch(err => console.log(err))
+				.catch(err => res.json({ err: true }))
 		} else {
 			res.json({ err: true, errors: validator.getErrors(err) })
 		}
@@ -130,11 +130,11 @@ router.post(
 										sendMail(email, vkey, 'verify')
 										res.json({status: 'success'})
 									})
-									.catch(err => console.log(err))
+									.catch(err => res.json({ err: true }))
 							});
 						}
 					})
-					.catch(err => console.log(err))
+					.catch(err => res.json({ err: true }))
 			} else {
 				res.json({ err: true, errors: validator.getErrors(err) })
 			}

@@ -55,7 +55,6 @@ const getUniqueUsers = (imdb, comments) => {
 
 router.post('/', authJwt, async (req, res) => {
   try {
-    console.log('i am the body --> ', req.body)
     const newComment = {
       commentImdb: req.body.commentImdb,
       commentBody: req.body.commentBody,

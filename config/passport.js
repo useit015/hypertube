@@ -93,7 +93,6 @@ module.exports = passport => {
 				callbackURL: `${process.env.API_URL}/oauth/git_ret`
 			},
 			async (accessToken, refreshToken, profile, done) => {
-				console.log('profile --> ', profile)
 				const user = {
 					firstName: '',
 					lastName: '',

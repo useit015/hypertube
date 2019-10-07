@@ -5,9 +5,7 @@ module.exports = (movieList, downloadList) => {
 
 	const freeEngine = (movie) => {
 		if (movie && movie.engine) {
-			movie.engine.destroy(() => {
-				console.log('i destroyed the engine for --> ', movie.engine.files[0].name)
-			})
+			movie.engine.destroy()
 			delete downloadList[movie.engine.infoHash]
 			delete movieList[movie.engine.infoHash]
 		}
@@ -27,8 +25,6 @@ module.exports = (movieList, downloadList) => {
 	}
 
 	return socket => {
-		console.log('i am the socket --> ', socket.id, downloadList)
-
 		socket.on('watch', ({ id, imdb, title, poster, userId }) => {
 			if (downloadList[id]) {
 				if (downloadList[id].users) {
@@ -53,7 +49,6 @@ module.exports = (movieList, downloadList) => {
 			}
 
 			User.findById(userId, (err, user) => {
-				console.log('user is -> ', user)
 				if (user) {
 					if (user.movies.length) {
 						const movie = user.movies.find(cur => cur.imdb == imdb)
