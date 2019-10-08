@@ -100,7 +100,7 @@ export default {
 	data: () => ({
 		movie: {},
 		loading: true,
-		playing: true,
+		playing: false,
 		trailer: false,
 		description: "test",
 		movieLoading: false,

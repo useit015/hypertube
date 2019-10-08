@@ -61,6 +61,9 @@ export default {
 				userActions: {
 					doubleClick: true,
 					hotkeys: true
+				},
+				controlBar: {
+					pictureInPictureToggle: !this.youtube
 				}
 			}
 		};
@@ -68,7 +71,7 @@ export default {
 	mounted() {
 		const self = this;
 		videojs.log.level("off");
-		videojs.options.techOrder = ["youtube"];
+		videojs.options.techOrder = ["youtube", "html5"];
 		this.player = videojs(this.$refs.videoPlayer, this.options, function() {
 			this.on("error", () => {
 				self.$emit("playerError");
