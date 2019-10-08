@@ -43,7 +43,7 @@
 				<v-btn fab small outlined color="primary" class="trailer_close" @click="trailer = false">
 					<v-icon>close</v-icon>
 				</v-btn>
-				<youtube fitParent :player-vars="vars" ref="youtube" :video-id="movie.trailer"/>
+				<movie-player youtube :youtubeId="movie.trailer"/>
 			</v-row>
 			<v-row v-if="movieLoading" column align="center" justify="center" class="trailer_overlay">
 				<v-btn
@@ -76,218 +76,218 @@
 </template>
 
 <script>
-	import axios from "axios";
-	import translate from "translate";
-	import utility from "@/assets/utility";
-	import loader from "@/components/loader";
-	import { mapActions, mapGetters } from "vuex";
-	import movieCast from "@/components/movieCast";
-	import moviePlayer from "@/components/moviePlayer";
-	import moviePoster from "@/components/moviePoster";
-	import movieFilters from "@/components/movieFilters";
-	import movieComments from "@/components/movieComments";
+import axios from "axios";
+import translate from "translate";
+import utility from "@/assets/utility";
+import loader from "@/components/loader";
+import { mapActions, mapGetters } from "vuex";
+import movieCast from "@/components/movieCast";
+import moviePlayer from "@/components/moviePlayer";
+import moviePoster from "@/components/moviePoster";
+import movieFilters from "@/components/movieFilters";
+import movieComments from "@/components/movieComments";
 
-	export default {
-		middleware: "authenticated",
-		components: {
-			loader,
-			movieCast,
-			moviePlayer,
-			moviePoster,
-			movieFilters,
-			movieComments
-		},
-		data: () => ({
-			movie: {},
-			loading: true,
-			playing: false,
-			trailer: false,
-			description: "test",
-			movieLoading: false,
-			selectedTorrent: null,
-			vars: {
-				autoplay: 1
+export default {
+	middleware: "authenticated",
+	components: {
+		loader,
+		movieCast,
+		moviePlayer,
+		moviePoster,
+		movieFilters,
+		movieComments
+	},
+	data: () => ({
+		movie: {},
+		loading: true,
+		playing: true,
+		trailer: false,
+		description: "test",
+		movieLoading: false,
+		selectedTorrent: null,
+		vars: {
+			autoplay: 1
+		}
+	}),
+	async created() {
+		try {
+			const url = `https://hypertube.tk/api/movies/info/${this.imdb}`;
+			const { data } = await axios.get(url);
+			this.movie = data.movie;
+			if (this.locale == "en" || this.locale == "dr") {
+				this.description = this.movie.description;
+			} else {
+				this.description = await translate(this.movie.description, {
+					to: this.locale,
+					engine: "google",
+					key: "AIzaSyB0Ixi8-g3o4B0gp-uyM6TqTPKUFoYzW4M"
+				});
 			}
-		}),
-		async created() {
-			try {
-				const url = `https://hypertube.tk/api/movies/info/${this.imdb}`;
-				const { data } = await axios.get(url);
-				this.movie = data.movie;
-				if (this.locale == "en") {
-					this.description = this.movie.description;
-				} else {
-					this.description = await translate(this.movie.description, {
-						to: this.locale,
-						engine: "google",
-						key: "AIzaSyB0Ixi8-g3o4B0gp-uyM6TqTPKUFoYzW4M"
-					});
-				}
-				this.loading = false;
-			} catch (err) {
-				this.openAlert(this, "edit.fail");
-			}
+			this.loading = false;
+		} catch (err) {
+			this.openAlert(this, "edit.fail");
+		}
+	},
+	watch: {
+		trailer() {
+			if (this.trailer) window.scrollTo(0, 0);
+			document.documentElement.style.overflow = this.trailer
+				? "hidden"
+				: "auto";
 		},
-		watch: {
-			trailer() {
-				if (this.trailer) window.scrollTo(0, 0);
-				document.documentElement.style.overflow = this.trailer
-					? "hidden"
-					: "auto";
-			},
-			movieLoading() {
-				if (this.movieLoading) window.scrollTo(0, 0);
-				document.documentElement.style.overflow = this.movieLoading
-					? "hidden"
-					: "auto";
-			}
+		movieLoading() {
+			if (this.movieLoading) window.scrollTo(0, 0);
+			document.documentElement.style.overflow = this.movieLoading
+				? "hidden"
+				: "auto";
+		}
+	},
+	computed: {
+		...mapGetters(["user"]),
+		imdb() {
+			return this.$route.params.imdb;
 		},
-		computed: {
-			...mapGetters(["user"]),
-			imdb() {
-				return this.$route.params.imdb;
-			},
-			overlay() {
-				const gradient = [
-					"to bottom",
-					"rgba(0, 0, 0, 0.6)",
-					"rgba(0, 0, 0, 0.8)"
-				].join(", ");
-				const movie = `url("${this.movie.poster_big}")`;
-				return `background-image: linear-gradient(${gradient}), ${movie}`;
-			},
-			runtime() {
-				const { runtime } = this.movie;
-				const hours = runtime / 60;
-				const mins = runtime % 60;
-				return `${hours.toFixed(0)} h ${mins} min`;
-			},
-			selected() {
-				if (this.selectedTorrent) {
-					return { ...this.selectedTorrent };
-				} else {
-					return {
-						id: null,
-						ext: null,
-						sub: null,
-						imdb: null
-					};
-				}
-			},
-			locale() {
-				if (this.$i18n) return this.$i18n.locale;
-			},
-			userId() {
-				return this.user._id;
-			}
+		overlay() {
+			const gradient = [
+				"to bottom",
+				"rgba(0, 0, 0, 0.6)",
+				"rgba(0, 0, 0, 0.8)"
+			].join(", ");
+			const movie = `url("${this.movie.poster_big}")`;
+			return `background-image: linear-gradient(${gradient}), ${movie}`;
 		},
-		methods: {
-			...utility,
-			...mapActions(["markAsWatched"]),
-			play({ ext, id }) {
-				const { imdb } = this;
-				const sub = this.movie.sub.filter(cur => !!cur.path.length);
-				this.selectedTorrent = { id, ext, imdb, sub };
-				this.movieLoading = true;
-			},
-			closeMovie() {
-				if (this.playing) {
-					this.playing = false;
-					this.movieLoading = false;
-					this.selectedTorrent = null;
-					this.$socket.client.emit("cleanup");
-				}
-			},
-			movieLoaded() {
-				this.playing = true;
-				const payload = {
-					imdb: this.imdb,
-					userId: this.userId,
-					title: this.movie.title,
-					id: this.selectedTorrent.id,
-					poster: this.movie.poster_big
+		runtime() {
+			const { runtime } = this.movie;
+			const hours = runtime / 60;
+			const mins = runtime % 60;
+			return `${hours.toFixed(0)} h ${mins} min`;
+		},
+		selected() {
+			if (this.selectedTorrent) {
+				return { ...this.selectedTorrent };
+			} else {
+				return {
+					id: null,
+					ext: null,
+					sub: null,
+					imdb: null
 				};
-				this.$socket.client.emit("watch", payload);
-				this.markAsWatched(payload);
-			},
-			playerError() {
+			}
+		},
+		locale() {
+			if (this.$i18n) return this.$i18n.locale;
+		},
+		userId() {
+			return this.user._id;
+		}
+	},
+	methods: {
+		...utility,
+		...mapActions(["markAsWatched"]),
+		play({ ext, id }) {
+			const { imdb } = this;
+			const sub = this.movie.sub.filter(cur => !!cur.path.length);
+			this.selectedTorrent = { id, ext, imdb, sub };
+			this.movieLoading = true;
+		},
+		closeMovie() {
+			if (this.playing) {
 				this.playing = false;
 				this.movieLoading = false;
 				this.selectedTorrent = null;
+				this.$socket.client.emit("cleanup");
 			}
+		},
+		movieLoaded() {
+			this.playing = true;
+			const payload = {
+				imdb: this.imdb,
+				userId: this.userId,
+				title: this.movie.title,
+				id: this.selectedTorrent.id,
+				poster: this.movie.poster_big
+			};
+			this.$socket.client.emit("watch", payload);
+			this.markAsWatched(payload);
+		},
+		playerError() {
+			this.playing = false;
+			this.movieLoading = false;
+			this.selectedTorrent = null;
 		}
-	};
+	}
+};
 </script>
 
 <style>
-.watch {
-	margin-top: -5rem;
-}
-
-.watch__overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background-position: center;
-	background-size: cover;
-	filter: blur(6px);
-	-webkit-filter: blur(6px);
-}
-
-.movie__content {
-	font-size: 1.2rem;
-	margin: 10rem auto;
-}
-
-.movie__details {
-	position: relative;
-	padding: 0 0 0 2rem;
-}
-
-.movie__genre > .theme--dark.v-btn.v-btn--disabled {
-	color: #fff !important;
-	text-shadow: 0 0 15px rgba(100, 214, 197, 0.5);
-	border-color: #fff;
-	box-shadow: inset 0 0 5px rgba(100, 214, 197, 0.5),
-		inset 0 0 10px rgba(100, 214, 197, 0.5),
-		0 0 10px rgba(100, 214, 197, 0.5), 0 0 5px rgba(100, 214, 197, 0.5) !important;
-}
-
-.movie__icon,
-.v-rating > .v-icon {
-	text-shadow: 0 0 25px rgba(100, 214, 197, 0.5),
-		0 0 20px rgba(100, 214, 197, 0.5), 0 0 15px rgba(255, 255, 255, 0.5),
-		0 0 10px rgba(100, 214, 197, 0.5), 0 0 5px rgba(100, 214, 197, 0.5);
-}
-
-.movie__desc,
-.movie__genre > .theme--dark.v-btn.v-btn--disabled {
-	letter-spacing: 1.6px;
-	line-height: 1.68;
-}
-
-.movie__desc {
-	font-size: 1.1em;
-}
-
-.trailer_overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background: rgba(0, 0, 0, 0.8);
-	z-index: 11;
-	margin: 0;
-	padding: 0 5rem;
-}
-
-@media only screen and (max-width: 960px) {
-	.movie__details {
-		padding: 1rem;
-		margin-top: 2rem;
+	.watch {
+		margin-top: -5rem;
 	}
-}
+
+	.watch__overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background-position: center;
+		background-size: cover;
+		filter: blur(6px);
+		-webkit-filter: blur(6px);
+	}
+
+	.movie__content {
+		font-size: 1.2rem;
+		margin: 10rem auto;
+	}
+
+	.movie__details {
+		position: relative;
+		padding: 0 0 0 2rem;
+	}
+
+	.movie__genre > .theme--dark.v-btn.v-btn--disabled {
+		color: #fff !important;
+		text-shadow: 0 0 15px rgba(100, 214, 197, 0.5);
+		border-color: #fff;
+		box-shadow: inset 0 0 5px rgba(100, 214, 197, 0.5),
+			inset 0 0 10px rgba(100, 214, 197, 0.5),
+			0 0 10px rgba(100, 214, 197, 0.5), 0 0 5px rgba(100, 214, 197, 0.5) !important;
+	}
+
+	.movie__icon,
+	.v-rating > .v-icon {
+		text-shadow: 0 0 25px rgba(100, 214, 197, 0.5),
+			0 0 20px rgba(100, 214, 197, 0.5), 0 0 15px rgba(255, 255, 255, 0.5),
+			0 0 10px rgba(100, 214, 197, 0.5), 0 0 5px rgba(100, 214, 197, 0.5);
+	}
+
+	.movie__desc,
+	.movie__genre > .theme--dark.v-btn.v-btn--disabled {
+		letter-spacing: 1.6px;
+		line-height: 1.68;
+	}
+
+	.movie__desc {
+		font-size: 1.1em;
+	}
+
+	.trailer_overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background: rgba(0, 0, 0, 0.8);
+		z-index: 11;
+		margin: 0;
+		padding: 0 5rem;
+	}
+
+	@media only screen and (max-width: 960px) {
+		.movie__details {
+			padding: 1rem;
+			margin-top: 2rem;
+		}
+	}
 </style>

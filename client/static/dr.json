@@ -1,0 +1,134 @@
+{
+    "or": "oula",
+    "email": "lmail",
+    "avatar": "tsswira",
+    "username": "shnou mssemin 3lik",
+    "password": "lcode",
+    "lastname": "kniya",
+    "firstname": "smya",
+    "confpassword": "3awd lcode",
+    "defaultLanguage": "bash kathdar",
+    "buttons": {
+        "play": "mshina",
+        "send": "sifet",
+        "save": "39al",
+        "login": "dkhel",
+        "reply": "jawb",
+        "cancel": "blash",
+        "signup": "tssejel",
+        "signin": "dkhel",
+        "register": "tssejel",
+        "download": "emporter",
+        "comment": "zid commentaire",
+        "forgot": "Nssit lcode"
+    },
+    "genres": {
+        "war": "lguirra",
+        "sport": "kora",
+        "crime": "montif",
+        "music": "mzika",
+        "drama": "mashakil",
+        "comedy": "khra dyal dahk",
+        "family": "malin dar",
+        "action": "tfargui3",
+        "horror": "khli3",
+        "sci-fi": "lharba",
+        "sci fi": "lharba",
+        "history": "lindochine",
+        "fantasy": "tal9a",
+        "western": "mdina 9dima",
+        "mystery": "blanat",
+        "popular": "dayr lbuzzr",
+        "romance": "badad",
+        "thriller": "l9tila",
+        "biography": "mostaljia",
+        "adventure": "lghaba ni3ma",
+        "animation": "mikhyat",
+        "documentary": "amoudou"
+    },
+    "filters": {
+        "Year": "l3am",
+        "Title": "smiytou",
+        "Date added": "imta tzad",
+        "Popularity": "sh7al dayr lbuzz"
+    },
+    "rules": {
+        "required": "wa la bouda",
+        "name": {
+            "valid": "dir smiytek men l9walb",
+            "len": "mashi smya hadi"
+        },
+        "username": {
+            "valid": "dir shnou msssemin 3lik bessah",
+            "len": "mashi smya hadi"
+        },
+        "password": {
+            "valid": "ma code ma ta wezza",
+            "len": "zid shi baraka",
+            "match": "deghya nssiti lcode"
+        },
+        "email": {
+            "valid": "mashi email hada"
+        },
+        "avatar": {
+            "ext": "dir tesswira m9ada men l9walb",
+            "size": "fin ghadi",
+            "empty": "makaynsh darba"
+        }
+    },
+    "api": {
+        "login": {
+            "verified": "dreb dawra f lmail ou rja3",
+            "pass": "tfeker lcode",
+            "user": "shkoun nta"
+        },
+        "register": {
+            "email": "had lmail fayt shayfou",
+            "username": "had smya fayt same3ha",
+            "user": "had khouna kan3arfo",
+            "img": "dir tsswira men l9walb",
+            "success": "3la slamtek! dreb shi dewra flmail ou rje3"
+        },
+        "forgot": {
+            "email": "makan3arfouksh",
+            "success": "dreb shi dewra flmail ou matb9ash tnssa"
+        }
+    },
+    "edit": {
+        "information": "l7ala lmadania",
+        "cur": "lcode l9dim",
+        "new": "lcode jdid",
+        "conf": "3awd lcode jdid",
+        "fail": "shi haja tnaket",
+        "success": "safi ra mfassra"
+    },
+    "tooltip": {
+        "search": "9aleb",
+        "clear": "raje3",
+        "filter": "gherbal",
+        "profile": "CIN",
+        "logout": "tla7",
+        "edit": "bdel CIN"
+    },
+    "title": {
+        "watched": "ash shefti",
+        "register": "Marhba",
+        "like": "film nadi",
+        "comments": "commentairat",
+        "login": "ghebra hadi",
+        "liked": "ash 3ejbek",
+        "unlike": "mabalansh",
+        "forgot": "shed nouba"
+    },
+    "cast": {
+        "actors": "lmomtilin",
+        "director": "lmokhrij"
+    },
+    "error": {
+        "image": "ma tsswira ma walou",
+        "link": "shi tsswira makaynash",
+        "comment": "mal9itsh lik lcommentairat",
+        "complete": "ser kmel CIN",
+        "torrent": "torrent tnak"
+    }
+}

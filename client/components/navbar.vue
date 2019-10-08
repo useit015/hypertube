@@ -10,9 +10,26 @@
 						</v-toolbar-title>
 					</nuxt-link>
 					<v-spacer></v-spacer>
-					<v-spacer></v-spacer>
-					<v-btn v-if="!authenticated" @click="changeLange('fr')" icon>FR</v-btn>
-					<v-btn v-if="!authenticated" @click="changeLange('en')" icon>EN</v-btn>
+					<v-select
+						class="navbar__lang"
+						solo
+						small
+						flat
+						dense
+						hide-details
+						color="primary"
+						:items="languages"
+						v-model="chosenLang"
+						v-if="!authenticated"
+					>
+						<template slot="selection" slot-scope="data">
+							<country-flag :country="getFlag(data.item)"/>
+						</template>
+						<template slot="item" slot-scope="data">
+							<country-flag :country="getFlag(data.item)"/>
+						</template>
+						<div slot="item" item>item</div>
+					</v-select>
 					<v-btn text large v-if="authenticated" @click="exit">
 						<span v-text="$t('tooltip.logout')"></span>
 						<v-icon class="ml-2">exit_to_app</v-icon>
@@ -35,64 +52,92 @@
 </template>
 
 <script>
-	import axios from "axios";
-	import { mapGetters, mapActions } from "vuex";
-	export default {
-		name: "Navbar",
-		data: () => ({
-			navbar: false,
-			query: ""
-		}),
-		created() {
-			this.$bus.$on("hideNavbar", () => (this.navbar = false));
-			this.$bus.$on("showNavbar", () => (this.navbar = true));
-		},
-		computed: {
-			...mapGetters(["authenticated"]),
-			...mapGetters(["user"])
-		},
-		methods: {
-			...mapActions(["logout"]),
-			exit() {
-				this.logout();
-				this.$router.push("/sign");
-			},
-			changeLange(lang) {
-				if (lang != this.$i18n.locale) {
-					this.$i18n.locale = lang;
-					this.$bus.$emit("langChange");
-				}
+import axios from "axios";
+import { mapGetters, mapActions } from "vuex";
+import CountryFlag from "vue-country-flag";
+
+export default {
+	name: "Navbar",
+	components: {
+		CountryFlag
+	},
+	data: () => ({
+		navbar: false,
+		chosenLang: "en",
+		query: "",
+		languages: ["en", "fr", "ar", "es", "dr"]
+	}),
+	created() {
+		this.$bus.$on("hideNavbar", () => (this.navbar = false));
+		this.$bus.$on("showNavbar", () => (this.navbar = true));
+	},
+	computed: {
+		...mapGetters(["authenticated"]),
+		...mapGetters(["user"])
+	},
+	watch: {
+		chosenLang() {
+			if (this.chosenLang != this.$i18n.locale) {
+				this.$i18n.locale = this.chosenLang;
+				this.$bus.$emit("langChange");
 			}
 		}
-	};
+	},
+	methods: {
+		...mapActions(["logout"]),
+		exit() {
+			this.logout();
+			this.$router.push("/sign");
+		},
+		getFlag(lang) {
+			return lang == "en"
+				? "us"
+				: lang == "ar"
+				? "sa"
+				: lang == "dr"
+				? "ma"
+				: lang;
+		}
+	}
+};
 </script>
 
 <style>
-.navbar {
-	z-index: 10;
-	width: 100vw;
-	position: fixed;
-}
+	.navbar {
+		z-index: 10;
+		width: 100vw;
+		position: fixed;
+	}
 
-.logo {
-	margin-left: -3px;
-	letter-spacing: 1px;
-}
+	.logo {
+		margin-left: -3px;
+		letter-spacing: 1px;
+	}
 
-.nuxt-link-active {
-	text-decoration: none;
-}
+	.nuxt-link-active {
+		text-decoration: none;
+	}
 
-.footer {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	transform: translateY(-100%);
-	width: 100vw;
-}
+	.footer {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		transform: translateY(-100%);
+		width: 100vw;
+	}
 
-.footer__content {
-	letter-spacing: 1px;
-	word-spacing: 3px;
-}
+	.footer__content {
+		letter-spacing: 1px;
+		word-spacing: 3px;
+	}
+
+	.navbar__lang {
+		max-width: 4.5rem;
+	}
+
+	.theme--dark.v-text-field--solo.navbar__lang
+		> .v-input__control
+		> .v-input__slot {
+		background: transparent;
+	}
 </style>

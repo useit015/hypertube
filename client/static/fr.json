@@ -128,6 +128,7 @@
         "comment": "Impossible de charger les commentaires",
         "link": "Le lien de l'image n'est pas valide",
         "image": "L'image n'est pas valide",
-        "complete": "Vous devez compléter votre profil"
+        "complete": "Vous devez compléter votre profil",
+        "torrent": "Il y a un problème avec le torrent"
     }
 }

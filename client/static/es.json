@@ -128,6 +128,7 @@
         "comment": "No se pueden cargar comentarios",
         "link": "El enlace de la imagen está roto",
         "image": "La imagen no es válida",
-        "complete": "Debes completar tu perfil"
+        "complete": "Debes completar tu perfil",
+        "torrent": "Hay un problema con el torrent"
     }
 }

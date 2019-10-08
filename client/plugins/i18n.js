@@ -11,7 +11,8 @@ export default ({ app }) => {
             en: require('~/static/en.json'),
             fr: require('~/static/fr.json'),
             ar: require('~/static/ar.json'),
-            es: require('~/static/es.json')
+            es: require('~/static/es.json'),
+            dr: require('~/static/dr.json')
         }
     })
 }

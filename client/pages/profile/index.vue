@@ -106,7 +106,15 @@
 										:label="$t('defaultLanguage')"
 										v-model="user.langue"
 										@input="sync"
-									/>
+									>
+										<template slot="selection" slot-scope="data">
+											<country-flag :country="getFlag(data.item)"/>
+										</template>
+										<template slot="item" slot-scope="data">
+											<country-flag :country="getFlag(data.item)"/>
+										</template>
+										<div slot="item" item>item</div>
+									</v-select>
 								</v-flex>
 							</v-layout>
 							<v-flex xs12 text-xs-right class="save__container px-0 py-0">
@@ -135,213 +143,222 @@
 </template>
 
 <script>
-	import axios from "axios";
-	import { mapGetters, mapActions } from "vuex";
-	import rules from "@/assets/rules";
-	import loader from "@/components/loader";
-	import utility from "@/assets/utility.js";
-	import passDialog from "@/components/passDialog";
-	import imageEditor from "@/components/imageEditor";
-	import profileMovies from "@/components/profileMovies";
-	import { setTimeout } from "timers";
+import axios from "axios";
+import rules from "@/assets/rules";
+import loader from "@/components/loader";
+import utility from "@/assets/utility.js";
+import CountryFlag from "vue-country-flag";
+import { mapGetters, mapActions } from "vuex";
+import passDialog from "@/components/passDialog";
+import imageEditor from "@/components/imageEditor";
+import profileMovies from "@/components/profileMovies";
 
-	const isExternal = url =>
-		url &&
-		(url.indexOf(":") > -1 ||
-			url.indexOf("//") > -1 ||
-			url.indexOf("www.") > -1);
+const isExternal = url =>
+	url &&
+	(url.indexOf(":") > -1 ||
+		url.indexOf("//") > -1 ||
+		url.indexOf("www.") > -1);
 
-	export default {
-		middleware: "authenticated",
-		components: {
-			loader,
-			passDialog,
-			imageEditor,
-			profileMovies
+export default {
+	middleware: "authenticated",
+	components: {
+		loader,
+		passDialog,
+		CountryFlag,
+		imageEditor,
+		profileMovies
+	},
+	data() {
+		return {
+			rules: {},
+			storeUser: "",
+			languages: ["en", "fr", "ar", "es", "dr"],
+			dataChanged: false,
+			isEditing: false,
+			renderer: true,
+			loaded: false,
+			saving: false,
+			valid: false
+		};
+	},
+	computed: {
+		...mapGetters(["user", "liked", "watched", "oauthUser"]),
+		langue() {
+			return this.user.langue;
 		},
-		data() {
-			return {
-				rules: {},
-				storeUser: "",
-				languages: ["en", "fr", "ar", "es"],
-				dataChanged: false,
-				isEditing: false,
-				renderer: true,
-				loaded: false,
-				saving: false,
-				valid: false
-			};
-		},
-		computed: {
-			...mapGetters(["user", "liked", "watched", "oauthUser"]),
-			langue() {
-				return this.user.langue;
-			},
-			avatar() {
-				return !this.user.image
-					? "/zdiab.jpg"
-					: isExternal(this.user.image)
-					? this.user.image
-					: `https://hypertube.tk${this.user.image}`;
-			}
-		},
-		watch: {
-			langue() {
-				this.$i18n.locale = this.langue;
-				this.renderer = false;
-				this.$nextTick(() => {
-					this.renderer = true;
-					this.$nextTick(() => (this.valid = this.$refs.form.validate()));
-				});
-			}
-		},
-		async created() {
-			this.rules = rules(this);
-			this.$bus.$emit("showNavbar");
-			this.loaded = true;
-			this.storeUser = JSON.stringify(this.user);
-		},
-		beforeDestroy() {
-			this.$bus.$emit("hideNavbar");
-		},
-		methods: {
-			...utility,
-			...mapActions(["updateUser"]),
-			toggleEdit() {
-				this.isEditing = !this.isEditing;
-			},
-			openEditor() {
-				this.$refs.editor.pickFile();
-			},
-			openPassDialog() {
-				this.$refs.passDialog.open();
-			},
-			async save() {
-				if (this.$refs.form.validate()) {
-					const url = `https://hypertube.tk/api/users/update`;
-					const headers = { Authorization: `jwt ${this.user.token}` };
-					const data = {
-						firstName: this.user.firstName,
-						lastName: this.user.lastName,
-						username: this.user.username,
-						email: this.user.email,
-						langue: this.user.langue
-					};
-
-					this.saving = true;
-					axios
-						.post(url, data, { headers })
-						.then(res => {
-							this.feedback(!res.data.err);
-							this.storeUser = JSON.stringify(this.user);
-						})
-						.catch(err => this.feedback());
-					this.isEditing = false;
-				}
-			},
-			toggleEdit() {
-				if (this.isEditing) this.updateUser(this.storeUser);
-				this.isEditing = !this.isEditing;
-			},
-			sync() {
-				this.dataChanged = JSON.stringify(this.user) !== this.storeUser;
-			},
-			feedback(state) {
-				if (state) {
-					this.openAlert(this, "edit.success", "green");
-				} else {
-					this.openAlert(this, "edit.fail");
-				}
-				this.saving = false;
-			}
+		avatar() {
+			return !this.user.image
+				? "/zdiab.jpg"
+				: isExternal(this.user.image)
+				? this.user.image
+				: `https://hypertube.tk${this.user.image}`;
 		}
-	};
+	},
+	watch: {
+		langue() {
+			this.$i18n.locale = this.langue;
+			this.renderer = false;
+			this.$nextTick(() => {
+				this.renderer = true;
+				this.$nextTick(() => (this.valid = this.$refs.form.validate()));
+			});
+		}
+	},
+	async created() {
+		this.rules = rules(this);
+		this.$bus.$emit("showNavbar");
+		this.loaded = true;
+		this.storeUser = JSON.stringify(this.user);
+	},
+	beforeDestroy() {
+		this.$bus.$emit("hideNavbar");
+	},
+	methods: {
+		...utility,
+		...mapActions(["updateUser"]),
+		toggleEdit() {
+			this.isEditing = !this.isEditing;
+		},
+		openEditor() {
+			this.$refs.editor.pickFile();
+		},
+		openPassDialog() {
+			this.$refs.passDialog.open();
+		},
+		async save() {
+			if (this.$refs.form.validate()) {
+				const url = `https://hypertube.tk/api/users/update`;
+				const headers = { Authorization: `jwt ${this.user.token}` };
+				const data = {
+					firstName: this.user.firstName,
+					lastName: this.user.lastName,
+					username: this.user.username,
+					email: this.user.email,
+					langue: this.user.langue
+				};
+				this.saving = true;
+				axios
+					.post(url, data, { headers })
+					.then(res => {
+						this.feedback(!res.data.err);
+						this.storeUser = JSON.stringify(this.user);
+					})
+					.catch(err => this.feedback());
+				this.isEditing = false;
+			}
+		},
+		toggleEdit() {
+			if (this.isEditing) this.updateUser(this.storeUser);
+			this.isEditing = !this.isEditing;
+		},
+		sync() {
+			this.dataChanged = JSON.stringify(this.user) !== this.storeUser;
+		},
+		feedback(state) {
+			if (state) {
+				this.openAlert(this, "edit.success", "green");
+			} else {
+				this.openAlert(this, "edit.fail");
+			}
+			this.saving = false;
+		},
+		getFlag(lang) {
+			return lang == "en"
+				? "us"
+				: lang == "ar"
+				? "sa"
+				: lang == "dr"
+				? "ma"
+				: lang;
+		}
+	}
+};
 </script>
 
 <style>
-.user {
-	width: 90vw;
-	max-width: 80rem;
-	margin: 10rem auto 0;
-}
+	.user {
+		width: 90vw;
+		max-width: 80rem;
+		margin: 10rem auto 0;
+	}
 
-.main {
-	flex: 1 1 60vw;
-	min-width: 50rem;
-	max-width: 60rem;
-	overflow: hidden;
-}
-
-@media only screen and (max-width: 50rem) {
 	.main {
-		min-width: 0;
+		flex: 1 1 60vw;
+		min-width: 50rem;
+		max-width: 60rem;
+		overflow: hidden;
 	}
-}
 
-.password__button {
-	position: absolute;
-	top: 33%;
-	right: 0%;
-	transform: translate(-50%, -50%);
-}
+	@media only screen and (max-width: 50rem) {
+		.main {
+			min-width: 0;
+		}
+	}
 
-.avatar {
-	margin: 1rem;
-	border-radius: 5px;
-}
+	.password__button {
+		position: absolute;
+		top: 33%;
+		right: 0%;
+		transform: translate(-50%, -50%);
+	}
 
-.avatar__container {
-	padding: 12px;
-}
+	.avatar {
+		margin: 1rem;
+		border-radius: 5px;
+	}
 
-.avatar__btn {
-	position: absolute;
-	top: 85%;
-	left: 85%;
-	transform: translate(-50%, -50%) scale(0.95);
-}
+	.avatar__container {
+		padding: 12px;
+	}
 
-.avatar__img {
-	box-shadow: 0 0 0 3px rgba(65, 65, 65, 0.4), 0 1px 5px rgba(0, 0, 0, 0.2);
-}
+	.avatar__btn {
+		position: absolute;
+		top: 85%;
+		left: 85%;
+		transform: translate(-50%, -50%) scale(0.95);
+	}
 
-.edit,
-.edit:hover,
-.edit:focus {
-	position: absolute;
-}
+	.avatar__img {
+		box-shadow: 0 0 0 3px rgba(65, 65, 65, 0.4), 0 1px 5px rgba(0, 0, 0, 0.2);
+	}
 
-.edit {
-	top: 0;
-	left: 100%;
-	transform: translate(-75%, -25%);
-}
+	.edit,
+	.edit:hover,
+	.edit:focus {
+		position: absolute;
+	}
 
-.save__container {
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	margin-top: -0.5rem;
-}
+	.edit {
+		top: 0;
+		left: 100%;
+		transform: translate(-75%, -25%);
+	}
 
-.movie__card {
-	position: relative;
-	margin: 2rem 1rem;
-	width: calc(25% - 3rem);
-	display: flex;
-	flex-direction: column;
-	background-color: #42424299 !important;
-}
+	.save__container {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		margin-top: -0.5rem;
+	}
 
-@media only screen and (max-width: 960px) {
 	.movie__card {
-		width: calc(33% - 2rem);
+		position: relative;
+		margin: 2rem 1rem;
+		width: calc(25% - 3rem);
+		display: flex;
+		flex-direction: column;
+		background-color: #42424299 !important;
 	}
-}
 
-@media only screen and (max-width: 550px) {
-	.movie__card {
-		width: calc(50% - 2rem);
+	@media only screen and (max-width: 960px) {
+		.movie__card {
+			width: calc(33% - 2rem);
+		}
 	}
-}
+
+	@media only screen and (max-width: 550px) {
+		.movie__card {
+			width: calc(50% - 2rem);
+		}
+	}
 </style>
