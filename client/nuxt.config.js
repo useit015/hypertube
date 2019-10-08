@@ -92,5 +92,8 @@ export default {
          ** You can extend webpack config here
          */
         extend(config, ctx) {}
+    },
+    env: {
+        translateKey: 'AIzaSyB0Ixi8-g3o4B0gp-uyM6TqTPKUFoYzW4M'
     }
 }

@@ -120,7 +120,7 @@ export default {
 				this.description = await translate(this.movie.description, {
 					to: this.locale,
 					engine: "google",
-					key: "AIzaSyB0Ixi8-g3o4B0gp-uyM6TqTPKUFoYzW4M"
+					key: process.env.translateKey
 				});
 			}
 			this.loading = false;
