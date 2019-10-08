@@ -59,8 +59,8 @@ const convert = (file, thread = 4) => {
 	return converted
 }
 
-const getSubt = async (id, imdb) => {
-	const uploadPath = `./sub/${imdb}`;
+const getSubt = async (id, err) => {
+	const uploadPath = `./sub/${id}`;
 
 	if (!fs.existsSync(uploadPath)) {
 		fs.mkdir(uploadPath, (err) => {
@@ -68,7 +68,12 @@ const getSubt = async (id, imdb) => {
 		});
 	}
 
-	return await yifysubtitles(id, { path: uploadPath, langs: ['en', 'fr', 'es', 'ar'] }); 
+	let langs = ['fr', 'es', 'ar'];
+
+	if (!err) langs.push('en');
+	 
+	return await yifysubtitles(id, { path: uploadPath, langs });
+	
 }
 
 const getInfo = async id => {
@@ -185,7 +190,7 @@ module.exports = (movieList, downloadList) => {
 			const { imdb } = req.params;
 			const [ movie, sub, cast ] = await Promise.all([
 				fetchMovie(imdb),
-				getSubt(imdb, imdb),
+				getSubt(imdb, imdb == "tt8752498"),
 				getInfo(imdb)
 			])
 			movie.sub = sub

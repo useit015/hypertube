@@ -107,7 +107,8 @@ export default {
 		selectedTorrent: null,
 		vars: {
 			autoplay: 1
-		}
+		},
+		timer: null
 	}),
 	async created() {
 		try {
@@ -189,6 +190,10 @@ export default {
 			const sub = this.movie.sub.filter(cur => !!cur.path.length);
 			this.selectedTorrent = { id, ext, imdb, sub };
 			this.movieLoading = true;
+			this.timer=setTimeout(() => {
+				this.playerError();
+				this.openAlert(this, "edit.fail");
+			}, 90000);
 		},
 		closeMovie() {
 			if (this.playing) {
@@ -200,6 +205,7 @@ export default {
 		},
 		movieLoaded() {
 			this.playing = true;
+			clearTimeout(this.timer);
 			const payload = {
 				imdb: this.imdb,
 				userId: this.userId,
@@ -214,6 +220,7 @@ export default {
 			this.playing = false;
 			this.movieLoading = false;
 			this.selectedTorrent = null;
+			this.$socket.client.emit("cleanup");
 		}
 	}
 };

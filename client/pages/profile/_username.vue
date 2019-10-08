@@ -88,7 +88,7 @@
 		computed: {
 			...mapGetters(["user"]),
 			avatar() {
-				return isExternal(this.user.image)
+				return isExternal(this.userLoaded.image)
 					? this.userLoaded.image
 					: `https://hypertube.tk${this.userLoaded.image}`;
 			},

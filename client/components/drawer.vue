@@ -48,25 +48,25 @@
 				"music",
 				"romance",
 				"horror",
-				"sci fi",
+				"sci-fi",
 				"thriller",
 				"biography"
 			],
 			items: [
 				{
-					value: "filters.Popularity",
+					value: "Popularity",
 					text: "Popularity"
 				},
 				{
-					value: "filters.Date added",
+					value: "Date added",
 					text: "Date added"
 				},
 				{
-					value: "filters.Year",
+					value: "Year",
 					text: "Year"
 				},
 				{
-					value: "filters.Title",
+					value: "Title",
 					text: "Title"
 				}
 			],
@@ -94,7 +94,7 @@
 				this.drawer = false;
 			},
 			trad(item) {
-				return this.$t(item.value);
+				return this.$t(`filters.${item.value}`);
 			}
 		}
 	};
