@@ -68,7 +68,7 @@ const getSubt = async (id, imdb) => {
 		});
 	}
 
-	return await yifysubtitles(id, { path: uploadPath, langs: ['en', 'fr', 'es', 'ar', 'de', 'it', 'ru', 'bn', 'cs', 'fa', 'el', 'id', 'ro', 'tr', 'vi'] }); 
+	return await yifysubtitles(id, { path: uploadPath, langs: ['en', 'fr', 'es', 'ar'] }); 
 }
 
 const getInfo = async id => {

@@ -68,7 +68,7 @@ const UserSchema = new mongoose.Schema({
 	},
 	langue: {
 		type: String,
-		enum: ['en', 'fr', 'ar', 'es'],
+		enum: ['en', 'fr', 'ar', 'es', 'dr'],
 		default: 'en'
 	},
 	movies: {
