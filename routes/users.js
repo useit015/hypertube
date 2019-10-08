@@ -263,7 +263,7 @@ router.get('/recover/:key', (req, res) => {
 	User.findOne({ rkey })
 		.then(user => {
 			if (user) {
-				res.json({ ...user.addToken(), rkey })
+				res.render('recover', { rkey })
 			} else {
 				res.json({ err: true, errors: ['Invalid key'] })
 			}
@@ -271,17 +271,27 @@ router.get('/recover/:key', (req, res) => {
 		.catch(err => res.json({ err: true }))
 })
 
-router.post('/recovery_check', authJwt, (req, res) => {
-	const { key } = req.params
-	const { user } = req
-	if (user.key == key) {
-		user.key = undefined
-		user.save()
-			.then(user => res.json({ ok: true }))
-			.catch(err => res.json({ err: true }))
-	} else {
-		res.json({ err: true, errors: ['Invalid key'] })
-	}
+router.post('/passwordrecovery', (req, res) => {
+	const { rkey, newPassword, confNewPassword } = req.body
+	const data = { newPassword, confNewPassword }
+	validator.passwordRecover(data, err => {
+		if (!err) {
+			User.findOne({ rkey })
+				.then(user => {
+					if (user) {
+						user.password = newPassword
+						user.rkey = undefined
+						user.save()
+							.then(user => res.json(user.addToken()))
+							.catch(err => res.json({ err: true }))
+					} else {
+						res.json({ err: true })
+					}
+				}).catch(err => res.json({ err: true }))
+		} else {
+			res.json({ err: true, errors: validator.getErrors(err) })
+		}
+	})
 })
 
 module.exports = router

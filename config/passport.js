@@ -18,10 +18,10 @@ const findUser = async (data, done, type) => {
 		if (!user) {
 			const user = await User.findOne({ email: data.email })
 			if (!user || !data.email) {
-				new User(data).save().then(user => done(null, user))
+				new User(data).save().then(user => done(null, user)).catch()
 			} else {
 				user[`${type}Id`] = data[`${type}Id`]
-				user.save().then(user => done(null, user))
+				user.save().then(user => done(null, user)).catch()
 			}
 		} else {
 			done(null, user)
@@ -36,8 +36,18 @@ const generateUsername = async (firstName, lastName) => {
 	let user = await User.findOne({ username })
 	let i = 1;
 	while (user) {
-		// username = `user_${type}${randomBytes(6).toString('hex')}`
 		username = (firstName.substring(0,i)+lastName).slice(0,8).toLowerCase();
+		user = await User.findOne({ username })
+		i++;
+	}
+	return username
+}
+
+const checkUsername = async username => {
+	let user = await User.findOne({ username })
+	let i = 0;
+	while (user) {
+		username += i
 		user = await User.findOne({ username })
 		i++;
 	}
@@ -93,15 +103,16 @@ module.exports = passport => {
 				callbackURL: `${process.env.API_URL}/oauth/git_ret`
 			},
 			async (accessToken, refreshToken, profile, done) => {
-				const user = {
+				const username = await checkUsername(profile.username)
+				let user = {
 					firstName: '',
 					lastName: '',
-					username: profile.username,
+					username,
 					image: profile.photos[0].value,
-					email: profile._json.email ? profile._json.email : "",
 					githubId: profile.id,
 					verified: true
 				}
+				if (profile._json.email) user.email = profile._json.email
 				findUser(user, done, 'github')
 			}
 		)
@@ -114,10 +125,11 @@ module.exports = passport => {
 				callbackURL: `${process.env.API_URL}/oauth/ft_ret`
 			},
 			async (accessToken, refreshToken, profile, done) => {
+				const username = await checkUsername(profile.username)
 				const user = {
 					firstName: profile.name.givenName,
 					lastName: profile.name.familyName,
-					username: profile.username,
+					username,
 					image: profile.photos[0].value,
 					email: profile.emails[0].value,
 					ftId: profile.id,
@@ -188,11 +200,11 @@ module.exports = passport => {
 				callbackURL: `${process.env.API_URL}/oauth/sp_ret`
 			},
 			async (accessToken, refreshToken, expires_in, profile, done) => {
-				const userName = profile.displayName;
+				const username = await checkUsername(profile.displayName)
 				const user = {
 					firstName: '',
 					lastName: '',
-					username: userName,
+					username,
 					image: profile.photos[0],
 					email: profile._json.email,
 					spId: profile.id,

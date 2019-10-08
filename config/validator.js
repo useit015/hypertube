@@ -70,5 +70,16 @@ module.exports = {
 			password: passRule
 		})
 		Joi.validate(obj, schema, opts, f)
-	}
+	},
+	passwordRecover: (obj, f) => {
+		const schema = Joi.object().keys(
+			{
+				newPassword: passRule,
+				confNewPassword: Joi.any()
+				.valid(Joi.ref('newPassword'))
+				.required()
+				.options({ language: { any: { allowOnly: 'must match password' } } })
+			})
+		Joi.validate(obj, schema, opts, f)
+	},
 }
