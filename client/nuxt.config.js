@@ -94,6 +94,6 @@ export default {
         extend(config, ctx) {}
     },
     env: {
-        translateKey: 'AIzaSyB0Ixi8-g3o4B0gp-uyM6TqTPKUFoYzW4M'
+        translateKey: 'AIzaSyAGU9yAJ5nfJfsu5QzRVf42z4ZUvdJ_PHY'
     }
 }
