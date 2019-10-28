@@ -1,5 +1,5 @@
 <template>
-	<v-navigation-drawer class="genre_drawer" v-model="drawer" absolute temporary>
+	<v-navigation-drawer class="genre_drawer" v-model="drawer" temporary>
 		<v-list nav dense class="genre_list">
 			<v-list-item link v-for="(genre, i) in genres" :key="i" @click="filterMovie(genre)">
 				<v-list-item-icon>
