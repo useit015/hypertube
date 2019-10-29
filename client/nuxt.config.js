@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+require('dotenv').config()
 
 export default {
     mode: 'spa',
@@ -94,6 +95,6 @@ export default {
         extend(config, ctx) {}
     },
     env: {
-        translateKey: 'AIzaSyAGU9yAJ5nfJfsu5QzRVf42z4ZUvdJ_PHY'
+        translateKey: process.env.translateKey
     }
 }
