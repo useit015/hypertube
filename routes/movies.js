@@ -5,8 +5,8 @@ const FFmpeg = require('fluent-ffmpeg')
 const cloudscraper = require("cloudscraper")
 const torrentStream = require('torrent-stream')
 const { resolve, join, dirname } = require('path')
-const fs = require("fs");
-const yifysubtitles = require('@amilajack/yifysubtitles');
+const fs = require("fs")
+const yifysubtitles = require('@amilajack/yifysubtitles')
 const router = express.Router()
 
 const Movie = require('../models/Movie')
@@ -230,6 +230,7 @@ module.exports = (movieList, downloadList) => {
 					if (!torrent) return res.end()
 					movieList[id] = torrent
 				}
+				torrent.magnet = torrent.magnet.replace(/[^\x00-\x7F]/g, "")
 				const uploadPath = resolve(dirname(__dirname), 'movies')
 				const engine = torrentStream(torrent.magnet, { path: uploadPath })
 				engine.on('torrent', () => {
