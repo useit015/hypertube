@@ -145,7 +145,8 @@ router.post(
 router.post('/image', authJwt, async (req, res) => {
 	try {
 		const { user } = req
-		unlinkAsync(path.dirname(__dirname) + user.image, () => {})
+		if (user.image.indexOf('http://') != 0 && user.image.indexOf('https://') != 0)
+			unlinkAsync(path.dirname(__dirname) + user.image, () => {})
 		let image = base64Img.imgSync(req.body.img, 'uploads', user.username)
 		Jimp.read(image, (err, img) => {
 			if (err) {
